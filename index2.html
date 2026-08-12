@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lyka Delivery Breakdown Generator</title>
+  <style>
+    /* --- LYKA APP INTERFACE THEME --- */
+    :root {
+      --lyka-dark: #0a1c17;
+      --lyka-panel: #112822;
+      --lyka-card-bg: #16332b;
+      --lyka-green: #056839;
+      --lyka-accent: #25d366;
+      --lyka-border: #1f473c;
+      --lyka-text: #e8f5e9;
+      --lyka-text-muted: #a3c2b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    body { background-color: var(--lyka-dark); color: var(--lyka-text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* Header */
+    header { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; background: var(--lyka-panel); border-bottom: 2px solid var(--lyka-green); }
+    header h1 { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+    
+    .btn { padding: 9px 18px; font-size: 13px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-primary { background-color: var(--lyka-accent); color: #052317; }
+    .btn-primary:hover { background-color: #20bd5a; }
+    .btn-secondary { background: var(--lyka-card-bg); color: var(--lyka-text); border: 1px solid var(--lyka-border); margin-left: 8px; }
+
+    /* Layout */
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+    .left-panel { width: 420px; background: var(--lyka-panel); border-right: 1px solid var(--lyka-border); padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .right-panel { flex: 1; background: var(--lyka-dark); padding: 24px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+
+    .panel-title { font-size: 12px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .format-box { background: var(--lyka-card-bg); border: 1px solid var(--lyka-border); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; color: var(--lyka-text-muted); line-height: 1.5; }
+    textarea { width: 100%; flex: 1; background: var(--lyka-dark); border: 1px solid var(--lyka-border); border-radius: 6px; color: #6ee7b7; font-family: monospace; font-size: 13px; padding: 12px; resize: none; outline: none; }
+    textarea:focus { border-color: var(--lyka-accent); }
+
+    /* --- PRINTABLE REPORT / DOCKET DOCUMENT STYLES --- */
+    .report-paper { background: #ffffff; color: #111827; width: 100%; max-width: 800px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 12px; }
+
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--lyka-green); padding-bottom: 10px; margin-bottom: 20px; }
+    .doc-title h2 { font-size: 22px; font-weight: 900; color: var(--lyka-green); letter-spacing: 0.5px; }
+    .doc-logo { font-size: 26px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; }
+
+    .section-title { font-size: 14px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 24px 0 8px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 4px; }
+
+    /* Tables */
+    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px; }
+    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: left; }
+    table.data-table th { background: #f0fdf4; color: var(--lyka-green); font-weight: 800; text-transform: uppercase; }
+    table.data-table .num-col { text-align: right; }
+    
+    .subtotal-row { background-color: #f8fafc; font-weight: bold; color: var(--lyka-green); }
+    .grandtotal-row { background-color: var(--lyka-green); color: #ffffff; font-weight: 900; font-size: 12px; }
+    .grandtotal-row td { border-color: var(--lyka-green); }
+
+    .doc-note { font-size: 10px; color: #6b7280; font-style: italic; margin-top: 16px; }
+
+    /* Empty State */
+    .empty-state { color: var(--lyka-text-muted); text-align: center; margin-top: 100px; font-size: 14px; }
+
+    /* --- CSS PRINT MEDIA --- */
+    @media print {
+      header, .left-panel, .no-print { display: none !important; }
+      body, .app-body, .right-panel { background: #ffffff !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
+      .report-paper { box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+      .data-table th { background-color: #f0fdf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .grandtotal-row { background-color: #056839 !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🐾 LYKA DELIVERY BREAKDOWN GENERATOR</h1>
+    <div>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ PRINT DOCKET (A4)</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Left Input Panel -->
+    <div class="left-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="panel-title">INPUT PALLET DATA</span>
+        <div>
+          <button class="btn btn-secondary" onclick="loadSample()">Example</button>
+          <button class="btn btn-secondary" onclick="clearData()">Clear</button>
+        </div>
+      </div>
+
+      <div class="format-box">
+        <strong>Format (Tab or Pipe separated):</strong><br>
+        [Pallet No] | [Product Description] | [Weight]<br><br>
+        <em>Example:</em><br>
+        1 | Beef heart | 864<br>
+        2 | Beef lungs | 540
+      </div>
+
+      <textarea id="dataInput" placeholder="Paste data here..." oninput="parseData()"></textarea>
+    </div>
+
+    <!-- Right Live Preview -->
+    <div class="right-panel">
+      <div id="reportContainer" style="width: 100%; display: flex; justify-content: center;">
+        <div class="empty-state">
+          <p>📋 No pallet breakdown generated yet.</p>
+          <p style="font-size:12px; margin-top:6px;">Paste warehouse data or click <strong>Example</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sampleText = `1	Beef heart	864
+2	Beef heart	864
+3	Beef heart	864
+4	Beef heart	864
+5	Beef heart	816
+6	Beef heart	900
+7	Beef heart	897
+8	Beef lungs	540
+9	Beef lungs	540
+10	Beef lungs	540
+11	Beef lungs	480
+12	Beef lungs	540
+13	Beef lungs	540
+14	Beef lungs	504
+15	Beef lungs	430
+16	Beef lungs	700
+17	Beef lungs	480
+18	Beef lungs	480
+19	Sardines	560
+20	Sardines	450
+21	Sardines	560
+22	Sardines	450
+23	Sardines	450
+24	Beef spleen	180
+25	Beef spleen	900
+26	Beef kidney	788.8
+27	Beef trim	979.2
+28	Beef trim	979.2
+29	Beef trim	979.2
+30	Beef trim	979.2
+31	Beef trim	979.2`;
+
+    function loadSample() {
+      document.getElementById('dataInput').value = sampleText;
+      parseData();
+    }
+
+    function clearData() {
+      document.getElementById('dataInput').value = '';
+      parseData();
+    }
+
+    function parseData() {
+      const rawText = document.getElementById('dataInput').value.trim();
+      const container = document.getElementById('reportContainer');
+
+      if (!rawText) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p>📋 No pallet breakdown generated yet.</p>
+            <p style="font-size:12px; margin-top:6px;">Paste warehouse data or click <strong>Example</strong>.</p>
+          </div>`;
+        return;
+      }
+
+      const lines = rawText.split('\n');
+      const pallets = [];
+      
+      lines.forEach(line => {
+        if (!line.trim()) return;
+        // Split by tabs, pipes, or multiple spaces
+        const parts = line.split(/[\t|]+|\s{2,}/).map(p => p.trim());
+        
+        if (parts.length >= 2) {
+          let palletNo = parts[0];
+          let desc = parts[1];
+          let weight = parseFloat(parts[2] || parts[1]);
+
+          if (isNaN(weight) && parts.length >= 3) {
+            weight = parseFloat(parts[2]);
+          }
+
+          if (!isNaN(weight)) {
+            pallets.push({
+              palletNo: palletNo,
+              desc: desc.toUpperCase(),
+              date: '',
+              batch: '',
+              weight: weight
+            });
+          }
+        }
+      });
+
+      // --- CALCULATE SUMMARY GROUPS ---
+      const summaryGroups = {};
+      let totalPalletsCount = 0;
+      let grandTotalWeight = 0;
+
+      pallets.forEach(item => {
+        totalPalletsCount++;
+        grandTotalWeight += item.weight;
+
+        if (!summaryGroups[item.desc]) {
+          summaryGroups[item.desc] = { weights: {}, totalWeight: 0, totalPallets: 0 };
+        }
+
+        const group = summaryGroups[item.desc];
+        const wKey = item.weight.toString();
+        
+        if (!group.weights[wKey]) {
+          group.weights[wKey] = 0;
+        }
+        group.weights[wKey]++;
+        group.totalPallets++;
+        group.totalWeight += item.weight;
+      });
+
+      // Build HTML
+      let html = `
+        <div class="report-paper">
+          <!-- Header -->
+          <div class="doc-header">
+            <div class="doc-title">
+              <h2>DELIVERY BREAKDOWN</h2>
+            </div>
+            <div class="doc-logo">lyka</div>
+          </div>
+
+          <!-- Table 1: Itemized Pallet Breakdown -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 10%;">PALLET NO.</th>
+                <th style="width: 40%;">PRODUCT DESCRIPTION</th>
+                <th style="width: 15%;">DATE</th>
+                <th style="width: 15%;">BATCH</th>
+                <th style="width: 20%;" class="num-col">WEIGHT (KG)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pallets.map(p => `
+                <tr>
+                  <td>${p.palletNo}</td>
+                  <td><strong>${p.desc}</strong></td>
+                  <td>${p.date}</td>
+                  <td>${p.batch}</td>
+                  <td class="num-col"><strong>${p.weight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</strong></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <!-- Table 2: Delivery Summary -->
+          <div class="section-title">DELIVERY SUMMARY</div>
+          <div style="font-weight: bold; font-size: 11px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 40%;">PRODUCT</th>
+                <th style="width: 15%;">DATE</th>
+                <th style="width: 15%;">BATCH</th>
+                <th style="width: 15%;" class="num-col">WEIGHT PER PALLET (KG)</th>
+                <th style="width: 15%;" class="num-col">NO. OF PALLETS</th>
+                <th style="width: 20%;" class="num-col">TOTAL WEIGHT (KG)</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      Object.keys(summaryGroups).forEach(prodName => {
+        const group = summaryGroups[prodName];
+        const weightsList = Object.keys(group.weights);
+
+        weightsList.forEach((wVal, idx) => {
+          const count = group.weights[wVal];
+          const subWeight = parseFloat(wVal) * count;
+          
+          html += `
+            <tr>
+              <td>${idx === 0 ? `<strong>${prodName}</strong>` : ''}</td>
+              <td></td>
+              <td></td>
+              <td class="num-col">${parseFloat(wVal).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+              <td class="num-col">${count}</td>
+              <td class="num-col">${subWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+            </tr>
+          `;
+        });
+
+        // Group Total Row
+        html += `
+          <tr class="subtotal-row">
+            <td colspan="4">TOTAL ${prodName}</td>
+            <td class="num-col">${group.totalPallets}</td>
+            <td class="num-col">${group.totalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+          </tr>
+        `;
+      });
+
+      // Grand Total Row
+      html += `
+            <tr class="grandtotal-row">
+              <td colspan="4">GRAND TOTAL</td>
+              <td class="num-col">${totalPalletsCount}</td>
+              <td class="num-col">${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="doc-note">
+          Note: All weights are in kilograms (kg). Date and Batch fields are left blank where pending.
+        </div>
+      </div>
+      `;
+
+      container.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
