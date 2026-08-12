@@ -1,0 +1,234 @@
+Here is the updated single-file code using **Lyka Dog Food's signature brand green (`#004d40` / `#056839` vibrant forest green accent)**.
+
+The dark mode web app now features Lyka's rich green headers, borders, and button accents, and the printable delivery dockets are styled with matching green headers and borders.
+
+### Single-File Code (`index.html`)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Breakdown Generator - Lyka Green</title>
+  <style>
+    /* --- LYKA GREEN BRAND THEME --- */
+    :root {
+      --lyka-dark: #0a1c17;
+      --lyka-panel: #112822;
+      --lyka-card-bg: #16332b;
+      --lyka-green: #056839;
+      --lyka-green-hover: #078248;
+      --lyka-accent: #25d366;
+      --lyka-border: #1f473c;
+      --lyka-text: #e8f5e9;
+      --lyka-text-muted: #a3c2b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--lyka-dark); color: var(--lyka-text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* Top Bar */
+    header { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; background: var(--lyka-panel); border-bottom: 2px solid var(--lyka-green); }
+    header h1 { font-size: 16px; letter-spacing: 1px; font-weight: 800; text-transform: uppercase; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+    header p { font-size: 12px; color: var(--lyka-text-muted); margin-top: 2px; }
+
+    /* Action Buttons */
+    .btn { padding: 9px 18px; font-size: 13px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-primary { background-color: var(--lyka-accent); color: #052317; }
+    .btn-primary:hover { background-color: #20bd5a; }
+    .btn-secondary { background: var(--lyka-card-bg); color: var(--lyka-text); border: 1px solid var(--lyka-border); margin-left: 8px; }
+    .btn-secondary:hover { background: var(--lyka-border); }
+
+    /* Main Container Split */
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+    .left-panel { width: 420px; background: var(--lyka-panel); border-right: 1px solid var(--lyka-border); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .right-panel { flex: 1; background: var(--lyka-dark); padding: 24px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+
+    /* Form Fields */
+    .panel-title { font-size: 12px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .format-box { background: var(--lyka-card-bg); border: 1px solid var(--lyka-border); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 12px; color: var(--lyka-text-muted); line-height: 1.5; }
+    textarea { width: 100%; flex: 1; background: var(--lyka-dark); border: 1px solid var(--lyka-border); border-radius: 6px; color: #6ee7b7; font-family: monospace; font-size: 13px; padding: 12px; resize: none; outline: none; }
+    textarea:focus { border-color: var(--lyka-accent); }
+
+    /* --- PRINTABLE DOCKET / REPORT CARDS --- */
+    .docket-list { display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 700px; }
+    .docket-card { background: #ffffff; color: #0b1d17; border: 3px solid var(--lyka-green); padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); border-radius: 4px; }
+    
+    /* Docket Layout */
+    .docket-header { border-bottom: 3px solid var(--lyka-green); padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; }
+    .docket-header h2 { font-size: 20px; font-weight: 900; letter-spacing: 0.5px; color: var(--lyka-green); }
+    .docket-header span { font-size: 14px; font-weight: 700; color: #2d4a3e; }
+    
+    .docket-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .docket-table th, .docket-table td { border: 1px solid var(--lyka-green); padding: 8px 12px; text-align: left; font-size: 13px; }
+    .docket-table th { background: #eef7f2; color: var(--lyka-green); font-weight: 800; text-transform: uppercase; }
+    
+    .docket-footer { margin-top: 20px; border-top: 2px dashed var(--lyka-green); padding-top: 10px; font-size: 12px; display: flex; justify-content: space-between; font-weight: bold; color: var(--lyka-green); }
+
+    /* Empty State */
+    .empty-state { color: var(--lyka-text-muted); text-align: center; margin-top: 100px; font-size: 14px; }
+
+    /* --- CSS PRINT MEDIA STYLES --- */
+    @media print {
+      /* Hide top header, sidebar, buttons */
+      header, .left-panel, .no-print { display: none !important; }
+      body, .app-body, .right-panel { background: white !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
+      .docket-list { width: 100% !important; max-width: 100% !important; }
+      .docket-card { box-shadow: none !important; border: 3px solid #056839 !important; page-break-after: always; margin-bottom: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <div>
+      <h1>🐾 DELIVERY BREAKDOWN GENERATOR</h1>
+      <p>A4 Printable Breakdown Dockets • Lyka Green Theme</p>
+    </div>
+    <div>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ PRINT ALL</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Left Panel: Controls & Raw Data -->
+    <div class="left-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="panel-title">PASTE DELIVERY DATA</span>
+        <div>
+          <button class="btn btn-secondary" onclick="loadSample()">Example</button>
+          <button class="btn btn-secondary" onclick="clearData()">Clear</button>
+        </div>
+      </div>
+
+      <div class="format-box">
+        <strong>Expected Format:</strong><br>
+        Customer: [Name]<br>
+        LP: [License Plate/ID]<br>
+        Item | Qty | UOM<br>
+        <em>--- blank line between orders ---</em>
+      </div>
+
+      <textarea id="dataInput" placeholder="Paste order data here..." oninput="parseData()"></textarea>
+    </div>
+
+    <!-- Right Panel: Live Preview -->
+    <div class="right-panel">
+      <div id="docketContainer" class="docket-list">
+        <div class="empty-state">
+          <p>📋 No delivery dockets generated yet.</p>
+          <p style="font-size:12px; margin-top:6px;">Paste data on the left or click <strong>Example</strong> to test.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample Data
+    const sampleText = `Customer: Warehouse A - Fresh Foods
+LP: 74579
+Chicken Breast | 960 | KG
+Beef Trim | 320 | KG
+
+Customer: Metro Supermarket Central
+LP: 12233
+Turkey Thigh | 150 | KG
+Chicken Breast | 400 | KG
+Lamb Chops | 85 | KG`;
+
+    function loadSample() {
+      document.getElementById('dataInput').value = sampleText;
+      parseData();
+    }
+
+    function clearData() {
+      document.getElementById('dataInput').value = '';
+      parseData();
+    }
+
+    function parseData() {
+      const rawText = document.getElementById('dataInput').value.trim();
+      const container = document.getElementById('docketContainer');
+
+      if (!rawText) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p>📋 No delivery dockets generated yet.</p>
+            <p style="font-size:12px; margin-top:6px;">Paste data on the left or click <strong>Example</strong> to test.</p>
+          </div>`;
+        return;
+      }
+
+      // Split records by blank lines
+      const blocks = rawText.split(/\n\s*\n/);
+      let html = '';
+
+      blocks.forEach((block, index) => {
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+        let customer = 'General Delivery';
+        let lp = 'N/A';
+        let items = [];
+
+        lines.forEach(line => {
+          if (line.toLowerCase().startsWith('customer:')) {
+            customer = line.replace(/customer:/i, '').trim();
+          } else if (line.toLowerCase().startsWith('lp:')) {
+            lp = line.replace(/lp:/i, '').trim();
+          } else if (line.includes('|')) {
+            const parts = line.split('|').map(p => p.trim());
+            items.push({
+              name: parts[0] || 'Item',
+              qty: parts[1] || '0',
+              uom: parts[2] || 'Units'
+            });
+          }
+        });
+
+        // Render Docket Card HTML
+        html += `
+          <div class="docket-card">
+            <div class="docket-header">
+              <div>
+                <h2>DELIVERY BREAKDOWN</h2>
+                <span>DESTINATION: ${customer}</span>
+              </div>
+              <div style="text-align:right;">
+                <h2>LP: ${lp}</h2>
+                <span>Docket #${index + 101}</span>
+              </div>
+            </div>
+
+            <table class="docket-table">
+              <thead>
+                <tr>
+                  <th>Item Description</th>
+                  <th style="width: 100px; text-align:right;">Qty</th>
+                  <th style="width: 100px;">UOM</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${items.map(item => `
+                  <tr>
+                    <td><strong>${item.name}</strong></td>
+                    <td style="text-align:right;"><strong>${item.qty}</strong></td>
+                    <td>${item.uom}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="docket-footer">
+              <span>Verified By: ___________________</span>
+              <span>Driver Sign: ___________________</span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
