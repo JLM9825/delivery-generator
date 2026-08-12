@@ -101,15 +101,14 @@
       </div>
 
       <div class="format-box">
-        <strong>Supported Formats:</strong><br>
-        1. <em>Comma Separated:</em><br>
-        Beef heart | 864, 864, 816, 900<br><br>
-        2. <em>Standard Line List:</em><br>
-        Beef heart | 864<br>
-        Beef heart | 864
+        <strong>Format (No pallet numbers needed):</strong><br>
+        [Product Description] | [Weights separated by commas]<br><br>
+        <em>Example:</em><br>
+        Beef heart | 864, 864, 864, 816, 900<br>
+        Beef lungs | 540, 540, 480, 504
       </div>
 
-      <textarea id="dataInput" placeholder="Paste data here..." oninput="parseData()"></textarea>
+      <textarea id="dataInput" placeholder="Paste product and weights here..." oninput="parseData()"></textarea>
     </div>
 
     <!-- Right Live Preview -->
@@ -159,53 +158,58 @@ Beef trim | 979.2, 979.2, 979.2, 979.2, 979.2`;
       let palletCounter = 1;
 
       lines.forEach(line => {
-        if (!line.trim()) return;
+        let cleanLine = line.trim();
+        if (!cleanLine) return;
 
-        // Check if line contains '|' delimiter
-        if (line.includes('|')) {
-          const parts = line.split('|').map(p => p.trim());
-          let desc = parts[0];
-          let weightsStr = parts[1] || '';
+        // Strip leading sequence numbers if user pastes them (e.g., "1  Beef heart  864")
+        cleanLine = cleanLine.replace(/^\d+[\s\t|]+/, '');
 
-          // Split weights by commas or spaces
-          const weightTokens = weightsStr.split(/[\s,]+/).filter(w => w);
-          
-          weightTokens.forEach(token => {
-            const wVal = parseFloat(token);
-            if (!isNaN(wVal)) {
-              pallets.push({
-                palletNo: palletCounter++,
-                desc: desc.toUpperCase(),
-                date: '',
-                batch: '',
-                weight: wVal
-              });
-            }
-          });
+        let desc = '';
+        let weightsStr = '';
+
+        if (cleanLine.includes('|')) {
+          const parts = cleanLine.split('|').map(p => p.trim());
+          desc = parts[0];
+          weightsStr = parts[1] || '';
+        } else if (cleanLine.includes('\t')) {
+          const parts = cleanLine.split('\t').map(p => p.trim());
+          desc = parts[0];
+          weightsStr = parts.slice(1).join(' ');
         } else {
-          // Fallback for tab/space delimited inputs
-          const parts = line.split(/[\t]+|\s{2,}/).map(p => p.trim());
-          if (parts.length >= 2) {
-            let desc = parts[0];
-            let weight = parseFloat(parts[parts.length - 1]);
-            
-            // If first part was a number (pallet ID), clean description
-            if (!isNaN(parseFloat(parts[0])) && parts.length >= 3) {
-              desc = parts[1];
-            }
-
-            if (!isNaN(weight)) {
-              pallets.push({
-                palletNo: palletCounter++,
-                desc: desc.toUpperCase(),
-                date: '',
-                batch: '',
-                weight: weight
-              });
-            }
+          // Fallback: search for first number in line to separate product name from weights
+          const match = cleanLine.match(/^([a-zA-Z\s]+)(.*)$/);
+          if (match) {
+            desc = match[1].trim();
+            weightsStr = match[2].trim();
+          } else {
+            desc = cleanLine;
           }
         }
+
+        // Extract all numerical weights from the right side
+        const weightTokens = weightsStr.split(/[\s,]+/).filter(w => w !== '');
+
+        weightTokens.forEach(token => {
+          const wVal = parseFloat(token);
+          if (!isNaN(wVal)) {
+            pallets.push({
+              palletNo: palletCounter++,
+              desc: desc.toUpperCase(),
+              date: '',
+              batch: '',
+              weight: wVal
+            });
+          }
+        });
       });
+
+      if (pallets.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p>⚠️ No valid product weights found.</p>
+          </div>`;
+        return;
+      }
 
       // --- CALCULATE SUMMARY GROUPS ---
       const summaryGroups = {};
