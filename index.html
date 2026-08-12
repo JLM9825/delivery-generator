@@ -46,6 +46,12 @@
     .doc-title h2 { font-size: 22px; font-weight: 900; color: var(--lyka-green); letter-spacing: 0.5px; }
     .doc-logo { font-size: 26px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; }
 
+    /* Summary section starts cleanly on page 2 */
+    .summary-section {
+      break-before: page;
+      page-break-before: always;
+    }
+
     .section-title { font-size: 14px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 24px 0 8px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 4px; }
 
     /* Tables */
@@ -70,6 +76,7 @@
       .report-paper { box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
       .data-table th { background-color: #f0fdf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .grandtotal-row { background-color: #056839 !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .summary-section { break-before: page !important; page-break-before: always !important; }
     }
   </style>
 </head>
@@ -94,11 +101,12 @@
       </div>
 
       <div class="format-box">
-        <strong>Format (Tab or Pipe separated):</strong><br>
-        [Pallet No] | [Product Description] | [Weight]<br><br>
-        <em>Example:</em><br>
-        1 | Beef heart | 864<br>
-        2 | Beef lungs | 540
+        <strong>Supported Formats:</strong><br>
+        1. <em>Comma Separated:</em><br>
+        Beef heart | 864, 864, 816, 900<br><br>
+        2. <em>Standard Line List:</em><br>
+        Beef heart | 864<br>
+        Beef heart | 864
       </div>
 
       <textarea id="dataInput" placeholder="Paste data here..." oninput="parseData()"></textarea>
@@ -116,37 +124,12 @@
   </div>
 
   <script>
-    const sampleText = `1	Beef heart	864
-2	Beef heart	864
-3	Beef heart	864
-4	Beef heart	864
-5	Beef heart	816
-6	Beef heart	900
-7	Beef heart	897
-8	Beef lungs	540
-9	Beef lungs	540
-10	Beef lungs	540
-11	Beef lungs	480
-12	Beef lungs	540
-13	Beef lungs	540
-14	Beef lungs	504
-15	Beef lungs	430
-16	Beef lungs	700
-17	Beef lungs	480
-18	Beef lungs	480
-19	Sardines	560
-20	Sardines	450
-21	Sardines	560
-22	Sardines	450
-23	Sardines	450
-24	Beef spleen	180
-25	Beef spleen	900
-26	Beef kidney	788.8
-27	Beef trim	979.2
-28	Beef trim	979.2
-29	Beef trim	979.2
-30	Beef trim	979.2
-31	Beef trim	979.2`;
+    const sampleText = `Beef heart | 864, 864, 864, 864, 816, 900, 897
+Beef lungs | 540, 540, 540, 480, 540, 540, 504, 430, 700, 480, 480
+Sardines | 560, 450, 560, 450, 450
+Beef spleen | 180, 900
+Beef kidney | 788.8
+Beef trim | 979.2, 979.2, 979.2, 979.2, 979.2`;
 
     function loadSample() {
       document.getElementById('dataInput').value = sampleText;
@@ -173,29 +156,53 @@
 
       const lines = rawText.split('\n');
       const pallets = [];
-      
+      let palletCounter = 1;
+
       lines.forEach(line => {
         if (!line.trim()) return;
-        // Split by tabs, pipes, or multiple spaces
-        const parts = line.split(/[\t|]+|\s{2,}/).map(p => p.trim());
-        
-        if (parts.length >= 2) {
-          let palletNo = parts[0];
-          let desc = parts[1];
-          let weight = parseFloat(parts[2] || parts[1]);
 
-          if (isNaN(weight) && parts.length >= 3) {
-            weight = parseFloat(parts[2]);
-          }
+        // Check if line contains '|' delimiter
+        if (line.includes('|')) {
+          const parts = line.split('|').map(p => p.trim());
+          let desc = parts[0];
+          let weightsStr = parts[1] || '';
 
-          if (!isNaN(weight)) {
-            pallets.push({
-              palletNo: palletNo,
-              desc: desc.toUpperCase(),
-              date: '',
-              batch: '',
-              weight: weight
-            });
+          // Split weights by commas or spaces
+          const weightTokens = weightsStr.split(/[\s,]+/).filter(w => w);
+          
+          weightTokens.forEach(token => {
+            const wVal = parseFloat(token);
+            if (!isNaN(wVal)) {
+              pallets.push({
+                palletNo: palletCounter++,
+                desc: desc.toUpperCase(),
+                date: '',
+                batch: '',
+                weight: wVal
+              });
+            }
+          });
+        } else {
+          // Fallback for tab/space delimited inputs
+          const parts = line.split(/[\t]+|\s{2,}/).map(p => p.trim());
+          if (parts.length >= 2) {
+            let desc = parts[0];
+            let weight = parseFloat(parts[parts.length - 1]);
+            
+            // If first part was a number (pallet ID), clean description
+            if (!isNaN(parseFloat(parts[0])) && parts.length >= 3) {
+              desc = parts[1];
+            }
+
+            if (!isNaN(weight)) {
+              pallets.push({
+                palletNo: palletCounter++,
+                desc: desc.toUpperCase(),
+                date: '',
+                batch: '',
+                weight: weight
+              });
+            }
           }
         }
       });
@@ -227,7 +234,7 @@
       // Build HTML
       let html = `
         <div class="report-paper">
-          <!-- Header -->
+          <!-- Page 1: Header + Itemized Pallet Breakdown -->
           <div class="doc-header">
             <div class="doc-title">
               <h2>DELIVERY BREAKDOWN</h2>
@@ -235,7 +242,6 @@
             <div class="doc-logo">lyka</div>
           </div>
 
-          <!-- Table 1: Itemized Pallet Breakdown -->
           <table class="data-table">
             <thead>
               <tr>
@@ -259,22 +265,23 @@
             </tbody>
           </table>
 
-          <!-- Table 2: Delivery Summary -->
-          <div class="section-title">DELIVERY SUMMARY</div>
-          <div style="font-weight: bold; font-size: 11px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
+          <!-- Page 2: Delivery Summary -->
+          <div class="summary-section">
+            <div class="section-title">DELIVERY SUMMARY</div>
+            <div style="font-weight: bold; font-size: 11px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
 
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width: 40%;">PRODUCT</th>
-                <th style="width: 15%;">DATE</th>
-                <th style="width: 15%;">BATCH</th>
-                <th style="width: 15%;" class="num-col">WEIGHT PER PALLET (KG)</th>
-                <th style="width: 15%;" class="num-col">NO. OF PALLETS</th>
-                <th style="width: 20%;" class="num-col">TOTAL WEIGHT (KG)</th>
-              </tr>
-            </thead>
-            <tbody>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 40%;">PRODUCT</th>
+                  <th style="width: 15%;">DATE</th>
+                  <th style="width: 15%;">BATCH</th>
+                  <th style="width: 15%;" class="num-col">WEIGHT PER PALLET (KG)</th>
+                  <th style="width: 15%;" class="num-col">NO. OF PALLETS</th>
+                  <th style="width: 20%;" class="num-col">TOTAL WEIGHT (KG)</th>
+                </tr>
+              </thead>
+              <tbody>
       `;
 
       Object.keys(summaryGroups).forEach(prodName => {
@@ -309,16 +316,17 @@
 
       // Grand Total Row
       html += `
-            <tr class="grandtotal-row">
-              <td colspan="4">GRAND TOTAL</td>
-              <td class="num-col">${totalPalletsCount}</td>
-              <td class="num-col">${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
-            </tr>
-          </tbody>
-        </table>
+              <tr class="grandtotal-row">
+                <td colspan="4">GRAND TOTAL</td>
+                <td class="num-col">${totalPalletsCount}</td>
+                <td class="num-col">${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <div class="doc-note">
-          Note: All weights are in kilograms (kg). Date and Batch fields are left blank where pending.
+          <div class="doc-note">
+            Note: All weights are in kilograms (kg). Date and Batch fields are left blank where pending.
+          </div>
         </div>
       </div>
       `;
