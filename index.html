@@ -101,14 +101,17 @@
       </div>
 
       <div class="format-box">
-        <strong>Format (No pallet numbers needed):</strong><br>
-        [Product Description] | [Weights separated by commas]<br><br>
+        <strong>Format:</strong><br>
+        [Product Description]<br>
+        [Weights separated by spaces or commas]<br><br>
         <em>Example:</em><br>
-        Beef heart | 864, 864, 864, 816, 900<br>
-        Beef lungs | 540, 540, 480, 504
+        Beef heart<br>
+        864 864 864 816 900<br><br>
+        Beef lungs<br>
+        540 540 480 504
       </div>
 
-      <textarea id="dataInput" placeholder="Paste product and weights here..." oninput="parseData()"></textarea>
+      <textarea id="dataInput" placeholder="Paste product name and weights..." oninput="parseData()"></textarea>
     </div>
 
     <!-- Right Live Preview -->
@@ -123,12 +126,23 @@
   </div>
 
   <script>
-    const sampleText = `Beef heart | 864, 864, 864, 864, 816, 900, 897
-Beef lungs | 540, 540, 540, 480, 540, 540, 504, 430, 700, 480, 480
-Sardines | 560, 450, 560, 450, 450
-Beef spleen | 180, 900
-Beef kidney | 788.8
-Beef trim | 979.2, 979.2, 979.2, 979.2, 979.2`;
+    const sampleText = `Beef heart
+864 864 864 864 816 900 897
+
+Beef lungs
+540 540 540 480 540 540 504 430 700 540 480
+
+Sardines
+560 450 560 450 450
+
+Beef spleen
+180 900
+
+Beef kidney
+788.8
+
+Beef trim
+979.2 979.2`;
 
     function loadSample() {
       document.getElementById('dataInput').value = sampleText;
@@ -156,51 +170,79 @@ Beef trim | 979.2, 979.2, 979.2, 979.2, 979.2`;
       const lines = rawText.split('\n');
       const pallets = [];
       let palletCounter = 1;
+      let currentDesc = '';
 
       lines.forEach(line => {
         let cleanLine = line.trim();
         if (!cleanLine) return;
 
-        // Strip leading sequence numbers if user pastes them (e.g., "1  Beef heart  864")
+        // Strip leading sequence numbers if present (e.g. "1 Beef heart")
         cleanLine = cleanLine.replace(/^\d+[\s\t|]+/, '');
 
-        let desc = '';
-        let weightsStr = '';
-
+        // Format Option A: Pipe separated line ("Beef heart | 864 864 816")
         if (cleanLine.includes('|')) {
           const parts = cleanLine.split('|').map(p => p.trim());
-          desc = parts[0];
-          weightsStr = parts[1] || '';
-        } else if (cleanLine.includes('\t')) {
-          const parts = cleanLine.split('\t').map(p => p.trim());
-          desc = parts[0];
-          weightsStr = parts.slice(1).join(' ');
+          const desc = parts[0];
+          const weightsStr = parts[1] || '';
+          const tokens = weightsStr.split(/[\s,]+/).filter(w => w !== '');
+          tokens.forEach(t => {
+            const w = parseFloat(t);
+            if (!isNaN(w)) {
+              pallets.push({
+                palletNo: palletCounter++,
+                desc: desc.toUpperCase(),
+                date: '',
+                batch: '',
+                weight: w
+              });
+            }
+          });
+          currentDesc = '';
         } else {
-          // Fallback: search for first number in line to separate product name from weights
-          const match = cleanLine.match(/^([a-zA-Z\s]+)(.*)$/);
-          if (match) {
-            desc = match[1].trim();
-            weightsStr = match[2].trim();
+          // Check if line consists entirely of numbers/spaces/commas
+          const tokens = cleanLine.split(/[\s,]+/).filter(t => t !== '');
+          const isNumericLine = tokens.length > 0 && tokens.every(t => !isNaN(parseFloat(t)));
+
+          if (isNumericLine && currentDesc) {
+            // Line contains weights for currentDesc
+            tokens.forEach(t => {
+              const w = parseFloat(t);
+              if (!isNaN(w)) {
+                pallets.push({
+                  palletNo: palletCounter++,
+                  desc: currentDesc.toUpperCase(),
+                  date: '',
+                  batch: '',
+                  weight: w
+                });
+              }
+            });
           } else {
-            desc = cleanLine;
+            // Check if line has product name and weights together ("Beef heart 864 816")
+            const match = cleanLine.match(/^([a-zA-Z\s]+?)\s+([\d\s,.]+)$/);
+            if (match) {
+              const desc = match[1].trim();
+              const weightsStr = match[2].trim();
+              const wTokens = weightsStr.split(/[\s,]+/).filter(w => w !== '');
+              wTokens.forEach(t => {
+                const w = parseFloat(t);
+                if (!isNaN(w)) {
+                  pallets.push({
+                    palletNo: palletCounter++,
+                    desc: desc.toUpperCase(),
+                    date: '',
+                    batch: '',
+                    weight: w
+                  });
+                }
+              });
+              currentDesc = '';
+            } else {
+              // Line is a product description
+              currentDesc = cleanLine;
+            }
           }
         }
-
-        // Extract all numerical weights from the right side
-        const weightTokens = weightsStr.split(/[\s,]+/).filter(w => w !== '');
-
-        weightTokens.forEach(token => {
-          const wVal = parseFloat(token);
-          if (!isNaN(wVal)) {
-            pallets.push({
-              palletNo: palletCounter++,
-              desc: desc.toUpperCase(),
-              date: '',
-              batch: '',
-              weight: wVal
-            });
-          }
-        });
       });
 
       if (pallets.length === 0) {
