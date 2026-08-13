@@ -4,62 +4,207 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lyka Delivery Breakdown Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    /* --- LYKA APP INTERFACE THEME --- */
     :root {
-      --lyka-dark: #0a1c17;
-      --lyka-panel: #112822;
-      --lyka-card-bg: #16332b;
+      --lyka-bg: #071510;
+      --lyka-panel: #0d221b;
+      --lyka-card: #132e25;
+      --lyka-card-hover: #18382d;
+      --lyka-border: #1d4235;
+      --lyka-border-light: #2a5948;
       --lyka-green: #056839;
       --lyka-accent: #25d366;
-      --lyka-border: #1f473c;
-      --lyka-text: #e8f5e9;
-      --lyka-text-muted: #a3c2b8;
+      --lyka-accent-glow: rgba(37, 211, 102, 0.15);
+      --lyka-text: #ecfdf5;
+      --lyka-text-muted: #88a79d;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; }
-    body { background-color: var(--lyka-dark); color: var(--lyka-text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--lyka-bg); color: var(--lyka-text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
     /* Header */
-    header { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; background: var(--lyka-panel); border-bottom: 2px solid var(--lyka-green); }
-    header h1 { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff; display: flex; align-items: center; gap: 8px; }
-    
-    .btn { padding: 9px 18px; font-size: 13px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; transition: 0.2s; }
-    .btn-primary { background-color: var(--lyka-accent); color: #052317; }
-    .btn-primary:hover { background-color: #20bd5a; }
-    .btn-secondary { background: var(--lyka-card-bg); color: var(--lyka-text); border: 1px solid var(--lyka-border); margin-left: 8px; }
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 14px 28px; 
+      background: var(--lyka-panel); 
+      border-bottom: 1px solid var(--lyka-border);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
 
-    /* Layout */
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { 
+      background: linear-gradient(135deg, #25d366, #056839); 
+      width: 36px; height: 36px; 
+      border-radius: 10px; 
+      display: flex; align-items: center; justify-content: center; 
+      font-size: 18px; 
+      box-shadow: 0 0 15px var(--lyka-accent-glow);
+    }
+    header h1 { font-size: 15px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff; text-transform: uppercase; }
+
+    .btn { 
+      padding: 10px 20px; 
+      font-size: 13px; 
+      font-weight: 700; 
+      border-radius: 8px; 
+      border: none; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary { 
+      background: linear-gradient(135deg, #25d366, #1db954); 
+      color: #041f13; 
+      box-shadow: 0 4px 14px var(--lyka-accent-glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3); }
+    .btn-secondary { 
+      background: var(--lyka-card); 
+      color: var(--lyka-text); 
+      border: 1px solid var(--lyka-border); 
+    }
+    .btn-secondary:hover { background: var(--lyka-card-hover); border-color: var(--lyka-border-light); }
+
+    /* App Body */
     .app-body { display: flex; flex: 1; overflow: hidden; }
-    .left-panel { width: 420px; background: var(--lyka-panel); border-right: 1px solid var(--lyka-border); padding: 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
-    .right-panel { flex: 1; background: var(--lyka-dark); padding: 24px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
-    .panel-title { font-size: 12px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .format-box { background: var(--lyka-card-bg); border: 1px solid var(--lyka-border); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; color: var(--lyka-text-muted); line-height: 1.5; }
-    
-    .field-group { display: flex; flex-direction: column; gap: 6px; }
-    .field-label { font-size: 11px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; }
-    .input-text { background: var(--lyka-dark); border: 1px solid var(--lyka-border); border-radius: 6px; color: #6ee7b7; font-size: 13px; padding: 10px; outline: none; }
-    .input-text:focus { border-color: var(--lyka-accent); }
+    /* Left Control Panel */
+    .left-panel { 
+      width: 440px; 
+      background: var(--lyka-panel); 
+      border-right: 1px solid var(--lyka-border); 
+      padding: 24px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 20px; 
+      overflow-y: auto; 
+    }
 
-    textarea { width: 100%; height: 260px; background: var(--lyka-dark); border: 1px solid var(--lyka-border); border-radius: 6px; color: #6ee7b7; font-family: monospace; font-size: 13px; padding: 12px; resize: vertical; outline: none; }
-    textarea:focus { border-color: var(--lyka-accent); }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; }
+    .panel-title { font-size: 11px; font-weight: 800; color: var(--lyka-accent); text-transform: uppercase; letter-spacing: 1px; }
 
-    /* --- PRINTABLE REPORT / DOCKET DOCUMENT STYLES --- */
-    .report-paper { background: #ffffff; color: #111827; width: 100%; max-width: 800px; padding: 24px 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 11px; }
+    .field-group { display: flex; flex-direction: column; gap: 8px; }
+    .field-label { font-size: 11px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--lyka-green); padding-bottom: 8px; margin-bottom: 16px; }
+    .input-text { 
+      background: var(--lyka-bg); 
+      border: 1px solid var(--lyka-border); 
+      border-radius: 8px; 
+      color: var(--lyka-accent); 
+      font-weight: 600;
+      font-size: 14px; 
+      padding: 12px; 
+      outline: none; 
+      transition: all 0.2s;
+    }
+    .input-text:focus { border-color: var(--lyka-accent); box-shadow: 0 0 0 3px var(--lyka-accent-glow); }
+
+    .format-box { 
+      background: var(--lyka-card); 
+      border: 1px solid var(--lyka-border); 
+      border-radius: 10px; 
+      padding: 14px; 
+      font-size: 12px; 
+      color: var(--lyka-text-muted); 
+      line-height: 1.6; 
+    }
+    .format-box strong { color: var(--lyka-text); }
+    .format-box code { font-family: 'JetBrains Mono', monospace; color: var(--lyka-accent); background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; }
+
+    .textarea-wrapper { position: relative; display: flex; flex-direction: column; }
+    textarea { 
+      width: 100%; 
+      height: 280px; 
+      background: var(--lyka-bg); 
+      border: 1px solid var(--lyka-border); 
+      border-radius: 10px; 
+      color: #86efac; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 13px; 
+      padding: 14px; 
+      resize: vertical; 
+      outline: none; 
+      transition: all 0.2s;
+      line-height: 1.5;
+    }
+    textarea:focus { border-color: var(--lyka-accent); box-shadow: 0 0 0 3px var(--lyka-accent-glow); }
+
+    .status-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: var(--lyka-card);
+      border: 1px solid var(--lyka-border);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--lyka-text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    /* Right Preview Area */
+    .right-panel { 
+      flex: 1; 
+      background: var(--lyka-bg); 
+      padding: 28px; 
+      overflow-y: auto; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      gap: 20px;
+    }
+
+    /* Live Summary Bar */
+    .summary-cards {
+      width: 100%;
+      max-width: 800px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--lyka-panel);
+      border: 1px solid var(--lyka-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .stat-label { font-size: 11px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; }
+    .stat-value { font-size: 22px; font-weight: 800; color: #ffffff; }
+
+    /* Printable Paper Sheet */
+    .report-paper { 
+      background: #ffffff; 
+      color: #111827; 
+      width: 100%; 
+      max-width: 800px; 
+      padding: 36px 40px; 
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+      font-size: 11px; 
+    }
+
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--lyka-green); padding-bottom: 10px; margin-bottom: 20px; }
     .delivery-no-box { font-size: 12px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; }
     .doc-title h2 { font-size: 20px; font-weight: 900; color: var(--lyka-green); letter-spacing: 0.5px; text-align: center; }
-    .doc-logo { font-size: 24px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; text-align: right; }
+    .doc-logo { font-size: 26px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; text-align: right; }
 
     .summary-section { margin-top: 24px; page-break-inside: avoid; }
-    .section-title { font-size: 13px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 16px 0 6px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 2px; }
+    .section-title { font-size: 12px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 20px 0 8px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 4px; }
 
-    /* Tables */
+    /* Report Tables */
     table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; page-break-inside: auto; }
     table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
-    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 4px 8px; text-align: left; }
+    table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; }
     table.data-table th { background: #f0fdf4; color: var(--lyka-green); font-weight: 800; text-transform: uppercase; }
     table.data-table .num-col { text-align: right; }
     
@@ -67,16 +212,26 @@
     .grandtotal-row { background-color: var(--lyka-green); color: #ffffff; font-weight: 900; font-size: 11px; }
     .grandtotal-row td { border-color: var(--lyka-green); }
 
-    .doc-note { font-size: 10px; color: #6b7280; font-style: italic; margin-top: 12px; }
+    .doc-note { font-size: 10px; color: #6b7280; font-style: italic; margin-top: 14px; }
 
-    /* Empty State */
-    .empty-state { color: var(--lyka-text-muted); text-align: center; margin-top: 100px; font-size: 14px; }
+    /* Empty Placeholder */
+    .empty-state { 
+      background: var(--lyka-panel); 
+      border: 2px dashed var(--lyka-border); 
+      border-radius: 16px; 
+      padding: 60px; 
+      text-align: center; 
+      color: var(--lyka-text-muted); 
+      max-width: 500px;
+      margin-top: 60px;
+    }
+    .empty-state p { margin-top: 8px; font-size: 13px; }
 
-    /* --- CSS PRINT MEDIA --- */
+    /* Print View Overrides */
     @media print {
-      header, .left-panel, .no-print { display: none !important; }
+      header, .left-panel, .summary-cards, .no-print { display: none !important; }
       body, .app-body, .right-panel { background: #ffffff !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
-      .report-paper { box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+      .report-paper { box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; }
       .data-table th { background-color: #f0fdf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .grandtotal-row { background-color: #056839 !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
@@ -85,51 +240,77 @@
 <body>
 
   <header>
-    <h1>🐾 LYKA DELIVERY BREAKDOWN GENERATOR</h1>
+    <div class="brand">
+      <div class="brand-icon">🐾</div>
+      <h1>Lyka Breakdown Generator</h1>
+    </div>
     <div>
-      <button class="btn btn-primary" onclick="window.print()">🖨️ PRINT DOCKET (A4)</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Print Docket (A4)</button>
     </div>
   </header>
 
   <div class="app-body">
-    <!-- Left Input Panel -->
+    <!-- Left Input Controls -->
     <div class="left-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span class="panel-title">INPUT PALLET DATA</span>
+      <div class="panel-header">
+        <span class="panel-title">Input Pallet Data</span>
         <div>
-          <button class="btn btn-secondary" onclick="loadSample()">Example</button>
-          <button class="btn btn-secondary" onclick="clearData()">Clear</button>
+          <button class="btn btn-secondary" style="padding:5px 10px; font-size:11px;" onclick="loadSample()">Sample</button>
+          <button class="btn btn-secondary" style="padding:5px 10px; font-size:11px;" onclick="clearData()">Clear</button>
         </div>
       </div>
 
-      <!-- Delivery Number Input -->
       <div class="field-group">
         <label class="field-label" for="deliveryNoInput">Delivery No.</label>
         <input type="text" id="deliveryNoInput" class="input-text" placeholder="e.g. DEL-88492" oninput="parseData()">
       </div>
 
       <div class="format-box">
-        <strong>Format:</strong><br>
-        [Product Description]<br>
-        [Weights separated by -]<br><br>
+        <strong>Format Guide:</strong><br>
+        Product Description on line 1.<br>
+        Weights on line 2 separated by <code>-</code><br><br>
         <em>Example:</em><br>
-        Lamb<br>
-        240-240-250-100-160<br><br>
-        Chicken<br>
-        870-690-340
+        <strong>Lamb</strong><br>
+        <code>240-240-250-100-160</code>
       </div>
 
-      <textarea id="dataInput" placeholder="Paste product name and weights separated by -..." oninput="parseData()"></textarea>
+      <div class="field-group">
+        <label class="field-label">Raw Breakdown Data</label>
+        <div class="textarea-wrapper">
+          <textarea id="dataInput" placeholder="Paste product name and weights separated by -..." oninput="parseData()"></textarea>
+          <div class="status-badge" id="palletCountBadge">0 Pallets</div>
+        </div>
+      </div>
     </div>
 
     <!-- Right Live Preview -->
     <div class="right-panel">
-      <div id="reportContainer" style="width: 100%; display: flex; justify-content: center;">
-        <div class="empty-state">
-          <p>📋 No pallet breakdown generated yet.</p>
-          <p style="font-size:12px; margin-top:6px;">Paste warehouse data or click <strong>Example</strong>.</p>
+      
+      <!-- Live Dashboard Cards -->
+      <div class="summary-cards" id="summaryCards" style="display:none;">
+        <div class="stat-card">
+          <span class="stat-label">Total Pallets</span>
+          <span class="stat-value" id="statPallets">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Total Weight</span>
+          <span class="stat-value" id="statWeight">0 kg</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Product Groups</span>
+          <span class="stat-value" id="statProducts">0</span>
         </div>
       </div>
+
+      <!-- PDF Preview Container -->
+      <div id="reportContainer" style="width: 100%; display: flex; justify-content: center;">
+        <div class="empty-state">
+          <div style="font-size:32px;">📋</div>
+          <strong style="color:var(--lyka-text); display:block; margin-top:12px; font-size:16px;">Ready for Data</strong>
+          <p>Paste product weights on the left or click <strong>Sample</strong> to preview live.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -156,12 +337,17 @@ Chicken
       const deliveryNo = document.getElementById('deliveryNoInput').value.trim();
       const rawText = document.getElementById('dataInput').value.trim();
       const container = document.getElementById('reportContainer');
+      const cards = document.getElementById('summaryCards');
+      const badge = document.getElementById('palletCountBadge');
 
       if (!rawText) {
+        cards.style.display = 'none';
+        badge.innerText = '0 Pallets';
         container.innerHTML = `
           <div class="empty-state">
-            <p>📋 No pallet breakdown generated yet.</p>
-            <p style="font-size:12px; margin-top:6px;">Paste warehouse data or click <strong>Example</strong>.</p>
+            <div style="font-size:32px;">📋</div>
+            <strong style="color:var(--lyka-text); display:block; margin-top:12px; font-size:16px;">Ready for Data</strong>
+            <p>Paste product weights on the left or click <strong>Sample</strong> to preview live.</p>
           </div>`;
         return;
       }
@@ -175,10 +361,7 @@ Chicken
         let cleanLine = line.trim();
         if (!cleanLine) return;
 
-        // Extract numbers separated by dashes, spaces, or commas
         const numMatches = cleanLine.match(/\d+(?:\.\d+)?/g);
-        
-        // Check if line contains product name text
         const hasText = /[a-zA-Z]/.test(cleanLine);
 
         if (hasText) {
@@ -205,10 +388,15 @@ Chicken
         }
       });
 
+      badge.innerText = `${pallets.length} Pallet${pallets.length === 1 ? '' : 's'}`;
+
       if (pallets.length === 0) {
+        cards.style.display = 'none';
         container.innerHTML = `
           <div class="empty-state">
-            <p>⚠️ No valid product weights found.</p>
+            <div style="font-size:32px;">⚠️</div>
+            <strong style="color:var(--lyka-text); display:block; margin-top:12px; font-size:16px;">No Weights Found</strong>
+            <p>Ensure weights are formatted correctly (e.g. 240-240-250).</p>
           </div>`;
         return;
       }
@@ -236,9 +424,14 @@ Chicken
         group.totalWeight += item.weight;
       });
 
+      // Update Dashboard Stats Cards
+      cards.style.display = 'grid';
+      document.getElementById('statPallets').innerText = totalPalletsCount;
+      document.getElementById('statWeight').innerText = `${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})} kg`;
+      document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
+
       let html = `
         <div class="report-paper">
-          <!-- Page Header -->
           <div class="doc-header">
             <div class="delivery-no-box" style="width:30%;">
               ${deliveryNo ? `DELIVERY NO: ${deliveryNo}` : ''}
@@ -249,7 +442,6 @@ Chicken
             <div class="doc-logo" style="width:30%;">lyka</div>
           </div>
 
-          <!-- Itemized Pallet Breakdown Table -->
           <table class="data-table">
             <thead>
               <tr>
@@ -269,7 +461,6 @@ Chicken
             </tbody>
           </table>
 
-          <!-- Continuous Delivery Summary -->
           <div class="summary-section">
             <div class="section-title">DELIVERY SUMMARY</div>
             <div style="font-weight: bold; font-size: 10.5px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
@@ -304,7 +495,6 @@ Chicken
           `;
         });
 
-        // Group Total Row
         html += `
           <tr class="subtotal-row">
             <td>TOTAL ${prodName}</td>
@@ -315,7 +505,6 @@ Chicken
         `;
       });
 
-      // Grand Total Row
       html += `
               <tr class="grandtotal-row">
                 <td>GRAND TOTAL</td>
