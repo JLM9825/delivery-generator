@@ -9,27 +9,34 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #070d0b;
-      --panel-bg: rgba(13, 24, 20, 0.85);
-      --card-bg: #0f1f1a;
-      --card-border: #1e3a30;
-      --card-hover: #162f25;
-      --accent-green: #20e070;
-      --accent-emerald: #056839;
-      --accent-glow: rgba(32, 224, 112, 0.22);
+      --bg-dark: #050b08;
+      --panel-bg: rgba(8, 26, 17, 0.85);
+      --card-bg: #0b2216;
+      --card-border: #134e2e;
+      --card-hover: #103822;
+      --halo-green: #00ff66;
+      --halo-glow: rgba(0, 255, 102, 0.35);
+      --halo-glow-subtle: rgba(0, 255, 102, 0.12);
+      --accent-emerald: #02381e;
       --text-main: #f0fdf4;
-      --text-muted: #799a8f;
+      --text-muted: #62997b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
+    /* Custom Halo Green Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--halo-green); box-shadow: 0 0 10px var(--halo-green); }
+
     body {
       background-color: var(--bg-dark);
       background-image: 
-        radial-gradient(circle at 15% 15%, rgba(32, 224, 112, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 85% 85%, rgba(5, 104, 57, 0.18) 0%, transparent 50%),
-        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        radial-gradient(circle at 10% 10%, rgba(0, 255, 102, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(0, 204, 82, 0.15) 0%, transparent 50%),
+        linear-gradient(rgba(0, 255, 102, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 102, 0.02) 1px, transparent 1px);
       background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
       color: var(--text-main);
       display: flex;
@@ -48,27 +55,28 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--card-border);
-      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.8), 0 1px 0 var(--halo-glow-subtle);
       z-index: 20;
     }
 
     .brand { display: flex; align-items: center; gap: 14px; }
     .brand-icon {
-      background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald));
+      background: linear-gradient(135deg, var(--halo-green), #00993d);
       width: 42px; height: 42px;
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       font-size: 22px;
-      box-shadow: 0 0 22px var(--accent-glow);
+      box-shadow: 0 0 20px var(--halo-glow);
     }
     header h1 {
       font-size: 16px;
       font-weight: 800;
       letter-spacing: 1.2px;
       text-transform: uppercase;
-      background: linear-gradient(90deg, #ffffff, #a7f3d0);
+      background: linear-gradient(90deg, #ffffff, var(--halo-green));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
     }
 
     .action-group { display: flex; gap: 12px; }
@@ -86,13 +94,13 @@
       gap: 8px;
     }
     .btn-primary {
-      background: linear-gradient(135deg, #20e070, #13a852);
+      background: linear-gradient(135deg, var(--halo-green), #00b347);
       color: #02140a;
-      box-shadow: 0 4px 18px var(--accent-glow);
+      box-shadow: 0 0 18px var(--halo-glow);
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(32, 224, 112, 0.45);
+      box-shadow: 0 0 28px rgba(0, 255, 102, 0.6);
     }
     .btn-secondary {
       background: var(--card-bg);
@@ -101,7 +109,8 @@
     }
     .btn-secondary:hover {
       background: var(--card-hover);
-      border-color: var(--accent-green);
+      border-color: var(--halo-green);
+      box-shadow: 0 0 12px var(--halo-glow-subtle);
       transform: translateY(-1px);
     }
 
@@ -120,25 +129,27 @@
       flex-direction: column;
       gap: 22px;
       overflow-y: auto;
+      box-shadow: 5px 0 25px rgba(0,0,0,0.5);
     }
 
     .panel-header { display: flex; justify-content: space-between; align-items: center; }
     .panel-title {
       font-size: 11px;
       font-weight: 800;
-      color: var(--accent-green);
+      color: var(--halo-green);
       text-transform: uppercase;
       letter-spacing: 1.5px;
+      text-shadow: 0 0 8px var(--halo-glow);
     }
 
     .field-group { display: flex; flex-direction: column; gap: 8px; }
     .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
 
     .input-text {
-      background: rgba(5, 12, 10, 0.8);
+      background: rgba(3, 15, 10, 0.95);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      color: var(--accent-green);
+      color: var(--halo-green);
       font-weight: 700;
       font-size: 15px;
       padding: 14px 16px;
@@ -146,39 +157,42 @@
       transition: all 0.2s ease;
     }
     .input-text:focus {
-      border-color: var(--accent-green);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      border-color: var(--halo-green);
+      box-shadow: 0 0 15px var(--halo-glow);
     }
 
     .format-card {
-      background: linear-gradient(180deg, var(--card-bg), rgba(15, 31, 26, 0.5));
+      background: linear-gradient(180deg, var(--card-bg), rgba(11, 34, 22, 0.4));
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 18px;
+      padding: 16px 20px;
       font-size: 12px;
       color: var(--text-muted);
-      line-height: 1.6;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .format-card strong { color: var(--text-main); }
     .format-card code {
       font-family: 'JetBrains Mono', monospace;
-      color: var(--accent-green);
-      background: rgba(0, 0, 0, 0.4);
-      padding: 3px 8px;
-      border-radius: 6px;
-      border: 1px solid rgba(32, 224, 112, 0.15);
-      font-size: 12px;
+      color: var(--halo-green);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 4px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--halo-green);
+      font-size: 20px;
+      font-weight: 800;
+      box-shadow: 0 0 10px var(--halo-glow);
     }
 
     .textarea-wrapper { position: relative; display: flex; flex-direction: column; }
     textarea {
       width: 100%;
       height: 310px;
-      background: rgba(5, 12, 10, 0.85);
+      background: rgba(3, 15, 10, 0.95);
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      color: #a7f3d0;
+      color: #b3ffcb;
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
       padding: 18px;
@@ -188,8 +202,8 @@
       line-height: 1.65;
     }
     textarea:focus {
-      border-color: var(--accent-green);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      border-color: var(--halo-green);
+      box-shadow: 0 0 15px var(--halo-glow);
     }
 
     .status-badge {
@@ -197,13 +211,13 @@
       bottom: 14px;
       right: 14px;
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--halo-green);
       font-size: 11px;
       font-weight: 700;
-      color: var(--accent-green);
+      color: var(--halo-green);
       padding: 6px 12px;
       border-radius: 8px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 12px var(--halo-glow);
     }
 
     /* Right Preview Container */
@@ -235,12 +249,16 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      transition: transform 0.25s ease, border-color 0.25s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    .metric-card:hover { transform: translateY(-3px); border-color: var(--accent-green); }
+    .metric-card:hover { 
+      transform: translateY(-3px); 
+      border-color: var(--halo-green);
+      box-shadow: 0 0 20px var(--halo-glow-subtle);
+    }
     .metric-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-    .metric-value { font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
+    .metric-value { font-size: 28px; font-weight: 800; color: var(--halo-green); letter-spacing: -0.5px; text-shadow: 0 0 10px var(--halo-glow); }
 
     /* Printable Paper Output */
     .report-paper {
@@ -250,7 +268,7 @@
       max-width: 840px;
       padding: 48px 52px;
       border-radius: 18px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.65);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 2px var(--halo-green);
       font-size: 11px;
       position: relative;
     }
@@ -274,7 +292,7 @@
     table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px; page-break-inside: auto; }
     table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
     table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 7px 12px; text-align: left; }
-    table.data-table th { background: #f0fdf4; color: var(--accent-emerald); font-weight: 800; text-transform: uppercase; }
+    table.data-table th { background: #e6fdf0; color: var(--accent-emerald); font-weight: 800; text-transform: uppercase; }
     table.data-table .num-col { text-align: right; }
     
     .subtotal-row { background-color: #f8fafc; font-weight: bold; color: var(--accent-emerald); }
@@ -301,8 +319,8 @@
       header, .left-panel, .dashboard-metrics, .no-print { display: none !important; }
       body, .app-body, .right-panel { background: #ffffff !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
       .report-paper { box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; }
-      .data-table th { background-color: #f0fdf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .grandtotal-row { background-color: #056839 !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .data-table th { background-color: #e6fdf0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .grandtotal-row { background-color: #02381e !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
   </style>
 </head>
@@ -323,7 +341,7 @@
     <!-- Left Panel Controls -->
     <div class="left-panel">
       <div class="panel-header">
-        <span class="panel-title">Dash-Separated Input</span>
+        <span class="panel-title">Input</span>
         <div>
           <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="loadSample()">Sample</button>
           <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="clearData()">Clear</button>
@@ -336,11 +354,8 @@
       </div>
 
       <div class="format-card">
-        <strong>Input Format Rule:</strong><br>
-        Use hyphens/dashes <code>-</code> exclusively to separate numbers.<br><br>
-        <em>Example Input Structure:</em><br>
-        <strong>Beef lung</strong><br>
-        <code>344-455-222-989</code>
+        <span class="field-label">Accepted Delimiter:</span>
+        <code>-</code>
       </div>
 
       <div class="field-group">
@@ -376,7 +391,7 @@
         <div class="empty-state">
           <div class="empty-state-icon">📄</div>
           <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
-          <p style="margin-top:8px; font-size:13px;">Enter product names and dash-separated weights on the left, or click <strong>Sample</strong>.</p>
+          <p style="margin-top:8px; font-size:13px;">Enter product names and weights on the left, or click <strong>Sample</strong>.</p>
         </div>
       </div>
 
@@ -445,7 +460,7 @@ Sardines
           <div class="empty-state">
             <div class="empty-state-icon">📄</div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
-            <p style="margin-top:8px; font-size:13px;">Enter product names and dash-separated weights on the left, or click <strong>Sample</strong>.</p>
+            <p style="margin-top:8px; font-size:13px;">Enter product names and weights on the left, or click <strong>Sample</strong>.</p>
           </div>`;
         return;
       }
