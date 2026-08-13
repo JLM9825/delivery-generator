@@ -54,14 +54,16 @@
     .doc-logo { font-size: 24px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; text-align: right; }
 
     .summary-section {
-      margin-top: 20px;
+      margin-top: 24px;
+      page-break-inside: avoid;
     }
 
     .section-title { font-size: 13px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 16px 0 6px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 2px; }
 
-    /* Compact Tables to fit 50+ rows cleanly */
-    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 10.5px; }
-    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 3px 8px; text-align: left; }
+    /* Tables */
+    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; page-break-inside: auto; }
+    table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
+    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 4px 8px; text-align: left; }
     table.data-table th { background: #f0fdf4; color: var(--lyka-green); font-weight: 800; text-transform: uppercase; }
     table.data-table .num-col { text-align: right; }
     
@@ -186,65 +188,53 @@ Goat lung
         let cleanLine = line.trim();
         if (!cleanLine) return;
 
-        // Strip leading sequence numbers if present (e.g. "1 Beef heart")
+        // Strip leading sequence numbers if present
         cleanLine = cleanLine.replace(/^\d+[\s\t|]+/, '');
 
-        // Format Option A: Pipe separated line ("Beef heart | 864 864 816")
-        if (cleanLine.includes('|')) {
-          const parts = cleanLine.split('|').map(p => p.trim());
-          const desc = parts[0];
-          const weightsStr = parts[1] || '';
-          const tokens = weightsStr.split(/[\s,]+/).filter(w => w !== '');
-          tokens.forEach(t => {
-            const w = parseFloat(t);
+        // Extract numbers from line
+        const numMatches = cleanLine.match(/\b\d+(?:\.\d+)?\b/g);
+        
+        // Determine if line is purely weight values
+        const nonNumericParts = cleanLine.replace(/\d+(?:\.\d+)?/g, '').replace(/[\s,|\t]/g, '');
+        const isPureNumeric = (numMatches && numMatches.length > 0 && nonNumericParts.length === 0);
+
+        if (isPureNumeric && currentDesc) {
+          numMatches.forEach(numStr => {
+            const w = parseFloat(numStr);
             if (!isNaN(w)) {
               pallets.push({
                 palletNo: palletCounter++,
-                desc: desc.toUpperCase(),
+                desc: currentDesc.toUpperCase(),
                 weight: w
               });
             }
           });
-          currentDesc = '';
         } else {
-          // Check if line consists entirely of numbers/spaces/commas
-          const tokens = cleanLine.split(/[\s,]+/).filter(t => t !== '');
-          const isNumericLine = tokens.length > 0 && tokens.every(t => !isNaN(parseFloat(t)));
-
-          if (isNumericLine && currentDesc) {
-            // Line contains weights for currentDesc
-            tokens.forEach(t => {
-              const w = parseFloat(t);
-              if (!isNaN(w)) {
-                pallets.push({
-                  palletNo: palletCounter++,
-                  desc: currentDesc.toUpperCase(),
-                  weight: w
+          // Check for line formatted as "Description 500 600 700"
+          if (numMatches && numMatches.length > 0) {
+            const firstNumIdx = cleanLine.search(/\b\d/);
+            const descPart = cleanLine.substring(0, firstNumIdx).replace(/[\s|]+$/, '').trim();
+            const weightsPart = cleanLine.substring(firstNumIdx);
+            
+            if (descPart.length > 0) {
+              const weights = weightsPart.match(/\b\d+(?:\.\d+)?\b/g);
+              if (weights) {
+                weights.forEach(numStr => {
+                  const w = parseFloat(numStr);
+                  if (!isNaN(w)) {
+                    pallets.push({
+                      palletNo: palletCounter++,
+                      desc: descPart.toUpperCase(),
+                      weight: w
+                    });
+                  }
                 });
               }
-            });
-          } else {
-            // Check if line has product name and weights together ("Beef heart 864 816")
-            const match = cleanLine.match(/^([a-zA-Z\s]+?)\s+([\d\s,.]+)$/);
-            if (match) {
-              const desc = match[1].trim();
-              const weightsStr = match[2].trim();
-              const wTokens = weightsStr.split(/[\s,]+/).filter(w => w !== '');
-              wTokens.forEach(t => {
-                const w = parseFloat(t);
-                if (!isNaN(w)) {
-                  pallets.push({
-                    palletNo: palletCounter++,
-                    desc: desc.toUpperCase(),
-                    weight: w
-                  });
-                }
-              });
               currentDesc = '';
-            } else {
-              // Line is a product description
-              currentDesc = cleanLine;
             }
+          } else {
+            // Line is purely a description heading
+            currentDesc = cleanLine;
           }
         }
       });
