@@ -31,40 +31,45 @@
 
     /* Layout */
     .app-body { display: flex; flex: 1; overflow: hidden; }
-    .left-panel { width: 420px; background: var(--lyka-panel); border-right: 1px solid var(--lyka-border); padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .left-panel { width: 420px; background: var(--lyka-panel); border-right: 1px solid var(--lyka-border); padding: 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
     .right-panel { flex: 1; background: var(--lyka-dark); padding: 24px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
     .panel-title { font-size: 12px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
     .format-box { background: var(--lyka-card-bg); border: 1px solid var(--lyka-border); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; color: var(--lyka-text-muted); line-height: 1.5; }
-    textarea { width: 100%; flex: 1; background: var(--lyka-dark); border: 1px solid var(--lyka-border); border-radius: 6px; color: #6ee7b7; font-family: monospace; font-size: 13px; padding: 12px; resize: none; outline: none; }
+    
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label { font-size: 11px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; }
+    .input-text { background: var(--lyka-dark); border: 1px solid var(--lyka-border); border-radius: 6px; color: #6ee7b7; font-size: 13px; padding: 10px; outline: none; }
+    .input-text:focus { border-color: var(--lyka-accent); }
+
+    textarea { width: 100%; height: 260px; background: var(--lyka-dark); border: 1px solid var(--lyka-border); border-radius: 6px; color: #6ee7b7; font-family: monospace; font-size: 13px; padding: 12px; resize: vertical; outline: none; }
     textarea:focus { border-color: var(--lyka-accent); }
 
     /* --- PRINTABLE REPORT / DOCKET DOCUMENT STYLES --- */
-    .report-paper { background: #ffffff; color: #111827; width: 100%; max-width: 800px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 12px; }
+    .report-paper { background: #ffffff; color: #111827; width: 100%; max-width: 800px; padding: 24px 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 11px; }
 
-    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--lyka-green); padding-bottom: 10px; margin-bottom: 20px; }
-    .doc-title h2 { font-size: 22px; font-weight: 900; color: var(--lyka-green); letter-spacing: 0.5px; }
-    .doc-logo { font-size: 26px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; }
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--lyka-green); padding-bottom: 8px; margin-bottom: 16px; }
+    .delivery-no-box { font-size: 12px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; }
+    .doc-title h2 { font-size: 20px; font-weight: 900; color: var(--lyka-green); letter-spacing: 0.5px; text-align: center; }
+    .doc-logo { font-size: 24px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; text-align: right; }
 
-    /* Summary section starts cleanly on page 2 */
     .summary-section {
-      break-before: page;
-      page-break-before: always;
+      margin-top: 20px;
     }
 
-    .section-title { font-size: 14px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 24px 0 8px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 4px; }
+    .section-title { font-size: 13px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 16px 0 6px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 2px; }
 
-    /* Tables */
-    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px; }
-    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: left; }
+    /* Compact Tables to fit 50+ rows cleanly */
+    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 10.5px; }
+    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 3px 8px; text-align: left; }
     table.data-table th { background: #f0fdf4; color: var(--lyka-green); font-weight: 800; text-transform: uppercase; }
     table.data-table .num-col { text-align: right; }
     
     .subtotal-row { background-color: #f8fafc; font-weight: bold; color: var(--lyka-green); }
-    .grandtotal-row { background-color: var(--lyka-green); color: #ffffff; font-weight: 900; font-size: 12px; }
+    .grandtotal-row { background-color: var(--lyka-green); color: #ffffff; font-weight: 900; font-size: 11px; }
     .grandtotal-row td { border-color: var(--lyka-green); }
 
-    .doc-note { font-size: 10px; color: #6b7280; font-style: italic; margin-top: 16px; }
+    .doc-note { font-size: 10px; color: #6b7280; font-style: italic; margin-top: 12px; }
 
     /* Empty State */
     .empty-state { color: var(--lyka-text-muted); text-align: center; margin-top: 100px; font-size: 14px; }
@@ -76,7 +81,6 @@
       .report-paper { box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
       .data-table th { background-color: #f0fdf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .grandtotal-row { background-color: #056839 !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .summary-section { break-before: page !important; page-break-before: always !important; }
     }
   </style>
 </head>
@@ -98,6 +102,12 @@
           <button class="btn btn-secondary" onclick="loadSample()">Example</button>
           <button class="btn btn-secondary" onclick="clearData()">Clear</button>
         </div>
+      </div>
+
+      <!-- Delivery Number Input -->
+      <div class="field-group">
+        <label class="field-label" for="deliveryNoInput">Delivery No.</label>
+        <input type="text" id="deliveryNoInput" class="input-text" placeholder="e.g. DEL-88492" oninput="parseData()">
       </div>
 
       <div class="format-box">
@@ -126,35 +136,35 @@
   </div>
 
   <script>
-    const sampleText = `Beef heart
-864 864 864 864 816 900 897
+    const sampleText = `Goat carcass
+520 600 720 580 625 700 720 720 720 720 720 720
 
-Beef lungs
-540 540 540 480 540 540 504 430 700 540 480
+Goat heart
+875 520
 
-Sardines
-560 450 560 450 450
+Goat trim
+979.2 979.2 788.8 707.2 816 979.2
 
-Beef spleen
-180 900
+Goat liver
+600 240
 
-Beef kidney
-788.8
-
-Beef trim
-979.2 979.2`;
+Goat lung
+520`;
 
     function loadSample() {
+      document.getElementById('deliveryNoInput').value = 'DEL-10492';
       document.getElementById('dataInput').value = sampleText;
       parseData();
     }
 
     function clearData() {
+      document.getElementById('deliveryNoInput').value = '';
       document.getElementById('dataInput').value = '';
       parseData();
     }
 
     function parseData() {
+      const deliveryNo = document.getElementById('deliveryNoInput').value.trim();
       const rawText = document.getElementById('dataInput').value.trim();
       const container = document.getElementById('reportContainer');
 
@@ -191,8 +201,6 @@ Beef trim
               pallets.push({
                 palletNo: palletCounter++,
                 desc: desc.toUpperCase(),
-                date: '',
-                batch: '',
                 weight: w
               });
             }
@@ -211,8 +219,6 @@ Beef trim
                 pallets.push({
                   palletNo: palletCounter++,
                   desc: currentDesc.toUpperCase(),
-                  date: '',
-                  batch: '',
                   weight: w
                 });
               }
@@ -230,8 +236,6 @@ Beef trim
                   pallets.push({
                     palletNo: palletCounter++,
                     desc: desc.toUpperCase(),
-                    date: '',
-                    batch: '',
                     weight: w
                   });
                 }
@@ -280,22 +284,24 @@ Beef trim
       // Build HTML
       let html = `
         <div class="report-paper">
-          <!-- Page 1: Header + Itemized Pallet Breakdown -->
+          <!-- Page Header -->
           <div class="doc-header">
-            <div class="doc-title">
+            <div class="delivery-no-box" style="width:30%;">
+              ${deliveryNo ? `DELIVERY NO: ${deliveryNo}` : ''}
+            </div>
+            <div class="doc-title" style="width:40%;">
               <h2>DELIVERY BREAKDOWN</h2>
             </div>
-            <div class="doc-logo">lyka</div>
+            <div class="doc-logo" style="width:30%;">lyka</div>
           </div>
 
+          <!-- Itemized Pallet Breakdown Table -->
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 10%;">PALLET NO.</th>
-                <th style="width: 40%;">PRODUCT DESCRIPTION</th>
-                <th style="width: 15%;">DATE</th>
-                <th style="width: 15%;">BATCH</th>
-                <th style="width: 20%;" class="num-col">WEIGHT (KG)</th>
+                <th style="width: 15%;">PALLET NO.</th>
+                <th style="width: 60%;">PRODUCT DESCRIPTION</th>
+                <th style="width: 25%;" class="num-col">WEIGHT (KG)</th>
               </tr>
             </thead>
             <tbody>
@@ -303,27 +309,23 @@ Beef trim
                 <tr>
                   <td>${p.palletNo}</td>
                   <td><strong>${p.desc}</strong></td>
-                  <td>${p.date}</td>
-                  <td>${p.batch}</td>
                   <td class="num-col"><strong>${p.weight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</strong></td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
 
-          <!-- Page 2: Delivery Summary -->
+          <!-- Continuous Delivery Summary -->
           <div class="summary-section">
             <div class="section-title">DELIVERY SUMMARY</div>
-            <div style="font-weight: bold; font-size: 11px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
+            <div style="font-weight: bold; font-size: 10.5px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
 
             <table class="data-table">
               <thead>
                 <tr>
                   <th style="width: 40%;">PRODUCT</th>
-                  <th style="width: 15%;">DATE</th>
-                  <th style="width: 15%;">BATCH</th>
-                  <th style="width: 15%;" class="num-col">WEIGHT PER PALLET (KG)</th>
-                  <th style="width: 15%;" class="num-col">NO. OF PALLETS</th>
+                  <th style="width: 20%;" class="num-col">WEIGHT PER PALLET (KG)</th>
+                  <th style="width: 20%;" class="num-col">NO. OF PALLETS</th>
                   <th style="width: 20%;" class="num-col">TOTAL WEIGHT (KG)</th>
                 </tr>
               </thead>
@@ -341,8 +343,6 @@ Beef trim
           html += `
             <tr>
               <td>${idx === 0 ? `<strong>${prodName}</strong>` : ''}</td>
-              <td></td>
-              <td></td>
               <td class="num-col">${parseFloat(wVal).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
               <td class="num-col">${count}</td>
               <td class="num-col">${subWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
@@ -353,7 +353,8 @@ Beef trim
         // Group Total Row
         html += `
           <tr class="subtotal-row">
-            <td colspan="4">TOTAL ${prodName}</td>
+            <td>TOTAL ${prodName}</td>
+            <td class="num-col"></td>
             <td class="num-col">${group.totalPallets}</td>
             <td class="num-col">${group.totalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
           </tr>
@@ -363,7 +364,8 @@ Beef trim
       // Grand Total Row
       html += `
               <tr class="grandtotal-row">
-                <td colspan="4">GRAND TOTAL</td>
+                <td>GRAND TOTAL</td>
+                <td class="num-col"></td>
                 <td class="num-col">${totalPalletsCount}</td>
                 <td class="num-col">${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
               </tr>
@@ -371,7 +373,7 @@ Beef trim
           </table>
 
           <div class="doc-note">
-            Note: All weights are in kilograms (kg). Date and Batch fields are left blank where pending.
+            Note: All weights are in kilograms (kg).
           </div>
         </div>
       </div>
