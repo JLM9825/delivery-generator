@@ -3,35 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lyka Breakdown Generator Pro</title>
+  <title>Lyka Breakdown Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-main: #040d0a;
-      --panel-bg: rgba(10, 28, 22, 0.85);
-      --card-bg: #0e241c;
-      --card-hover: #15362a;
-      --border-color: #1a4234;
-      --border-light: #265a47;
-      --accent-green: #25d366;
+      --bg-dark: #070d0b;
+      --panel-bg: rgba(13, 24, 20, 0.85);
+      --card-bg: #0f1f1a;
+      --card-border: #1e3a30;
+      --card-hover: #162f25;
+      --accent-green: #20e070;
       --accent-emerald: #056839;
-      --accent-glow: rgba(37, 211, 102, 0.25);
+      --accent-glow: rgba(32, 224, 112, 0.22);
       --text-main: #f0fdf4;
-      --text-muted: #7e9f93;
+      --text-muted: #799a8f;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
     body {
-      background-color: var(--bg-main);
+      background-color: var(--bg-dark);
       background-image: 
-        radial-gradient(circle at 10% 20%, rgba(37, 211, 102, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(5, 104, 57, 0.15) 0%, transparent 50%),
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+        radial-gradient(circle at 15% 15%, rgba(32, 224, 112, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(5, 104, 57, 0.18) 0%, transparent 50%),
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
       color: var(--text-main);
       display: flex;
       flex-direction: column;
@@ -39,17 +38,17 @@
       overflow: hidden;
     }
 
-    /* Header Bar */
+    /* Top Navigation Header */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px 36px;
+      padding: 16px 36px;
       background: var(--panel-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-color);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      border-bottom: 1px solid var(--card-border);
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
       z-index: 20;
     }
 
@@ -60,13 +59,12 @@
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       font-size: 22px;
-      box-shadow: 0 0 25px var(--accent-glow);
+      box-shadow: 0 0 22px var(--accent-glow);
     }
     header h1 {
       font-size: 16px;
       font-weight: 800;
-      letter-spacing: 1px;
-      color: #ffffff;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
       background: linear-gradient(90deg, #ffffff, #a7f3d0);
       -webkit-background-clip: text;
@@ -88,26 +86,26 @@
       gap: 8px;
     }
     .btn-primary {
-      background: linear-gradient(135deg, #25d366, #1db954);
-      color: #03190e;
+      background: linear-gradient(135deg, #20e070, #13a852);
+      color: #02140a;
       box-shadow: 0 4px 18px var(--accent-glow);
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(37, 211, 102, 0.4);
+      box-shadow: 0 8px 28px rgba(32, 224, 112, 0.45);
     }
     .btn-secondary {
       background: var(--card-bg);
       color: var(--text-main);
-      border-color: var(--border-color);
+      border-color: var(--card-border);
     }
     .btn-secondary:hover {
       background: var(--card-hover);
-      border-color: var(--border-light);
+      border-color: var(--accent-green);
       transform: translateY(-1px);
     }
 
-    /* Main Container */
+    /* Layout Structure */
     .app-body { display: flex; flex: 1; overflow: hidden; }
 
     /* Left Control Sidebar */
@@ -116,11 +114,11 @@
       background: var(--panel-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-right: 1px solid var(--border-color);
-      padding: 30px;
+      border-right: 1px solid var(--card-border);
+      padding: 28px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 22px;
       overflow-y: auto;
     }
 
@@ -134,18 +132,18 @@
     }
 
     .field-group { display: flex; flex-direction: column; gap: 8px; }
-    .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
 
     .input-text {
-      background: rgba(4, 13, 10, 0.7);
-      border: 1px solid var(--border-color);
+      background: rgba(5, 12, 10, 0.8);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       color: var(--accent-green);
       font-weight: 700;
       font-size: 15px;
       padding: 14px 16px;
       outline: none;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
     }
     .input-text:focus {
       border-color: var(--accent-green);
@@ -153,31 +151,32 @@
     }
 
     .format-card {
-      background: linear-gradient(180deg, var(--card-bg), rgba(14, 36, 28, 0.4));
-      border: 1px solid var(--border-color);
+      background: linear-gradient(180deg, var(--card-bg), rgba(15, 31, 26, 0.5));
+      border: 1px solid var(--card-border);
       border-radius: 14px;
       padding: 18px;
       font-size: 12px;
       color: var(--text-muted);
       line-height: 1.6;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .format-card strong { color: var(--text-main); }
     .format-card code {
       font-family: 'JetBrains Mono', monospace;
       color: var(--accent-green);
-      background: rgba(0, 0, 0, 0.35);
-      padding: 3px 7px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px 8px;
       border-radius: 6px;
-      border: 1px solid rgba(37, 211, 102, 0.15);
+      border: 1px solid rgba(32, 224, 112, 0.15);
+      font-size: 12px;
     }
 
     .textarea-wrapper { position: relative; display: flex; flex-direction: column; }
     textarea {
       width: 100%;
       height: 310px;
-      background: rgba(4, 13, 10, 0.85);
-      border: 1px solid var(--border-color);
+      background: rgba(5, 12, 10, 0.85);
+      border: 1px solid var(--card-border);
       border-radius: 14px;
       color: #a7f3d0;
       font-family: 'JetBrains Mono', monospace;
@@ -185,8 +184,8 @@
       padding: 18px;
       resize: vertical;
       outline: none;
-      transition: all 0.2s;
-      line-height: 1.6;
+      transition: all 0.2s ease;
+      line-height: 1.65;
     }
     textarea:focus {
       border-color: var(--accent-green);
@@ -198,16 +197,16 @@
       bottom: 14px;
       right: 14px;
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--card-border);
       font-size: 11px;
       font-weight: 700;
       color: var(--accent-green);
       padding: 6px 12px;
       border-radius: 8px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
     }
 
-    /* Right Preview Area */
+    /* Right Preview Container */
     .right-panel {
       flex: 1;
       background: transparent;
@@ -219,7 +218,7 @@
       gap: 28px;
     }
 
-    /* Dashboard Metric Cards Header */
+    /* Dashboard Metrics Bar */
     .dashboard-metrics {
       width: 100%;
       max-width: 840px;
@@ -230,20 +229,20 @@
     .metric-card {
       background: var(--panel-bg);
       backdrop-filter: blur(16px);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 20px 24px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       transition: transform 0.25s ease, border-color 0.25s ease;
     }
-    .metric-card:hover { transform: translateY(-3px); border-color: var(--border-light); }
+    .metric-card:hover { transform: translateY(-3px); border-color: var(--accent-green); }
     .metric-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
     .metric-value { font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
 
-    /* Printable Paper Sheet */
+    /* Printable Paper Output */
     .report-paper {
       background: #ffffff;
       color: #111827;
@@ -251,7 +250,7 @@
       max-width: 840px;
       padding: 48px 52px;
       border-radius: 18px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.65);
       font-size: 11px;
       position: relative;
     }
@@ -287,7 +286,7 @@
     /* Empty State */
     .empty-state {
       background: var(--panel-bg);
-      border: 2px dashed var(--border-color);
+      border: 2px dashed var(--card-border);
       border-radius: 20px;
       padding: 80px 40px;
       text-align: center;
@@ -315,16 +314,16 @@
       <h1>Lyka Breakdown Generator</h1>
     </div>
     <div class="action-group">
-      <button class="btn btn-secondary" onclick="copyData()">📋 Copy Raw</button>
+      <button class="btn btn-secondary" onclick="copyData()">📋 Copy Input</button>
       <button class="btn btn-primary" onclick="window.print()">🖨️ Print Docket (A4)</button>
     </div>
   </header>
 
   <div class="app-body">
-    <!-- Left Input Sidebar -->
+    <!-- Left Panel Controls -->
     <div class="left-panel">
       <div class="panel-header">
-        <span class="panel-title">Data Input Studio</span>
+        <span class="panel-title">Dash-Separated Input</span>
         <div>
           <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="loadSample()">Sample</button>
           <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="clearData()">Clear</button>
@@ -337,11 +336,9 @@
       </div>
 
       <div class="format-card">
-        <strong>Accepted Input Formats:</strong><br>
-        • Dash Lists: <code>344-455-222-989</code><br>
-        • Multipliers: <code>540 x 12</code> or <code>540x12</code><br>
-        • Separators: <code>520, 600</code> or <code>520 600</code><br><br>
-        <em>Example Input:</em><br>
+        <strong>Input Format Rule:</strong><br>
+        Use hyphens/dashes <code>-</code> exclusively to separate numbers.<br><br>
+        <em>Example Input Structure:</em><br>
         <strong>Beef lung</strong><br>
         <code>344-455-222-989</code>
       </div>
@@ -349,16 +346,16 @@
       <div class="field-group">
         <label class="field-label">Raw Breakdown Stream</label>
         <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Paste product descriptions and pallet weights..." oninput="parseData()"></textarea>
+          <textarea id="dataInput" placeholder="Beef lung&#10;344-455-222-989" oninput="parseData()"></textarea>
           <div class="status-badge" id="palletCountBadge">0 Pallets</div>
         </div>
       </div>
     </div>
 
-    <!-- Right Live Preview -->
+    <!-- Right Live Document View -->
     <div class="right-panel">
       
-      <!-- Top Dynamic Metrics -->
+      <!-- Live Metrics Header -->
       <div class="dashboard-metrics" id="dashboardMetrics" style="display:none;">
         <div class="metric-card">
           <span class="metric-label">Total Pallets</span>
@@ -374,12 +371,12 @@
         </div>
       </div>
 
-      <!-- Main Document Output -->
+      <!-- Report Sheet Output -->
       <div id="reportContainer" style="width: 100%; display: flex; justify-content: center;">
         <div class="empty-state">
           <div class="empty-state-icon">📄</div>
           <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
-          <p style="margin-top:8px; font-size:13px;">Paste weight records on the left control panel or click <strong>Sample</strong> to load an example payload.</p>
+          <p style="margin-top:8px; font-size:13px;">Enter product names and dash-separated weights on the left, or click <strong>Sample</strong>.</p>
         </div>
       </div>
 
@@ -415,39 +412,21 @@ Sardines
       const input = document.getElementById('dataInput').value;
       if (!input) return;
       navigator.clipboard.writeText(input);
-      alert('Raw input data copied to clipboard!');
+      alert('Raw input copied to clipboard!');
     }
 
+    // Strictly extracts weights split by dashes (-) only
     function extractWeightsFromLine(line) {
       const weights = [];
-      const multiplierRegex = /(\d+(?:\.\d+)?)\s*[xX*]\s*(\d+)/g;
-      let match;
-      let lineCopy = line;
+      const parts = line.split('-');
 
-      // Multiplier format (540 x 12)
-      while ((match = multiplierRegex.exec(line)) !== null) {
-        const weightVal = parseFloat(match[1]);
-        const qty = parseInt(match[2], 10);
-        if (!isNaN(weightVal) && !isNaN(qty)) {
-          for (let i = 0; i < qty; i++) {
-            weights.push(weightVal);
-          }
+      parts.forEach(part => {
+        const cleanPart = part.trim();
+        const weightVal = parseFloat(cleanPart);
+        if (!isNaN(weightVal) && weightVal > 0) {
+          weights.push(weightVal);
         }
-      }
-
-      lineCopy = lineCopy.replace(/(\d+(?:\.\d+)?)\s*[xX*]\s*(\d+)/g, '');
-      
-      // Numbers separated by dashes, spaces, commas
-      const numMatches = lineCopy.match(/\d+(?:\.\d+)?/g);
-      
-      if (numMatches) {
-        numMatches.forEach(numStr => {
-          const w = parseFloat(numStr);
-          if (!isNaN(w) && w > 0) {
-            weights.push(w);
-          }
-        });
-      }
+      });
 
       return weights;
     }
@@ -466,7 +445,7 @@ Sardines
           <div class="empty-state">
             <div class="empty-state-icon">📄</div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
-            <p style="margin-top:8px; font-size:13px;">Paste weight records on the left control panel or click <strong>Sample</strong> to load an example payload.</p>
+            <p style="margin-top:8px; font-size:13px;">Enter product names and dash-separated weights on the left, or click <strong>Sample</strong>.</p>
           </div>`;
         return;
       }
@@ -483,6 +462,7 @@ Sardines
         const hasText = /[a-zA-Z]/.test(cleanLine);
 
         if (hasText) {
+          // Detect if text and dash-separated numbers are on the same line
           const firstNumIdx = cleanLine.search(/\d/);
           if (firstNumIdx !== -1) {
             currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim();
@@ -494,6 +474,7 @@ Sardines
             currentDesc = cleanLine;
           }
         } else if (currentDesc) {
+          // Strictly parse dash-separated weights on dedicated lines
           const weights = extractWeightsFromLine(cleanLine);
           weights.forEach(w => {
             pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
@@ -509,7 +490,7 @@ Sardines
           <div class="empty-state">
             <div class="empty-state-icon">⚠️</div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
-            <p style="margin-top:8px; font-size:13px;">Check that quantities/weights use correct formats (e.g., 344-455-222-989 or 540 x 12).</p>
+            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 344-455-222-989).</p>
           </div>`;
         return;
       }
@@ -537,7 +518,7 @@ Sardines
         group.totalWeight += item.weight;
       });
 
-      // Update Top Metrics
+      // Update Header Stats Bar
       metrics.style.display = 'grid';
       document.getElementById('statPallets').innerText = totalPalletsCount;
       document.getElementById('statWeight').innerText = `${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})} kg`;
