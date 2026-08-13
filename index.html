@@ -262,22 +262,23 @@
 
       <div class="field-group">
         <label class="field-label" for="deliveryNoInput">Delivery No.</label>
-        <input type="text" id="deliveryNoInput" class="input-text" placeholder="e.g. DEL-88492" oninput="parseData()">
+        <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
       </div>
 
       <div class="format-box">
-        <strong>Format Guide:</strong><br>
-        Product Description on line 1.<br>
-        Weights on line 2 separated by <code>-</code><br><br>
+        <strong>Supported Formats:</strong><br>
+        • Multipliers: <code>540 x 12</code> or <code>540x12</code><br>
+        • Separators: <code>240-240-250</code> or <code>240, 250</code><br><br>
         <em>Example:</em><br>
-        <strong>Lamb</strong><br>
-        <code>240-240-250-100-160</code>
+        <strong>Beef lung</strong><br>
+        <code>480 x 1</code><br>
+        <code>540 x 12</code>
       </div>
 
       <div class="field-group">
         <label class="field-label">Raw Breakdown Data</label>
         <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Paste product name and weights separated by -..." oninput="parseData()"></textarea>
+          <textarea id="dataInput" placeholder="Paste product name and weights..." oninput="parseData()"></textarea>
           <div class="status-badge" id="palletCountBadge">0 Pallets</div>
         </div>
       </div>
@@ -315,14 +316,30 @@
   </div>
 
   <script>
-    const sampleText = `Lamb
-240-240-250-100-160
+    const sampleText = `Beef lung 
+480 x 1
+540 x 12 
 
-Chicken
-870-690-340`;
+Beef heart 
+864 x 5 
+900 x 1
+897 x 1 
+
+Beef spleen 
+680 x 1 
+
+Beef trim
+979.2 x 6 
+
+Beef kidney
+720 x 1
+
+Sardines 
+560 x 3 
+448 x 2`;
 
     function loadSample() {
-      document.getElementById('deliveryNoInput').value = 'DEL-10492';
+      document.getElementById('deliveryNoInput').value = 'TOLN10492';
       document.getElementById('dataInput').value = sampleText;
       parseData();
     }
@@ -331,6 +348,41 @@ Chicken
       document.getElementById('deliveryNoInput').value = '';
       document.getElementById('dataInput').value = '';
       parseData();
+    }
+
+    function extractWeightsFromLine(line) {
+      const weights = [];
+      
+      // Match "Weight x Quantity" pattern (e.g. "540 x 12", "540x12", "979.2*6")
+      const multiplierRegex = /(\d+(?:\.\d+)?)\s*[xX*]\s*(\d+)/g;
+      let match;
+      let lineCopy = line;
+
+      while ((match = multiplierRegex.exec(line)) !== null) {
+        const weightVal = parseFloat(match[1]);
+        const qty = parseInt(match[2], 10);
+        if (!isNaN(weightVal) && !isNaN(qty)) {
+          for (let i = 0; i < qty; i++) {
+            weights.push(weightVal);
+          }
+        }
+      }
+
+      // Remove multiplier patterns to check for remaining standard numbers
+      lineCopy = lineCopy.replace(/(\d+(?:\.\d+)?)\s*[xX*]\s*(\d+)/g, '');
+
+      // Standard numbers separated by -, space, comma
+      const numMatches = lineCopy.match(/\d+(?:\.\d+)?/g);
+      if (numMatches) {
+        numMatches.forEach(numStr => {
+          const w = parseFloat(numStr);
+          if (!isNaN(w) && w > 0) {
+            weights.push(w);
+          }
+        });
+      }
+
+      return weights;
     }
 
     function parseData() {
@@ -361,29 +413,26 @@ Chicken
         let cleanLine = line.trim();
         if (!cleanLine) return;
 
-        const numMatches = cleanLine.match(/\d+(?:\.\d+)?/g);
+        // Check if line contains letters (product description)
         const hasText = /[a-zA-Z]/.test(cleanLine);
 
         if (hasText) {
-          if (numMatches && numMatches.length > 0) {
-            const firstNumIdx = cleanLine.search(/\d/);
+          // If title has numbers appended, separate title from weight values
+          const firstNumIdx = cleanLine.search(/\d/);
+          if (firstNumIdx !== -1) {
             currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim();
-            
-            numMatches.forEach(numStr => {
-              const w = parseFloat(numStr);
-              if (!isNaN(w) && w > 0) {
-                pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
-              }
+            const weights = extractWeightsFromLine(cleanLine.substring(firstNumIdx));
+            weights.forEach(w => {
+              pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
             });
           } else {
             currentDesc = cleanLine;
           }
-        } else if (numMatches && currentDesc) {
-          numMatches.forEach(numStr => {
-            const w = parseFloat(numStr);
-            if (!isNaN(w) && w > 0) {
-              pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
-            }
+        } else if (currentDesc) {
+          // Line contains only weight data
+          const weights = extractWeightsFromLine(cleanLine);
+          weights.forEach(w => {
+            pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
           });
         }
       });
@@ -396,7 +445,7 @@ Chicken
           <div class="empty-state">
             <div style="font-size:32px;">⚠️</div>
             <strong style="color:var(--lyka-text); display:block; margin-top:12px; font-size:16px;">No Weights Found</strong>
-            <p>Ensure weights are formatted correctly (e.g. 240-240-250).</p>
+            <p>Ensure weights are formatted correctly (e.g. 540 x 12 or 240-240-250).</p>
           </div>`;
         return;
       }
