@@ -53,11 +53,7 @@
     .doc-title h2 { font-size: 20px; font-weight: 900; color: var(--lyka-green); letter-spacing: 0.5px; text-align: center; }
     .doc-logo { font-size: 24px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; text-align: right; }
 
-    .summary-section {
-      margin-top: 24px;
-      page-break-inside: avoid;
-    }
-
+    .summary-section { margin-top: 24px; page-break-inside: avoid; }
     .section-title { font-size: 13px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 16px 0 6px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 2px; }
 
     /* Tables */
@@ -115,15 +111,15 @@
       <div class="format-box">
         <strong>Format:</strong><br>
         [Product Description]<br>
-        [Weights separated by spaces or commas]<br><br>
+        [Weights separated by -]<br><br>
         <em>Example:</em><br>
-        Beef heart<br>
-        864 864 864 816 900<br><br>
-        Beef lungs<br>
-        540 540 480 504
+        Lamb<br>
+        240-240-250-100-160<br><br>
+        Chicken<br>
+        870-690-340
       </div>
 
-      <textarea id="dataInput" placeholder="Paste product name and weights..." oninput="parseData()"></textarea>
+      <textarea id="dataInput" placeholder="Paste product name and weights separated by -..." oninput="parseData()"></textarea>
     </div>
 
     <!-- Right Live Preview -->
@@ -138,20 +134,11 @@
   </div>
 
   <script>
-    const sampleText = `Goat carcass
-520 600 720 580 625 700 720 720 720 720 720 720 480 240 520 325
+    const sampleText = `Lamb
+240-240-250-100-160
 
-Goat heart
-875 520 540 360 300
-
-Goat trim
-979.2 979.2 788.8 707.2 816 979.2
-
-Goat liver
-600 240 200 580 1000
-
-Goat lung
-520 600`;
+Chicken
+870-690-340`;
 
     function loadSample() {
       document.getElementById('deliveryNoInput').value = 'DEL-10492';
@@ -179,32 +166,44 @@ Goat lung
         return;
       }
 
+      const lines = rawText.split('\n');
       const pallets = [];
       let palletCounter = 1;
+      let currentDesc = '';
 
-      // Group text by product sections (split by non-numeric headings)
-      const sectionRegex = /([a-zA-Z][a-zA-Z\s\-_]*)([\d\s,.\t\n\r]+)/g;
-      let match;
+      lines.forEach(line => {
+        let cleanLine = line.trim();
+        if (!cleanLine) return;
 
-      while ((match = sectionRegex.exec(rawText)) !== null) {
-        const prodName = match[1].trim().toUpperCase();
-        const weightsChunk = match[2];
+        // Extract numbers separated by dashes, spaces, or commas
+        const numMatches = cleanLine.match(/\d+(?:\.\d+)?/g);
+        
+        // Check if line contains product name text
+        const hasText = /[a-zA-Z]/.test(cleanLine);
 
-        // Extract every single numeric weight in this block
-        const weightMatches = weightsChunk.match(/\b\d+(?:\.\d+)?\b/g);
-        if (weightMatches) {
-          weightMatches.forEach(numStr => {
+        if (hasText) {
+          if (numMatches && numMatches.length > 0) {
+            const firstNumIdx = cleanLine.search(/\d/);
+            currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim();
+            
+            numMatches.forEach(numStr => {
+              const w = parseFloat(numStr);
+              if (!isNaN(w) && w > 0) {
+                pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
+              }
+            });
+          } else {
+            currentDesc = cleanLine;
+          }
+        } else if (numMatches && currentDesc) {
+          numMatches.forEach(numStr => {
             const w = parseFloat(numStr);
             if (!isNaN(w) && w > 0) {
-              pallets.push({
-                palletNo: palletCounter++,
-                desc: prodName,
-                weight: w
-              });
+              pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
             }
           });
         }
-      }
+      });
 
       if (pallets.length === 0) {
         container.innerHTML = `
@@ -214,7 +213,6 @@ Goat lung
         return;
       }
 
-      // --- CALCULATE SUMMARY GROUPS ---
       const summaryGroups = {};
       let totalPalletsCount = 0;
       let grandTotalWeight = 0;
@@ -238,7 +236,6 @@ Goat lung
         group.totalWeight += item.weight;
       });
 
-      // Build HTML
       let html = `
         <div class="report-paper">
           <!-- Page Header -->
