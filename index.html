@@ -388,7 +388,7 @@
       <div class="field-group">
         <label class="field-label">Raw Breakdown Stream</label>
         <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Beef lung&#10;344-455-222-989&#10;&#10;Beef trim&#10;979.2-979.2-788.8-707.2&#10;&#10;Beef kidney&#10;412.5-412.5-380.0-510.4" oninput="parseData()"></textarea>
+          <textarea id="dataInput" placeholder="Beef lung&#10;344-455-222-989&#10;&#10;Beef trim&#10;459-345-290&#10;&#10;Beef kidney&#10;412-380-510" oninput="parseData()"></textarea>
           <div class="status-badge" id="palletCountBadge">0 Pallets</div>
         </div>
       </div>
@@ -443,13 +443,20 @@ Beef heart
 864-864-864-864-864-900-897
 
 Beef trim
-979.2-979.2-788.8-707.2-845.6-610.0
+459-345-290-979-788-610
 
 Beef kidney
-412.5-412.5-380.0-510.4-380.0-495.2
+412-380-510-495
 
 Sardines
 560-560-560-448-448`;
+
+    // Helper to format numbers cleanly (hides .0 for whole integers)
+    function formatNum(val) {
+      if (typeof val !== 'number') val = parseFloat(val);
+      if (isNaN(val)) return '0';
+      return Number.isInteger(val) ? val.toLocaleString() : val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+    }
 
     function loadSample() {
       document.getElementById('deliveryNoInput').value = 'TOLN10492';
@@ -545,7 +552,7 @@ Sardines
           <div class="empty-state">
             <div class="empty-state-icon">⚠️</div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
-            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 979.2-788.8-412.5).</p>
+            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 459-345-290).</p>
           </div>`;
         return;
       }
@@ -576,7 +583,7 @@ Sardines
       // Update Header Stats Bar
       metrics.style.display = 'grid';
       document.getElementById('statPallets').innerText = totalPalletsCount;
-      document.getElementById('statWeight').innerText = `${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})} kg`;
+      document.getElementById('statWeight').innerText = `${formatNum(grandTotalWeight)} kg`;
       document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
 
       // Current Timestamp formatting for the generated document
@@ -611,7 +618,7 @@ Sardines
                 <tr>
                   <td>${p.palletNo}</td>
                   <td><strong>${p.desc}</strong></td>
-                  <td class="num-col"><strong>${p.weight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</strong></td>
+                  <td class="num-col"><strong>${formatNum(p.weight)}</strong></td>
                 </tr>
               `).join('')}
             </tbody>
@@ -644,9 +651,9 @@ Sardines
           html += `
             <tr>
               <td>${idx === 0 ? `<strong>${prodName}</strong>` : ''}</td>
-              <td class="num-col">${parseFloat(wVal).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+              <td class="num-col">${formatNum(wVal)}</td>
               <td class="num-col">${count}</td>
-              <td class="num-col">${subWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+              <td class="num-col">${formatNum(subWeight)}</td>
             </tr>
           `;
         });
@@ -656,7 +663,7 @@ Sardines
             <td>TOTAL ${prodName}</td>
             <td class="num-col"></td>
             <td class="num-col">${group.totalPallets}</td>
-            <td class="num-col">${group.totalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+            <td class="num-col">${formatNum(group.totalWeight)}</td>
           </tr>
         `;
       });
@@ -666,7 +673,7 @@ Sardines
                 <td>GRAND TOTAL</td>
                 <td class="num-col"></td>
                 <td class="num-col">${totalPalletsCount}</td>
-                <td class="num-col">${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})}</td>
+                <td class="num-col">${formatNum(grandTotalWeight)}</td>
               </tr>
             </tbody>
           </table>
