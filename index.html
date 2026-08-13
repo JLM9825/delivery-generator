@@ -139,19 +139,19 @@
 
   <script>
     const sampleText = `Goat carcass
-520 600 720 580 625 700 720 720 720 720 720 720
+520 600 720 580 625 700 720 720 720 720 720 720 480 240 520 325
 
 Goat heart
-875 520
+875 520 540 360 300
 
 Goat trim
 979.2 979.2 788.8 707.2 816 979.2
 
 Goat liver
-600 240
+600 240 200 580 1000
 
 Goat lung
-520`;
+520 600`;
 
     function loadSample() {
       document.getElementById('deliveryNoInput').value = 'DEL-10492';
@@ -210,13 +210,17 @@ Goat lung
             }
           });
         } else {
-          // Check for line formatted as "Description 500 600 700"
+          // Check for line formatted as "Description 500 600 700" or line starting with text and ending with numbers
           if (numMatches && numMatches.length > 0) {
             const firstNumIdx = cleanLine.search(/\b\d/);
             const descPart = cleanLine.substring(0, firstNumIdx).replace(/[\s|]+$/, '').trim();
             const weightsPart = cleanLine.substring(firstNumIdx);
             
             if (descPart.length > 0) {
+              currentDesc = descPart; // Persist product name for wrapped multi-line weights
+            }
+            
+            if (currentDesc) {
               const weights = weightsPart.match(/\b\d+(?:\.\d+)?\b/g);
               if (weights) {
                 weights.forEach(numStr => {
@@ -224,13 +228,12 @@ Goat lung
                   if (!isNaN(w)) {
                     pallets.push({
                       palletNo: palletCounter++,
-                      desc: descPart.toUpperCase(),
+                      desc: currentDesc.toUpperCase(),
                       weight: w
                     });
                   }
                 });
               }
-              currentDesc = '';
             }
           } else {
             // Line is purely a description heading
