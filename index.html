@@ -179,68 +179,32 @@ Goat lung
         return;
       }
 
-      const lines = rawText.split('\n');
       const pallets = [];
       let palletCounter = 1;
-      let currentDesc = '';
 
-      lines.forEach(line => {
-        let cleanLine = line.trim();
-        if (!cleanLine) return;
+      // Group text by product sections (split by non-numeric headings)
+      const sectionRegex = /([a-zA-Z][a-zA-Z\s\-_]*)([\d\s,.\t\n\r]+)/g;
+      let match;
 
-        // Strip leading sequence numbers if present
-        cleanLine = cleanLine.replace(/^\d+[\s\t|]+/, '');
+      while ((match = sectionRegex.exec(rawText)) !== null) {
+        const prodName = match[1].trim().toUpperCase();
+        const weightsChunk = match[2];
 
-        // Extract numbers from line
-        const numMatches = cleanLine.match(/\b\d+(?:\.\d+)?\b/g);
-        
-        // Determine if line is purely weight values
-        const nonNumericParts = cleanLine.replace(/\d+(?:\.\d+)?/g, '').replace(/[\s,|\t]/g, '');
-        const isPureNumeric = (numMatches && numMatches.length > 0 && nonNumericParts.length === 0);
-
-        if (isPureNumeric && currentDesc) {
-          numMatches.forEach(numStr => {
+        // Extract every single numeric weight in this block
+        const weightMatches = weightsChunk.match(/\b\d+(?:\.\d+)?\b/g);
+        if (weightMatches) {
+          weightMatches.forEach(numStr => {
             const w = parseFloat(numStr);
-            if (!isNaN(w)) {
+            if (!isNaN(w) && w > 0) {
               pallets.push({
                 palletNo: palletCounter++,
-                desc: currentDesc.toUpperCase(),
+                desc: prodName,
                 weight: w
               });
             }
           });
-        } else {
-          // Check for line formatted as "Description 500 600 700" or line starting with text and ending with numbers
-          if (numMatches && numMatches.length > 0) {
-            const firstNumIdx = cleanLine.search(/\b\d/);
-            const descPart = cleanLine.substring(0, firstNumIdx).replace(/[\s|]+$/, '').trim();
-            const weightsPart = cleanLine.substring(firstNumIdx);
-            
-            if (descPart.length > 0) {
-              currentDesc = descPart; // Persist product name for wrapped multi-line weights
-            }
-            
-            if (currentDesc) {
-              const weights = weightsPart.match(/\b\d+(?:\.\d+)?\b/g);
-              if (weights) {
-                weights.forEach(numStr => {
-                  const w = parseFloat(numStr);
-                  if (!isNaN(w)) {
-                    pallets.push({
-                      palletNo: palletCounter++,
-                      desc: currentDesc.toUpperCase(),
-                      weight: w
-                    });
-                  }
-                });
-              }
-            }
-          } else {
-            // Line is purely a description heading
-            currentDesc = cleanLine;
-          }
         }
-      });
+      }
 
       if (pallets.length === 0) {
         container.innerHTML = `
