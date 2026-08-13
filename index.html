@@ -79,7 +79,31 @@
       text-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
     }
 
-    .action-group { display: flex; gap: 12px; }
+    .live-clock {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--halo-green);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 0 10px var(--halo-glow-subtle);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-clock::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background-color: var(--halo-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--halo-green);
+    }
+
+    .action-group { display: flex; gap: 12px; align-items: center; }
 
     .btn {
       padding: 10px 20px;
@@ -283,7 +307,9 @@
     }
     .delivery-no-box { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
     .doc-title h2 { font-size: 22px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; text-align: center; }
-    .doc-logo { font-size: 28px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; text-align: right; }
+    .doc-logo-group { text-align: right; }
+    .doc-logo { font-size: 28px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; }
+    .doc-timestamp { font-size: 9px; font-weight: 700; color: #4b5563; margin-top: 2px; text-transform: uppercase; }
 
     .summary-section { margin-top: 28px; page-break-inside: avoid; }
     .section-title { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; margin: 24px 0 10px 0; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 4px; }
@@ -332,6 +358,7 @@
       <h1>Lyka Breakdown Generator</h1>
     </div>
     <div class="action-group">
+      <div class="live-clock" id="liveClock">--:--:--</div>
       <button class="btn btn-secondary" onclick="copyData()">📋 Copy Input</button>
       <button class="btn btn-primary" onclick="window.print()">🖨️ Print Docket (A4)</button>
     </div>
@@ -361,7 +388,7 @@
       <div class="field-group">
         <label class="field-label">Raw Breakdown Stream</label>
         <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Beef lung&#10;344-455-222-989" oninput="parseData()"></textarea>
+          <textarea id="dataInput" placeholder="Beef lung&#10;344-455-222-989&#10;&#10;Beef trim&#10;979.2-979.2-788.8-707.2&#10;&#10;Beef kidney&#10;412.5-412.5-380.0-510.4" oninput="parseData()"></textarea>
           <div class="status-badge" id="palletCountBadge">0 Pallets</div>
         </div>
       </div>
@@ -399,6 +426,16 @@
   </div>
 
   <script>
+    // Live Clock Function
+    function updateClock() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('liveClock').innerText = `${dateStr} • ${timeStr}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
     const sampleText = `Beef lung
 344-455-222-989
 
@@ -406,7 +443,10 @@ Beef heart
 864-864-864-864-864-900-897
 
 Beef trim
-979.2-979.2-788.8-707.2
+979.2-979.2-788.8-707.2-845.6-610.0
+
+Beef kidney
+412.5-412.5-380.0-510.4-380.0-495.2
 
 Sardines
 560-560-560-448-448`;
@@ -505,7 +545,7 @@ Sardines
           <div class="empty-state">
             <div class="empty-state-icon">⚠️</div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
-            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 344-455-222-989).</p>
+            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 979.2-788.8-412.5).</p>
           </div>`;
         return;
       }
@@ -539,6 +579,10 @@ Sardines
       document.getElementById('statWeight').innerText = `${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})} kg`;
       document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
 
+      // Current Timestamp formatting for the generated document
+      const now = new Date();
+      const generatedStamp = `${now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
+
       let html = `
         <div class="report-paper">
           <div class="doc-header">
@@ -548,7 +592,10 @@ Sardines
             <div class="doc-title" style="width:40%;">
               <h2>DELIVERY BREAKDOWN</h2>
             </div>
-            <div class="doc-logo" style="width:30%;">lyka</div>
+            <div class="doc-logo-group" style="width:30%;">
+              <div class="doc-logo">lyka</div>
+              <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
+            </div>
           </div>
 
           <table class="data-table">
@@ -625,7 +672,7 @@ Sardines
           </table>
 
           <div class="doc-note">
-            Note: All weights are recorded in kilograms (kg).
+            Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.
           </div>
         </div>
       </div>
