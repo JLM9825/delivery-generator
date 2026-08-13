@@ -3,233 +3,299 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lyka Delivery Breakdown Generator</title>
+  <title>Lyka Breakdown Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --lyka-bg: #071510;
-      --lyka-panel: #0d221b;
-      --lyka-card: #132e25;
-      --lyka-card-hover: #18382d;
-      --lyka-border: #1d4235;
-      --lyka-border-light: #2a5948;
-      --lyka-green: #056839;
-      --lyka-accent: #25d366;
-      --lyka-accent-glow: rgba(37, 211, 102, 0.15);
-      --lyka-text: #ecfdf5;
-      --lyka-text-muted: #88a79d;
+      --bg-main: #05100c;
+      --panel-bg: rgba(13, 34, 27, 0.75);
+      --card-bg: #102820;
+      --card-hover: #16352b;
+      --border-color: #1b4334;
+      --border-glow: #2cc973;
+      --accent-green: #25d366;
+      --accent-emerald: #056839;
+      --accent-glow: rgba(37, 211, 102, 0.2);
+      --text-main: #f0fdf4;
+      --text-muted: #83a79b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--lyka-bg); color: var(--lyka-text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-    /* Header */
-    header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 14px 28px; 
-      background: var(--lyka-panel); 
-      border-bottom: 1px solid var(--lyka-border);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      z-index: 10;
+    body {
+      background-color: var(--bg-main);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 211, 102, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(5, 104, 57, 0.15) 0px, transparent 50%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon { 
-      background: linear-gradient(135deg, #25d366, #056839); 
-      width: 36px; height: 36px; 
-      border-radius: 10px; 
-      display: flex; align-items: center; justify-content: center; 
-      font-size: 18px; 
-      box-shadow: 0 0 15px var(--lyka-accent-glow);
+    /* Top Navigation Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 32px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 20;
     }
-    header h1 { font-size: 15px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff; text-transform: uppercase; }
 
-    .btn { 
-      padding: 10px 20px; 
-      font-size: 13px; 
-      font-weight: 700; 
-      border-radius: 8px; 
-      border: none; 
-      cursor: pointer; 
-      transition: all 0.2s ease; 
-      display: inline-flex; align-items: center; gap: 8px;
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-icon {
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald));
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 20px var(--accent-glow);
     }
-    .btn-primary { 
-      background: linear-gradient(135deg, #25d366, #1db954); 
-      color: #041f13; 
-      box-shadow: 0 4px 14px var(--lyka-accent-glow);
+    header h1 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.75px;
+      color: #ffffff;
+      text-transform: uppercase;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3); }
-    .btn-secondary { 
-      background: var(--lyka-card); 
-      color: var(--lyka-text); 
-      border: 1px solid var(--lyka-border); 
-    }
-    .btn-secondary:hover { background: var(--lyka-card-hover); border-color: var(--lyka-border-light); }
 
-    /* App Body */
+    .action-group { display: flex; gap: 12px; }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #25d366, #1db954);
+      color: #03190e;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+    }
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+    .btn-secondary:hover {
+      background: var(--card-hover);
+      border-color: #2a5f4a;
+      transform: translateY(-1px);
+    }
+
+    /* Main Application Body */
     .app-body { display: flex; flex: 1; overflow: hidden; }
 
-    /* Left Control Panel */
-    .left-panel { 
-      width: 440px; 
-      background: var(--lyka-panel); 
-      border-right: 1px solid var(--lyka-border); 
-      padding: 24px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 20px; 
-      overflow-y: auto; 
+    /* Left Control Sidebar */
+    .left-panel {
+      width: 460px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid var(--border-color);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      overflow-y: auto;
     }
 
     .panel-header { display: flex; justify-content: space-between; align-items: center; }
-    .panel-title { font-size: 11px; font-weight: 800; color: var(--lyka-accent); text-transform: uppercase; letter-spacing: 1px; }
+    .panel-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-green);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
 
     .field-group { display: flex; flex-direction: column; gap: 8px; }
-    .field-label { font-size: 11px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .input-text { 
-      background: var(--lyka-bg); 
-      border: 1px solid var(--lyka-border); 
-      border-radius: 8px; 
-      color: var(--lyka-accent); 
-      font-weight: 600;
-      font-size: 14px; 
-      padding: 12px; 
-      outline: none; 
+    .input-text {
+      background: rgba(5, 16, 12, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--accent-green);
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px;
+      outline: none;
       transition: all 0.2s;
     }
-    .input-text:focus { border-color: var(--lyka-accent); box-shadow: 0 0 0 3px var(--lyka-accent-glow); }
-
-    .format-box { 
-      background: var(--lyka-card); 
-      border: 1px solid var(--lyka-border); 
-      border-radius: 10px; 
-      padding: 14px; 
-      font-size: 12px; 
-      color: var(--lyka-text-muted); 
-      line-height: 1.6; 
+    .input-text:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
-    .format-box strong { color: var(--lyka-text); }
-    .format-box code { font-family: 'JetBrains Mono', monospace; color: var(--lyka-accent); background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; }
+
+    .format-card {
+      background: linear-gradient(180deg, var(--card-bg), rgba(16, 40, 32, 0.5));
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .format-card strong { color: var(--text-main); }
+    .format-card code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-green);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px 6px;
+      border-radius: 5px;
+      border: 1px solid rgba(37, 211, 102, 0.1);
+    }
 
     .textarea-wrapper { position: relative; display: flex; flex-direction: column; }
-    textarea { 
-      width: 100%; 
-      height: 280px; 
-      background: var(--lyka-bg); 
-      border: 1px solid var(--lyka-border); 
-      border-radius: 10px; 
-      color: #86efac; 
-      font-family: 'JetBrains Mono', monospace; 
-      font-size: 13px; 
-      padding: 14px; 
-      resize: vertical; 
-      outline: none; 
+    textarea {
+      width: 100%;
+      height: 300px;
+      background: rgba(5, 16, 12, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: #a7f3d0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 16px;
+      resize: vertical;
+      outline: none;
       transition: all 0.2s;
-      line-height: 1.5;
+      line-height: 1.6;
     }
-    textarea:focus { border-color: var(--lyka-accent); box-shadow: 0 0 0 3px var(--lyka-accent-glow); }
+    textarea:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
 
     .status-badge {
       position: absolute;
-      bottom: 12px;
-      right: 12px;
-      background: var(--lyka-card);
-      border: 1px solid var(--lyka-border);
+      bottom: 14px;
+      right: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
       font-size: 11px;
       font-weight: 700;
-      color: var(--lyka-text-muted);
-      padding: 4px 8px;
-      border-radius: 6px;
+      color: var(--accent-green);
+      padding: 5px 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
     /* Right Preview Area */
-    .right-panel { 
-      flex: 1; 
-      background: var(--lyka-bg); 
-      padding: 28px; 
-      overflow-y: auto; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      gap: 20px;
-    }
-
-    /* Live Summary Bar */
-    .summary-cards {
-      width: 100%;
-      max-width: 800px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .stat-card {
-      background: var(--lyka-panel);
-      border: 1px solid var(--lyka-border);
-      border-radius: 12px;
-      padding: 16px 20px;
+    .right-panel {
+      flex: 1;
+      background: transparent;
+      padding: 32px;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    .stat-label { font-size: 11px; font-weight: 700; color: var(--lyka-text-muted); text-transform: uppercase; }
-    .stat-value { font-size: 22px; font-weight: 800; color: #ffffff; }
-
-    /* Printable Paper Sheet */
-    .report-paper { 
-      background: #ffffff; 
-      color: #111827; 
-      width: 100%; 
-      max-width: 800px; 
-      padding: 36px 40px; 
-      border-radius: 12px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
-      font-size: 11px; 
+      align-items: center;
+      gap: 24px;
     }
 
-    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--lyka-green); padding-bottom: 10px; margin-bottom: 20px; }
-    .delivery-no-box { font-size: 12px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; }
-    .doc-title h2 { font-size: 20px; font-weight: 900; color: var(--lyka-green); letter-spacing: 0.5px; text-align: center; }
-    .doc-logo { font-size: 26px; font-weight: 900; color: var(--lyka-green); font-style: italic; letter-spacing: -1px; text-align: right; }
+    /* Dynamic Dashboard Stats Header */
+    .dashboard-metrics {
+      width: 100%;
+      max-width: 820px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .metric-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+    }
+    .metric-card:hover { transform: translateY(-2px); }
+    .metric-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-value { font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
 
-    .summary-section { margin-top: 24px; page-break-inside: avoid; }
-    .section-title { font-size: 12px; font-weight: 800; color: var(--lyka-green); text-transform: uppercase; margin: 20px 0 8px 0; border-bottom: 1px solid var(--lyka-green); padding-bottom: 4px; }
+    /* Printable Document Styling */
+    .report-paper {
+      background: #ffffff;
+      color: #111827;
+      width: 100%;
+      max-width: 820px;
+      padding: 44px 48px;
+      border-radius: 16px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+      font-size: 11px;
+      position: relative;
+    }
 
-    /* Report Tables */
-    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; page-break-inside: auto; }
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 3px solid var(--accent-emerald);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+    .delivery-no-box { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
+    .doc-title h2 { font-size: 22px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; text-align: center; }
+    .doc-logo { font-size: 28px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; text-align: right; }
+
+    .summary-section { margin-top: 28px; page-break-inside: avoid; }
+    .section-title { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; margin: 24px 0 10px 0; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 4px; }
+
+    /* Tables */
+    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px; page-break-inside: auto; }
     table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
-    table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; }
-    table.data-table th { background: #f0fdf4; color: var(--lyka-green); font-weight: 800; text-transform: uppercase; }
+    table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 7px 12px; text-align: left; }
+    table.data-table th { background: #f0fdf4; color: var(--accent-emerald); font-weight: 800; text-transform: uppercase; }
     table.data-table .num-col { text-align: right; }
     
-    .subtotal-row { background-color: #f8fafc; font-weight: bold; color: var(--lyka-green); }
-    .grandtotal-row { background-color: var(--lyka-green); color: #ffffff; font-weight: 900; font-size: 11px; }
-    .grandtotal-row td { border-color: var(--lyka-green); }
+    .subtotal-row { background-color: #f8fafc; font-weight: bold; color: var(--accent-emerald); }
+    .grandtotal-row { background-color: var(--accent-emerald); color: #ffffff; font-weight: 900; font-size: 11.5px; }
+    .grandtotal-row td { border-color: var(--accent-emerald); }
 
-    .doc-note { font-size: 10px; color: #6b7280; font-style: italic; margin-top: 14px; }
+    .doc-note { font-size: 10px; color: #6b7280; font-style: italic; margin-top: 16px; }
 
-    /* Empty Placeholder */
-    .empty-state { 
-      background: var(--lyka-panel); 
-      border: 2px dashed var(--lyka-border); 
-      border-radius: 16px; 
-      padding: 60px; 
-      text-align: center; 
-      color: var(--lyka-text-muted); 
-      max-width: 500px;
-      margin-top: 60px;
+    /* Empty State Indicator */
+    .empty-state {
+      background: var(--panel-bg);
+      border: 2px dashed var(--border-color);
+      border-radius: 20px;
+      padding: 70px 40px;
+      text-align: center;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin-top: 40px;
     }
-    .empty-state p { margin-top: 8px; font-size: 13px; }
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
 
-    /* Print View Overrides */
+    /* Print Document Rules */
     @media print {
-      header, .left-panel, .summary-cards, .no-print { display: none !important; }
+      header, .left-panel, .dashboard-metrics, .no-print { display: none !important; }
       body, .app-body, .right-panel { background: #ffffff !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
       .report-paper { box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; }
       .data-table th { background-color: #f0fdf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -244,71 +310,72 @@
       <div class="brand-icon">🐾</div>
       <h1>Lyka Breakdown Generator</h1>
     </div>
-    <div>
+    <div class="action-group">
+      <button class="btn btn-secondary" onclick="copyData()">📋 Copy Data</button>
       <button class="btn btn-primary" onclick="window.print()">🖨️ Print Docket (A4)</button>
     </div>
   </header>
 
   <div class="app-body">
-    <!-- Left Input Controls -->
+    <!-- Left Input Sidebar -->
     <div class="left-panel">
       <div class="panel-header">
-        <span class="panel-title">Input Pallet Data</span>
+        <span class="panel-title">Data Input Studio</span>
         <div>
-          <button class="btn btn-secondary" style="padding:5px 10px; font-size:11px;" onclick="loadSample()">Sample</button>
-          <button class="btn btn-secondary" style="padding:5px 10px; font-size:11px;" onclick="clearData()">Clear</button>
+          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="loadSample()">Sample</button>
+          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="clearData()">Clear</button>
         </div>
       </div>
 
       <div class="field-group">
-        <label class="field-label" for="deliveryNoInput">Delivery No.</label>
+        <label class="field-label" for="deliveryNoInput">Delivery Reference No.</label>
         <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
       </div>
 
-      <div class="format-box">
-        <strong>Supported Formats:</strong><br>
-        • Multipliers: <code>540 x 12</code> or <code>540x12</code><br>
-        • Separators: <code>240-240-250</code> or <code>240, 250</code><br><br>
-        <em>Example:</em><br>
+      <div class="format-card">
+        <strong>Accepted Formats:</strong><br>
+        • Multipliers: <code>540 x 12</code>, <code>540x12</code>, or <code>540 * 12</code><br>
+        • Delimiters: <code>240-240-250</code> or <code>240, 250</code><br><br>
+        <em>Pattern Example:</em><br>
         <strong>Beef lung</strong><br>
         <code>480 x 1</code><br>
         <code>540 x 12</code>
       </div>
 
       <div class="field-group">
-        <label class="field-label">Raw Breakdown Data</label>
+        <label class="field-label">Raw Breakdown Stream</label>
         <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Paste product name and weights..." oninput="parseData()"></textarea>
+          <textarea id="dataInput" placeholder="Paste product descriptions and pallet weights..." oninput="parseData()"></textarea>
           <div class="status-badge" id="palletCountBadge">0 Pallets</div>
         </div>
       </div>
     </div>
 
-    <!-- Right Live Preview -->
+    <!-- Right Live Document View -->
     <div class="right-panel">
       
-      <!-- Live Dashboard Cards -->
-      <div class="summary-cards" id="summaryCards" style="display:none;">
-        <div class="stat-card">
-          <span class="stat-label">Total Pallets</span>
-          <span class="stat-value" id="statPallets">0</span>
+      <!-- Live Dashboard Bar -->
+      <div class="dashboard-metrics" id="dashboardMetrics" style="display:none;">
+        <div class="metric-card">
+          <span class="metric-label">Total Pallets</span>
+          <span class="metric-value" id="statPallets">0</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Total Weight</span>
-          <span class="stat-value" id="statWeight">0 kg</span>
+        <div class="metric-card">
+          <span class="metric-label">Gross Weight</span>
+          <span class="metric-value" id="statWeight">0 kg</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Product Groups</span>
-          <span class="stat-value" id="statProducts">0</span>
+        <div class="metric-card">
+          <span class="metric-label">Unique Products</span>
+          <span class="metric-value" id="statProducts">0</span>
         </div>
       </div>
 
-      <!-- PDF Preview Container -->
+      <!-- Main Document Output -->
       <div id="reportContainer" style="width: 100%; display: flex; justify-content: center;">
         <div class="empty-state">
-          <div style="font-size:32px;">📋</div>
-          <strong style="color:var(--lyka-text); display:block; margin-top:12px; font-size:16px;">Ready for Data</strong>
-          <p>Paste product weights on the left or click <strong>Sample</strong> to preview live.</p>
+          <div class="empty-state-icon">📄</div>
+          <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
+          <p style="margin-top:8px; font-size:13px;">Paste weight records on the left control panel or click <strong>Sample</strong> to load an example payload.</p>
         </div>
       </div>
 
@@ -350,10 +417,15 @@ Sardines
       parseData();
     }
 
+    function copyData() {
+      const input = document.getElementById('dataInput').value;
+      if (!input) return;
+      navigator.clipboard.writeText(input);
+      alert('Raw input data copied to clipboard!');
+    }
+
     function extractWeightsFromLine(line) {
       const weights = [];
-      
-      // Match "Weight x Quantity" pattern (e.g. "540 x 12", "540x12", "979.2*6")
       const multiplierRegex = /(\d+(?:\.\d+)?)\s*[xX*]\s*(\d+)/g;
       let match;
       let lineCopy = line;
@@ -368,11 +440,9 @@ Sardines
         }
       }
 
-      // Remove multiplier patterns to check for remaining standard numbers
       lineCopy = lineCopy.replace(/(\d+(?:\.\d+)?)\s*[xX*]\s*(\d+)/g, '');
-
-      // Standard numbers separated by -, space, comma
       const numMatches = lineCopy.match(/\d+(?:\.\d+)?/g);
+      
       if (numMatches) {
         numMatches.forEach(numStr => {
           const w = parseFloat(numStr);
@@ -389,17 +459,17 @@ Sardines
       const deliveryNo = document.getElementById('deliveryNoInput').value.trim();
       const rawText = document.getElementById('dataInput').value.trim();
       const container = document.getElementById('reportContainer');
-      const cards = document.getElementById('summaryCards');
+      const metrics = document.getElementById('dashboardMetrics');
       const badge = document.getElementById('palletCountBadge');
 
       if (!rawText) {
-        cards.style.display = 'none';
+        metrics.style.display = 'none';
         badge.innerText = '0 Pallets';
         container.innerHTML = `
           <div class="empty-state">
-            <div style="font-size:32px;">📋</div>
-            <strong style="color:var(--lyka-text); display:block; margin-top:12px; font-size:16px;">Ready for Data</strong>
-            <p>Paste product weights on the left or click <strong>Sample</strong> to preview live.</p>
+            <div class="empty-state-icon">📄</div>
+            <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
+            <p style="margin-top:8px; font-size:13px;">Paste weight records on the left control panel or click <strong>Sample</strong> to load an example payload.</p>
           </div>`;
         return;
       }
@@ -413,11 +483,9 @@ Sardines
         let cleanLine = line.trim();
         if (!cleanLine) return;
 
-        // Check if line contains letters (product description)
         const hasText = /[a-zA-Z]/.test(cleanLine);
 
         if (hasText) {
-          // If title has numbers appended, separate title from weight values
           const firstNumIdx = cleanLine.search(/\d/);
           if (firstNumIdx !== -1) {
             currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim();
@@ -429,7 +497,6 @@ Sardines
             currentDesc = cleanLine;
           }
         } else if (currentDesc) {
-          // Line contains only weight data
           const weights = extractWeightsFromLine(cleanLine);
           weights.forEach(w => {
             pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
@@ -440,12 +507,12 @@ Sardines
       badge.innerText = `${pallets.length} Pallet${pallets.length === 1 ? '' : 's'}`;
 
       if (pallets.length === 0) {
-        cards.style.display = 'none';
+        metrics.style.display = 'none';
         container.innerHTML = `
           <div class="empty-state">
-            <div style="font-size:32px;">⚠️</div>
-            <strong style="color:var(--lyka-text); display:block; margin-top:12px; font-size:16px;">No Weights Found</strong>
-            <p>Ensure weights are formatted correctly (e.g. 540 x 12 or 240-240-250).</p>
+            <div class="empty-state-icon">⚠️</div>
+            <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
+            <p style="margin-top:8px; font-size:13px;">Check that quantities/weights use correct formats (e.g., 540 x 12 or 240-240-250).</p>
           </div>`;
         return;
       }
@@ -473,8 +540,8 @@ Sardines
         group.totalWeight += item.weight;
       });
 
-      // Update Dashboard Stats Cards
-      cards.style.display = 'grid';
+      // Update Top Metrics
+      metrics.style.display = 'grid';
       document.getElementById('statPallets').innerText = totalPalletsCount;
       document.getElementById('statWeight').innerText = `${grandTotalWeight.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1})} kg`;
       document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
@@ -565,7 +632,7 @@ Sardines
           </table>
 
           <div class="doc-note">
-            Note: All weights are in kilograms (kg).
+            Note: All weights are recorded in kilograms (kg).
           </div>
         </div>
       </div>
