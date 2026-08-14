@@ -312,8 +312,7 @@
       margin-bottom: 24px;
     }
     .header-left { width: 33%; display: flex; flex-direction: column; gap: 4px; }
-    .to-field-box { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
-    .delivery-no-box { font-size: 11px; font-weight: 800; color: #374151; text-transform: uppercase; }
+    .delivery-no-box { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
     
     .doc-title { width: 34%; text-align: center; }
     .doc-title h2 { font-size: 20px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; }
@@ -321,13 +320,14 @@
     .header-right { width: 33%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
     .doc-logo { font-size: 26px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; line-height: 1; }
     .doc-timestamp { font-size: 9px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
-    .meta-box-container { display: flex; gap: 12px; margin-top: 6px; }
+    .meta-box-container { display: flex; gap: 10px; margin-top: 6px; }
     .meta-item { background: #e6fdf0; border: 1px solid #bbf7d0; padding: 4px 8px; border-radius: 6px; text-align: right; }
     .meta-item-label { font-size: 8px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
     .meta-item-value { font-size: 11px; font-weight: 800; color: #111827; }
 
-    .summary-section { margin-top: 28px; page-break-inside: avoid; }
-    .section-title { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; margin: 24px 0 10px 0; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 4px; }
+    .summary-section { margin-top: 36px; page-break-before: auto; }
+    .section-header-wrapper { margin-bottom: 12px; }
+    .section-title { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; margin: 16px 0 10px 0; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 4px; }
 
     /* Tables */
     table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px; page-break-inside: auto; }
@@ -414,15 +414,9 @@
         </div>
       </div>
 
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="toInput">TO:</label>
-          <input type="text" id="toInput" class="input-text" placeholder="e.g. Coldstore / Facility" oninput="parseData()">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="deliveryNoInput">Delivery Ref No.</label>
-          <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
-        </div>
+      <div class="field-group">
+        <label class="field-label" for="deliveryNoInput">Delivery Ref No.</label>
+        <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
       </div>
 
       <div class="field-row">
@@ -518,7 +512,7 @@ Beef liver
 Beef kidney
 720`;
 
-    // Helper to format numbers cleanly (hides .0 for whole integers)
+    // Helper to format numbers cleanly
     function formatNum(val) {
       if (typeof val !== 'number') val = parseFloat(val);
       if (isNaN(val)) return '0';
@@ -526,7 +520,6 @@ Beef kidney
     }
 
     function loadSample() {
-      document.getElementById('toInput').value = 'LYKA DANDENONG';
       document.getElementById('deliveryNoInput').value = 'TOLN10492';
       document.getElementById('tempInput').value = '-18°C';
       document.getElementById('primesafeInput').value = 'PS-10482';
@@ -536,7 +529,6 @@ Beef kidney
     }
 
     function clearData() {
-      document.getElementById('toInput').value = '';
       document.getElementById('deliveryNoInput').value = '';
       document.getElementById('tempInput').value = '';
       document.getElementById('primesafeInput').value = '';
@@ -569,7 +561,6 @@ Beef kidney
     }
 
     function parseData() {
-      const toValue = document.getElementById('toInput').value.trim();
       const deliveryNo = document.getElementById('deliveryNoInput').value.trim();
       const tempVal = document.getElementById('tempInput').value.trim();
       const primesafeVal = document.getElementById('primesafeInput').value.trim();
@@ -663,19 +654,18 @@ Beef kidney
       document.getElementById('statWeight').innerText = `${formatNum(grandTotalWeight)} kg`;
       document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
 
-      // Current Timestamp formatting for the generated document
+      // Current Timestamp formatting
       const now = new Date();
       const generatedStamp = `${now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
 
-      // Reusable Header Helper
-      const renderDocHeader = () => `
+      // Reusable Header Block
+      const renderDocHeader = (titleText) => `
         <div class="doc-header">
           <div class="header-left">
-            ${toValue ? `<div class="to-field-box">TO: ${toValue}</div>` : ''}
             ${deliveryNo ? `<div class="delivery-no-box">DELIVERY NO: ${deliveryNo}</div>` : ''}
           </div>
           <div class="doc-title">
-            <h2>DELIVERY BREAKDOWN</h2>
+            <h2>${titleText}</h2>
           </div>
           <div class="header-right">
             <div class="doc-logo">lyka</div>
@@ -702,7 +692,7 @@ Beef kidney
 
       let html = `
         <div class="report-paper">
-          ${renderDocHeader()}
+          ${renderDocHeader('DELIVERY BREAKDOWN')}
 
           <table class="data-table">
             <thead>
@@ -724,7 +714,7 @@ Beef kidney
           </table>
 
           <div class="summary-section">
-            <div class="section-title">DELIVERY SUMMARY</div>
+            ${renderDocHeader('DELIVERY SUMMARY')}
             <div style="font-weight: bold; font-size: 10.5px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
 
             <table class="data-table">
