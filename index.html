@@ -325,12 +325,17 @@
     .meta-item-label { font-size: 8px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
     .meta-item-value { font-size: 11px; font-weight: 800; color: #111827; }
 
-    .summary-section { margin-top: 36px; page-break-before: auto; }
-    .section-header-wrapper { margin-bottom: 12px; }
-    .section-title { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; margin: 16px 0 10px 0; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 4px; }
+    /* Mandatory Break for Summary Page */
+    .summary-section { 
+      margin-top: 40px; 
+      page-break-before: always; 
+      break-before: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
 
     /* Tables */
-    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px; page-break-inside: auto; }
+    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px; }
     table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
     table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 7px 12px; text-align: left; }
     table.data-table th { background: #e6fdf0; color: var(--accent-emerald); font-weight: 800; text-transform: uppercase; }
@@ -386,6 +391,7 @@
       .grandtotal-row { background-color: #02381e !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .custom-notes-box { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .meta-item { background: #e6fdf0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .summary-section { page-break-before: always !important; break-before: page !important; page-break-inside: avoid !important; break-inside: avoid !important; }
     }
   </style>
 </head>
@@ -481,7 +487,6 @@
   </div>
 
   <script>
-    // Live Clock Function
     function updateClock() {
       const now = new Date();
       const dateStr = now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
@@ -512,7 +517,6 @@ Beef liver
 Beef kidney
 720`;
 
-    // Helper to format numbers cleanly
     function formatNum(val) {
       if (typeof val !== 'number') val = parseFloat(val);
       if (isNaN(val)) return '0';
@@ -544,7 +548,6 @@ Beef kidney
       alert('Raw input copied to clipboard!');
     }
 
-    // Strictly extracts weights split by dashes (-) only
     function extractWeightsFromLine(line) {
       const weights = [];
       const parts = line.split('-');
@@ -654,11 +657,9 @@ Beef kidney
       document.getElementById('statWeight').innerText = `${formatNum(grandTotalWeight)} kg`;
       document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
 
-      // Current Timestamp formatting
       const now = new Date();
       const generatedStamp = `${now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
 
-      // Reusable Header Block
       const renderDocHeader = (titleText) => `
         <div class="doc-header">
           <div class="header-left">
@@ -713,6 +714,7 @@ Beef kidney
             </tbody>
           </table>
 
+          <!-- Mandatory New Page for Delivery Summary & Notes -->
           <div class="summary-section">
             ${renderDocHeader('DELIVERY SUMMARY')}
             <div style="font-weight: bold; font-size: 10.5px; margin-bottom: 6px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
