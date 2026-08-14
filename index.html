@@ -151,7 +151,7 @@
       padding: 28px;
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 20px;
       overflow-y: auto;
       box-shadow: 5px 0 25px rgba(0,0,0,0.5);
     }
@@ -167,6 +167,9 @@
     }
 
     .field-group { display: flex; flex-direction: column; gap: 8px; }
+    .field-row { display: flex; gap: 12px; }
+    .field-row .field-group { flex: 1; }
+
     .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
 
     .input-text {
@@ -175,10 +178,11 @@
       border-radius: 12px;
       color: var(--halo-green);
       font-weight: 700;
-      font-size: 15px;
-      padding: 14px 16px;
+      font-size: 14px;
+      padding: 12px 14px;
       outline: none;
       transition: all 0.2s ease;
+      width: 100%;
     }
     .input-text:focus {
       border-color: var(--halo-green);
@@ -189,7 +193,7 @@
       background: linear-gradient(180deg, var(--card-bg), rgba(11, 34, 22, 0.4));
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 16px 20px;
+      padding: 14px 18px;
       font-size: 12px;
       color: var(--text-muted);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -204,7 +208,7 @@
       padding: 4px 16px;
       border-radius: 8px;
       border: 1px solid var(--halo-green);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 800;
       box-shadow: 0 0 10px var(--halo-glow);
     }
@@ -218,14 +222,14 @@
       color: #b3ffcb;
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
-      padding: 18px;
+      padding: 16px;
       resize: vertical;
       outline: none;
       transition: all 0.2s ease;
       line-height: 1.65;
     }
-    textarea#dataInput { height: 260px; }
-    textarea#notesInput { height: 90px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; }
+    textarea#dataInput { height: 220px; }
+    textarea#notesInput { height: 80px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; }
     
     textarea:focus {
       border-color: var(--halo-green);
@@ -302,16 +306,25 @@
     .doc-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: flex-start;
       border-bottom: 3px solid var(--accent-emerald);
       padding-bottom: 12px;
       margin-bottom: 24px;
     }
-    .delivery-no-box { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
-    .doc-title h2 { font-size: 22px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; text-align: center; }
-    .doc-logo-group { text-align: right; }
-    .doc-logo { font-size: 28px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; }
-    .doc-timestamp { font-size: 9px; font-weight: 700; color: #4b5563; margin-top: 2px; text-transform: uppercase; }
+    .header-left { width: 33%; display: flex; flex-direction: column; gap: 4px; }
+    .to-field-box { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
+    .delivery-no-box { font-size: 11px; font-weight: 800; color: #374151; text-transform: uppercase; }
+    
+    .doc-title { width: 34%; text-align: center; }
+    .doc-title h2 { font-size: 20px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; }
+
+    .header-right { width: 33%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .doc-logo { font-size: 26px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; line-height: 1; }
+    .doc-timestamp { font-size: 9px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
+    .meta-box-container { display: flex; gap: 12px; margin-top: 6px; }
+    .meta-item { background: #e6fdf0; border: 1px solid #bbf7d0; padding: 4px 8px; border-radius: 6px; text-align: right; }
+    .meta-item-label { font-size: 8px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
+    .meta-item-value { font-size: 11px; font-weight: 800; color: #111827; }
 
     .summary-section { margin-top: 28px; page-break-inside: avoid; }
     .section-title { font-size: 12px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; margin: 24px 0 10px 0; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 4px; }
@@ -372,6 +385,7 @@
       .data-table th { background-color: #e6fdf0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .grandtotal-row { background-color: #02381e !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .custom-notes-box { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .meta-item { background: #e6fdf0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
   </style>
 </head>
@@ -400,9 +414,26 @@
         </div>
       </div>
 
-      <div class="field-group">
-        <label class="field-label" for="deliveryNoInput">Delivery Reference No.</label>
-        <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="toInput">TO:</label>
+          <input type="text" id="toInput" class="input-text" placeholder="e.g. Coldstore / Facility" oninput="parseData()">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="deliveryNoInput">Delivery Ref No.</label>
+          <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="tempInput">Temp on Arrival</label>
+          <input type="text" id="tempInput" class="input-text" placeholder="e.g. -18°C" oninput="parseData()">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="primesafeInput">PrimeSafe No.</label>
+          <input type="text" id="primesafeInput" class="input-text" placeholder="e.g. PS-10482" oninput="parseData()">
+        </div>
       </div>
 
       <div class="format-card">
@@ -418,10 +449,9 @@
         </div>
       </div>
 
-      <!-- New Custom Notes Input Box -->
       <div class="field-group">
         <label class="field-label" for="notesInput">Additional Notes / Instructions (Optional)</label>
-        <textarea id="notesInput" placeholder="e.g. Temperature checked on arrival: -18°C. Driver signature required." oninput="parseData()"></textarea>
+        <textarea id="notesInput" placeholder="e.g. Driver signature required on arrival." oninput="parseData()"></textarea>
       </div>
     </div>
 
@@ -467,20 +497,26 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    const sampleText = `Beef lung
-344-455-222-989
+    const sampleText = `Beef heart
+979.2-979.2-979.2-979.2-979.2-979.2-952
 
-Beef heart
-864-864-864-864-864-900-897
+Beef lung
+612-612-720-720-720-720-432-432
 
 Beef trim
-459-345-290-979-788-610
+979.2-979.2-979.2-979.2-979.2-979.2
 
-Beef kidney
-412-380-510-495
+Beef spleen
+700
 
 Sardines
-560-560-560-448-448`;
+448-448-560-560-560
+
+Beef liver
+600-680
+
+Beef kidney
+720`;
 
     // Helper to format numbers cleanly (hides .0 for whole integers)
     function formatNum(val) {
@@ -490,14 +526,20 @@ Sardines
     }
 
     function loadSample() {
+      document.getElementById('toInput').value = 'LYKA DANDENONG';
       document.getElementById('deliveryNoInput').value = 'TOLN10492';
+      document.getElementById('tempInput').value = '-18°C';
+      document.getElementById('primesafeInput').value = 'PS-10482';
       document.getElementById('dataInput').value = sampleText;
-      document.getElementById('notesInput').value = 'All pallets verified and temp logged at -18°C. Bay 3 dispatch.';
+      document.getElementById('notesInput').value = 'All pallets verified on arrival. Bay 3 dispatch.';
       parseData();
     }
 
     function clearData() {
+      document.getElementById('toInput').value = '';
       document.getElementById('deliveryNoInput').value = '';
+      document.getElementById('tempInput').value = '';
+      document.getElementById('primesafeInput').value = '';
       document.getElementById('dataInput').value = '';
       document.getElementById('notesInput').value = '';
       parseData();
@@ -527,7 +569,10 @@ Sardines
     }
 
     function parseData() {
+      const toValue = document.getElementById('toInput').value.trim();
       const deliveryNo = document.getElementById('deliveryNoInput').value.trim();
+      const tempVal = document.getElementById('tempInput').value.trim();
+      const primesafeVal = document.getElementById('primesafeInput').value.trim();
       const rawText = document.getElementById('dataInput').value.trim();
       const customNotes = document.getElementById('notesInput').value.trim();
       const container = document.getElementById('reportContainer');
@@ -558,7 +603,6 @@ Sardines
         const hasText = /[a-zA-Z]/.test(cleanLine);
 
         if (hasText) {
-          // Detect if text and dash-separated numbers are on the same line
           const firstNumIdx = cleanLine.search(/\d/);
           if (firstNumIdx !== -1) {
             currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim();
@@ -570,7 +614,6 @@ Sardines
             currentDesc = cleanLine;
           }
         } else if (currentDesc) {
-          // Strictly parse dash-separated weights on dedicated lines
           const weights = extractWeightsFromLine(cleanLine);
           weights.forEach(w => {
             pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
@@ -624,20 +667,42 @@ Sardines
       const now = new Date();
       const generatedStamp = `${now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
 
+      // Reusable Header Helper
+      const renderDocHeader = () => `
+        <div class="doc-header">
+          <div class="header-left">
+            ${toValue ? `<div class="to-field-box">TO: ${toValue}</div>` : ''}
+            ${deliveryNo ? `<div class="delivery-no-box">DELIVERY NO: ${deliveryNo}</div>` : ''}
+          </div>
+          <div class="doc-title">
+            <h2>DELIVERY BREAKDOWN</h2>
+          </div>
+          <div class="header-right">
+            <div class="doc-logo">lyka</div>
+            <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
+            ${(tempVal || primesafeVal) ? `
+              <div class="meta-box-container">
+                ${tempVal ? `
+                  <div class="meta-item">
+                    <div class="meta-item-label">TEMP ON ARRIVAL</div>
+                    <div class="meta-item-value">${tempVal}</div>
+                  </div>
+                ` : ''}
+                ${primesafeVal ? `
+                  <div class="meta-item">
+                    <div class="meta-item-label">PRIMESAFE NO.</div>
+                    <div class="meta-item-value">${primesafeVal}</div>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
       let html = `
         <div class="report-paper">
-          <div class="doc-header">
-            <div class="delivery-no-box" style="width:30%;">
-              ${deliveryNo ? `DELIVERY NO: ${deliveryNo}` : ''}
-            </div>
-            <div class="doc-title" style="width:40%;">
-              <h2>DELIVERY BREAKDOWN</h2>
-            </div>
-            <div class="doc-logo-group" style="width:30%;">
-              <div class="doc-logo">lyka</div>
-              <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
-            </div>
-          </div>
+          ${renderDocHeader()}
 
           <table class="data-table">
             <thead>
