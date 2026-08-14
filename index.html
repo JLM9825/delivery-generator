@@ -311,28 +311,13 @@
       padding-bottom: 10px;
       margin-bottom: 16px;
     }
-    
-    /* Manual Handwritten Field Lines in Header */
-    .header-left { width: 35%; display: flex; flex-direction: column; gap: 5px; }
+    .header-left { width: 33%; display: flex; flex-direction: column; gap: 4px; }
     .delivery-no-box { font-size: 11.5px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
-    .manual-line-item {
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--accent-emerald);
-      display: flex;
-      align-items: flex-end;
-      gap: 4px;
-    }
-    .manual-line-fill {
-      flex: 1;
-      border-bottom: 1px dashed #6b7280;
-      height: 12px;
-    }
     
-    .doc-title { width: 30%; text-align: center; }
+    .doc-title { width: 34%; text-align: center; }
     .doc-title h2 { font-size: 18px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; }
 
-    .header-right { width: 35%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .header-right { width: 33%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
     .doc-logo { font-size: 24px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; line-height: 1; }
     .doc-timestamp { font-size: 8.5px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
     .meta-box-container { display: flex; gap: 8px; margin-top: 4px; }
@@ -684,8 +669,6 @@ Beef kidney
         <div class="doc-header">
           <div class="header-left">
             ${deliveryNo ? `<div class="delivery-no-box">DELIVERY NO: ${deliveryNo}</div>` : ''}
-            <div class="manual-line-item">DATE: <span class="manual-line-fill"></span></div>
-            <div class="manual-line-item">BATCHES: <span class="manual-line-fill"></span></div>
           </div>
           <div class="doc-title">
             <h2>${titleText}</h2>
@@ -720,9 +703,11 @@ Beef kidney
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 15%;">PALLET NO.</th>
-                <th style="width: 60%;">PRODUCT DESCRIPTION</th>
-                <th style="width: 25%;" class="num-col">WEIGHT (KG)</th>
+                <th style="width: 12%;">PALLET NO.</th>
+                <th style="width: 48%;">PRODUCT DESCRIPTION</th>
+                <th style="width: 15%;">DATE</th>
+                <th style="width: 15%;">BATCH</th>
+                <th style="width: 10%;" class="num-col">WEIGHT (KG)</th>
               </tr>
             </thead>
             <tbody>
@@ -730,6 +715,8 @@ Beef kidney
                 <tr>
                   <td>${p.palletNo}</td>
                   <td><strong>${p.desc}</strong></td>
+                  <td></td>
+                  <td></td>
                   <td class="num-col"><strong>${formatNum(p.weight)}</strong></td>
                 </tr>
               `).join('')}
