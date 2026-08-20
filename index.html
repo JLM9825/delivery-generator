@@ -6,7 +6,7 @@
   <title>Lyka Breakdown Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-dark: #050b08;
@@ -24,6 +24,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
+    /* Custom Halo Green Scrollbar */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-dark); }
     ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
@@ -44,6 +45,7 @@
       overflow: hidden;
     }
 
+    /* Top Navigation Header */
     header {
       display: flex;
       justify-content: space-between;
@@ -63,10 +65,9 @@
       width: 42px; height: 42px;
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
       box-shadow: 0 0 20px var(--halo-glow);
     }
-    .brand-icon svg { width: 24px; height: 24px; fill: #02140a; }
-
     header h1 {
       font-size: 16px;
       font-weight: 800;
@@ -137,18 +138,20 @@
       transform: translateY(-1px);
     }
 
+    /* Layout Structure */
     .app-body { display: flex; flex: 1; overflow: hidden; }
 
+    /* Left Control Sidebar */
     .left-panel {
       width: 480px;
       background: var(--panel-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-right: 1px solid var(--card-border);
-      padding: 24px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
       overflow-y: auto;
       box-shadow: 5px 0 25px rgba(0,0,0,0.5);
     }
@@ -163,40 +166,37 @@
       text-shadow: 0 0 8px var(--halo-glow);
     }
 
-    .field-group { display: flex; flex-direction: column; gap: 6px; }
-    .field-row { display: flex; gap: 10px; }
+    .field-group { display: flex; flex-direction: column; gap: 8px; }
+    .field-row { display: flex; gap: 12px; }
     .field-row .field-group { flex: 1; }
 
     .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
 
-    .input-text, .input-select {
+    .input-text {
       background: rgba(3, 15, 10, 0.95);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
+      border-radius: 12px;
       color: var(--halo-green);
       font-weight: 700;
-      font-size: 13px;
-      padding: 10px 12px;
+      font-size: 14px;
+      padding: 12px 14px;
       outline: none;
       transition: all 0.2s ease;
       width: 100%;
     }
-    .input-text:focus, .input-select:focus {
+    .input-text:focus {
       border-color: var(--halo-green);
       box-shadow: 0 0 15px var(--halo-glow);
-    }
-    .input-select option {
-      background: #050b08;
-      color: #f0fdf4;
     }
 
     .format-card {
       background: linear-gradient(180deg, var(--card-bg), rgba(11, 34, 22, 0.4));
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 10px 14px;
+      border-radius: 14px;
+      padding: 14px 18px;
       font-size: 12px;
       color: var(--text-muted);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -205,12 +205,12 @@
       font-family: 'JetBrains Mono', monospace;
       color: var(--halo-green);
       background: rgba(0, 0, 0, 0.6);
-      padding: 2px 12px;
-      border-radius: 6px;
+      padding: 4px 16px;
+      border-radius: 8px;
       border: 1px solid var(--halo-green);
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 800;
-      box-shadow: 0 0 8px var(--halo-glow);
+      box-shadow: 0 0 10px var(--halo-glow);
     }
 
     .textarea-wrapper { position: relative; display: flex; flex-direction: column; }
@@ -218,18 +218,18 @@
       width: 100%;
       background: rgba(3, 15, 10, 0.95);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 14px;
       color: #b3ffcb;
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
-      padding: 14px;
+      padding: 16px;
       resize: vertical;
       outline: none;
       transition: all 0.2s ease;
-      line-height: 1.6;
+      line-height: 1.65;
     }
-    textarea#dataInput { height: 180px; }
-    textarea#notesInput { height: 80px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
+    textarea#dataInput { height: 220px; }
+    textarea#notesInput { height: 80px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; }
     
     textarea:focus {
       border-color: var(--halo-green);
@@ -238,59 +238,59 @@
 
     .status-badge {
       position: absolute;
-      bottom: 12px;
-      right: 12px;
+      bottom: 14px;
+      right: 14px;
       background: var(--card-bg);
       border: 1px solid var(--halo-green);
       font-size: 11px;
       font-weight: 700;
       color: var(--halo-green);
-      padding: 4px 10px;
-      border-radius: 6px;
-      box-shadow: 0 0 10px var(--halo-glow);
+      padding: 6px 12px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px var(--halo-glow);
     }
 
+    /* Right Preview Container */
     .right-panel {
       flex: 1;
       background: transparent;
-      padding: 32px;
+      padding: 36px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
+      gap: 28px;
     }
 
+    /* Dashboard Metrics Bar */
     .dashboard-metrics {
       width: 100%;
       max-width: 840px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 20px;
     }
     .metric-card {
       background: var(--panel-bg);
       backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 16px 20px;
+      border-radius: 16px;
+      padding: 20px 24px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 6px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    .metric-info { display: flex; flex-direction: column; gap: 4px; }
+    .metric-card:hover { 
+      transform: translateY(-3px); 
+      border-color: var(--halo-green);
+      box-shadow: 0 0 20px var(--halo-glow-subtle);
+    }
     .metric-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-    .metric-value { font-size: 24px; font-weight: 800; color: var(--halo-green); text-shadow: 0 0 10px var(--halo-glow); }
-    .metric-icon-box {
-      width: 38px; height: 38px;
-      border-radius: 8px;
-      background: rgba(0, 255, 102, 0.08);
-      border: 1px solid var(--card-border);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .metric-icon-box svg { width: 20px; height: 20px; fill: var(--halo-green); }
+    .metric-value { font-size: 28px; font-weight: 800; color: var(--halo-green); letter-spacing: -0.5px; text-shadow: 0 0 10px var(--halo-glow); }
 
+    /* Printable Paper Output */
     .report-paper {
       background: #ffffff;
       color: #111827;
@@ -311,29 +311,21 @@
       padding-bottom: 10px;
       margin-bottom: 16px;
     }
-    .header-left { width: 32%; display: flex; flex-direction: column; gap: 4px; }
-    .delivery-no-box { font-size: 11px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
-    .supplier-box { font-size: 10px; font-weight: 800; color: #111827; text-transform: uppercase; }
+    .header-left { width: 33%; display: flex; flex-direction: column; gap: 4px; }
+    .delivery-no-box { font-size: 11.5px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
     
-    .doc-title { width: 30%; text-align: center; }
-    .doc-title h2 { font-size: 17px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; }
+    .doc-title { width: 34%; text-align: center; }
+    .doc-title h2 { font-size: 18px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; }
 
-    .header-right { width: 38%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .header-right { width: 33%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
     .doc-logo { font-size: 24px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; line-height: 1; }
     .doc-timestamp { font-size: 8.5px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
-    
-    .meta-box-container { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; margin-top: 4px; }
+    .meta-box-container { display: flex; gap: 8px; margin-top: 4px; }
     .meta-item { background: #e6fdf0; border: 1px solid #bbf7d0; padding: 3px 6px; border-radius: 6px; text-align: right; }
     .meta-item-label { font-size: 7.5px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
-    .meta-item-value { font-size: 9.5px; font-weight: 800; color: #111827; }
-    .meta-item-value.pass { color: #15803d; }
-    .meta-item-value.fail { color: #b91c1c; }
+    .meta-item-value { font-size: 10px; font-weight: 800; color: #111827; }
 
-    .breakdown-section {
-      page-break-after: always !important;
-      break-after: page !important;
-    }
-
+    /* Force Delivery Summary to Start on Fresh Page & Contain on 1 Page */
     .summary-section { 
       page-break-before: always !important; 
       break-before: page !important;
@@ -342,6 +334,7 @@
       padding-top: 10px;
     }
 
+    /* Compact Tables to Ensure Summary Fits Entirely on 1 Page */
     table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 10px; }
     table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
     table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 5px 10px; text-align: left; }
@@ -352,6 +345,7 @@
     .grandtotal-row { background-color: var(--accent-emerald); color: #ffffff; font-weight: 900; font-size: 10.5px; }
     .grandtotal-row td { border-color: var(--accent-emerald); }
 
+    /* Custom Footer Notes Styling */
     .custom-notes-box {
       margin-top: 14px;
       padding: 10px 12px;
@@ -375,6 +369,7 @@
 
     .doc-note { font-size: 9.5px; color: #6b7280; font-style: italic; margin-top: 10px; }
 
+    /* Empty State */
     .empty-state {
       background: var(--panel-bg);
       border: 2px dashed var(--card-border);
@@ -385,9 +380,9 @@
       max-width: 520px;
       margin-top: 40px;
     }
-    .empty-state-icon { margin-bottom: 16px; display: inline-block; }
-    .empty-state-icon svg { width: 48px; height: 48px; fill: var(--text-muted); }
+    .empty-state-icon { font-size: 44px; margin-bottom: 12px; display: inline-block; }
 
+    /* Print Overrides */
     @media print {
       header, .left-panel, .dashboard-metrics, .no-print { display: none !important; }
       body, .app-body, .right-panel { background: #ffffff !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
@@ -396,10 +391,6 @@
       .grandtotal-row { background-color: #02381e !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .custom-notes-box { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .meta-item { background: #e6fdf0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .breakdown-section { 
-        page-break-after: always !important; 
-        break-after: page !important; 
-      }
       .summary-section { 
         page-break-before: always !important; 
         break-before: page !important; 
@@ -413,9 +404,7 @@
 
   <header>
     <div class="brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 11.5c-1.8 0-3.3 1.5-3.3 3.3 0 1.5 1.8 4.2 3.3 5.7 1.5-1.5 3.3-4.2 3.3-5.7 0-1.8-1.5-3.3-3.3-3.3zm-5.5-2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm11 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-11 4.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm11 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
-      </div>
+      <div class="brand-icon">🐾</div>
       <h1>Lyka Breakdown Generator</h1>
     </div>
     <div class="action-group">
@@ -426,29 +415,21 @@
   </header>
 
   <div class="app-body">
-    <!-- Left Control Sidebar -->
+    <!-- Left Panel Controls -->
     <div class="left-panel">
       <div class="panel-header">
-        <span class="panel-title">Header Information</span>
+        <span class="panel-title">Input</span>
         <div>
-          <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="loadSample()">Sample</button>
-          <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="clearData()">Clear</button>
+          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="loadSample()">Sample</button>
+          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="clearData()">Clear</button>
         </div>
       </div>
 
-      <!-- Input Row 1: Delivery Ref & Supplier -->
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="deliveryNoInput">Delivery Ref No.</label>
-          <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="supplierInput">Supplier Name</label>
-          <input type="text" id="supplierInput" class="input-text" placeholder="e.g. Parwan Valley" oninput="parseData()">
-        </div>
+      <div class="field-group">
+        <label class="field-label" for="deliveryNoInput">Delivery Ref No.</label>
+        <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
       </div>
 
-      <!-- Input Row 2: Temp & PrimeSafe -->
       <div class="field-row">
         <div class="field-group">
           <label class="field-label" for="tempInput">Temp on Arrival</label>
@@ -460,77 +441,48 @@
         </div>
       </div>
 
-      <!-- Input Row 3: Packaging Acceptable Dropdown -->
-      <div class="field-group">
-        <label class="field-label" for="pkgAcceptableInput">Packaging Acceptable</label>
-        <select id="pkgAcceptableInput" class="input-select" onchange="parseData()">
-          <option value="">-- Select Status --</option>
-          <option value="PASS" selected>PASS</option>
-          <option value="FAIL">FAIL</option>
-        </select>
-      </div>
-
       <div class="format-card">
         <span class="field-label">Accepted Delimiter:</span>
         <code>-</code>
       </div>
 
-      <!-- Breakdown Raw Stream -->
       <div class="field-group">
         <label class="field-label">Raw Breakdown Stream</label>
         <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Kangaroo trim&#10;344-455-222-989&#10;&#10;Kangaroo MDM&#10;459-345-290" oninput="parseData()"></textarea>
+          <textarea id="dataInput" placeholder="Beef lung&#10;344-455-222-989&#10;&#10;Beef trim&#10;459-345-290&#10;&#10;Beef kidney&#10;412-380-510" oninput="parseData()"></textarea>
           <div class="status-badge" id="palletCountBadge">0 Pallets</div>
         </div>
       </div>
 
-      <!-- Notes Text Area -->
       <div class="field-group">
-        <label class="field-label" for="notesInput">Additional Notes / Instructions</label>
-        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029" oninput="parseData()"></textarea>
+        <label class="field-label" for="notesInput">Additional Notes / Instructions (Optional)</label>
+        <textarea id="notesInput" placeholder="e.g. Driver signature required on arrival." oninput="parseData()"></textarea>
       </div>
     </div>
 
     <!-- Right Live Document View -->
     <div class="right-panel">
       
-      <!-- Live Metrics Dashboard Header -->
+      <!-- Live Metrics Header -->
       <div class="dashboard-metrics" id="dashboardMetrics" style="display:none;">
         <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Total Pallets</span>
-            <span class="metric-value" id="statPallets">0</span>
-          </div>
-          <div class="metric-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H4V5h16v14zM6 7h12v2H6V7zm0 4h12v2H6v-2zm0 4h8v2H6v-2z"/></svg>
-          </div>
+          <span class="metric-label">Total Pallets</span>
+          <span class="metric-value" id="statPallets">0</span>
         </div>
         <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Gross Weight</span>
-            <span class="metric-value" id="statWeight">0 kg</span>
-          </div>
-          <div class="metric-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5 0 1.52-1 2.81-2.4 3.27L14.5 17h-2.1l-1.1-3.3H9.5L8.4 17H6.3l1.4-4.23C6.3 12.31 5.3 11.02 5.3 9.5 5.3 7.57 6.87 6 8.8 6h3.2zm0 2H8.8c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h3.2c.83 0 1.5-.67 1.5-1.5S12.83 8 12 8z"/></svg>
-          </div>
+          <span class="metric-label">Gross Weight</span>
+          <span class="metric-value" id="statWeight">0 kg</span>
         </div>
         <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Unique Products</span>
-            <span class="metric-value" id="statProducts">0</span>
-          </div>
-          <div class="metric-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
-          </div>
+          <span class="metric-label">Unique Products</span>
+          <span class="metric-value" id="statProducts">0</span>
         </div>
       </div>
 
-      <!-- Printable Document Output Container -->
+      <!-- Report Sheet Output -->
       <div id="reportContainer" style="width: 100%; display: flex; justify-content: center;">
         <div class="empty-state">
-          <div class="empty-state-icon">
-            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-          </div>
+          <div class="empty-state-icon">📄</div>
           <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
           <p style="margin-top:8px; font-size:13px;">Enter product names and weights on the left, or click <strong>Sample</strong>.</p>
         </div>
@@ -549,11 +501,26 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    const sampleText = `Kangaroo trim
+    const sampleText = `Beef heart
 979.2-979.2-979.2-979.2-979.2-979.2-952
 
-Kangaroo MDM
-612-612-720-720-720-720-432-432`;
+Beef lung
+612-612-720-720-720-720-432-432
+
+Beef trim
+979.2-979.2-979.2-979.2-979.2-979.2
+
+Beef spleen
+700
+
+Sardines
+448-448-560-560-560
+
+Beef liver
+600-680
+
+Beef kidney
+720`;
 
     function formatNum(val) {
       if (typeof val !== 'number') val = parseFloat(val);
@@ -563,21 +530,17 @@ Kangaroo MDM
 
     function loadSample() {
       document.getElementById('deliveryNoInput').value = 'TOLN10492';
-      document.getElementById('supplierInput').value = 'Parwan Valley Meats';
       document.getElementById('tempInput').value = '-18°C';
       document.getElementById('primesafeInput').value = 'PS-10482';
-      document.getElementById('pkgAcceptableInput').value = 'PASS';
       document.getElementById('dataInput').value = sampleText;
-      document.getElementById('notesInput').value = 'Kangaroo trim BBD : 30/06/2028\nKangaroo MDM BBD : 25/2/2029';
+      document.getElementById('notesInput').value = 'All pallets verified on arrival. Bay 3 dispatch.';
       parseData();
     }
 
     function clearData() {
       document.getElementById('deliveryNoInput').value = '';
-      document.getElementById('supplierInput').value = '';
       document.getElementById('tempInput').value = '';
       document.getElementById('primesafeInput').value = '';
-      document.getElementById('pkgAcceptableInput').value = 'PASS';
       document.getElementById('dataInput').value = '';
       document.getElementById('notesInput').value = '';
       parseData();
@@ -607,10 +570,8 @@ Kangaroo MDM
 
     function parseData() {
       const deliveryNo = document.getElementById('deliveryNoInput').value.trim();
-      const supplierVal = document.getElementById('supplierInput').value.trim();
       const tempVal = document.getElementById('tempInput').value.trim();
       const primesafeVal = document.getElementById('primesafeInput').value.trim();
-      const pkgAcceptableVal = document.getElementById('pkgAcceptableInput').value;
       const rawText = document.getElementById('dataInput').value.trim();
       const customNotes = document.getElementById('notesInput').value.trim();
       const container = document.getElementById('reportContainer');
@@ -622,9 +583,7 @@ Kangaroo MDM
         badge.innerText = '0 Pallets';
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-state-icon">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-            </div>
+            <div class="empty-state-icon">📄</div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
             <p style="margin-top:8px; font-size:13px;">Enter product names and weights on the left, or click <strong>Sample</strong>.</p>
           </div>`;
@@ -667,9 +626,7 @@ Kangaroo MDM
         metrics.style.display = 'none';
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-state-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-            </div>
+            <div class="empty-state-icon">⚠️</div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
             <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 459-345-290).</p>
           </div>`;
@@ -699,6 +656,7 @@ Kangaroo MDM
         group.totalWeight += item.weight;
       });
 
+      // Update Header Stats Bar
       metrics.style.display = 'grid';
       document.getElementById('statPallets').innerText = totalPalletsCount;
       document.getElementById('statWeight').innerText = `${formatNum(grandTotalWeight)} kg`;
@@ -711,7 +669,6 @@ Kangaroo MDM
         <div class="doc-header">
           <div class="header-left">
             ${deliveryNo ? `<div class="delivery-no-box">DELIVERY NO: ${deliveryNo}</div>` : ''}
-            ${supplierVal ? `<div class="supplier-box">SUPPLIER: ${supplierVal}</div>` : ''}
           </div>
           <div class="doc-title">
             <h2>${titleText}</h2>
@@ -719,7 +676,7 @@ Kangaroo MDM
           <div class="header-right">
             <div class="doc-logo">lyka</div>
             <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
-            ${(tempVal || primesafeVal || pkgAcceptableVal) ? `
+            ${(tempVal || primesafeVal) ? `
               <div class="meta-box-container">
                 ${tempVal ? `
                   <div class="meta-item">
@@ -733,12 +690,6 @@ Kangaroo MDM
                     <div class="meta-item-value">${primesafeVal}</div>
                   </div>
                 ` : ''}
-                ${pkgAcceptableVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">PKG ACCEPTABLE</div>
-                    <div class="meta-item-value ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div>
-                  </div>
-                ` : ''}
               </div>
             ` : ''}
           </div>
@@ -747,35 +698,32 @@ Kangaroo MDM
 
       let html = `
         <div class="report-paper">
-          <!-- Page 1: Delivery Breakdown -->
-          <div class="breakdown-section">
-            ${renderDocHeader('DELIVERY BREAKDOWN')}
+          ${renderDocHeader('DELIVERY BREAKDOWN')}
 
-            <table class="data-table">
-              <thead>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 12%;">PALLET NO.</th>
+                <th style="width: 48%;">PRODUCT DESCRIPTION</th>
+                <th style="width: 15%;">DATE</th>
+                <th style="width: 15%;">BATCH</th>
+                <th style="width: 10%;" class="num-col">WEIGHT (KG)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pallets.map(p => `
                 <tr>
-                  <th style="width: 12%;">PALLET NO.</th>
-                  <th style="width: 48%;">PRODUCT DESCRIPTION</th>
-                  <th style="width: 15%;">DATE</th>
-                  <th style="width: 15%;">BATCH</th>
-                  <th style="width: 10%;" class="num-col">WEIGHT (KG)</th>
+                  <td>${p.palletNo}</td>
+                  <td><strong>${p.desc}</strong></td>
+                  <td></td>
+                  <td></td>
+                  <td class="num-col"><strong>${formatNum(p.weight)}</strong></td>
                 </tr>
-              </thead>
-              <tbody>
-                ${pallets.map(p => `
-                  <tr>
-                    <td>${p.palletNo}</td>
-                    <td><strong>${p.desc}</strong></td>
-                    <td></td>
-                    <td></td>
-                    <td class="num-col"><strong>${formatNum(p.weight)}</strong></td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
+              `).join('')}
+            </tbody>
+          </table>
 
-          <!-- Page 2: Delivery Summary -->
+          <!-- Isolated Summary Page -->
           <div class="summary-section">
             ${renderDocHeader('DELIVERY SUMMARY')}
             <div style="font-weight: bold; font-size: 10px; margin-bottom: 5px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
