@@ -4,848 +4,311 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lyka Breakdown Generator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #050b08;
-      --panel-bg: rgba(8, 26, 17, 0.85);
-      --card-bg: #0b2216;
-      --card-border: #134e2e;
-      --card-hover: #103822;
-      --halo-green: #00ff66;
-      --halo-glow: rgba(0, 255, 102, 0.35);
-      --halo-glow-subtle: rgba(0, 255, 102, 0.12);
-      --accent-emerald: #02381e;
-      --text-main: #f0fdf4;
-      --text-muted: #62997b;
+      --bg-dark: #0a0f0d;
+      --card-bg: #111a15;
+      --input-bg: #16241c;
+      --accent-green: #00ff66;
+      --border-green: #1f3d2b;
+      --text-main: #ffffff;
+      --text-muted: #88a090;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-dark); }
-    ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--halo-green); box-shadow: 0 0 10px var(--halo-green); }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif;
+    }
 
     body {
       background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 10% 10%, rgba(0, 255, 102, 0.12) 0%, transparent 45%),
-        radial-gradient(circle at 90% 90%, rgba(0, 204, 82, 0.15) 0%, transparent 50%),
-        linear-gradient(rgba(0, 255, 102, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 102, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
       color: var(--text-main);
       display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+      justify-content: center;
+      padding: 20px;
     }
 
-    header {
+    .container {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 36px;
-      background: var(--panel-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--card-border);
-      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.8), 0 1px 0 var(--halo-glow-subtle);
-      z-index: 20;
-    }
-
-    .brand { display: flex; align-items: center; gap: 14px; }
-    .brand-icon {
-      background: linear-gradient(135deg, var(--halo-green), #00993d);
-      width: 42px; height: 42px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 20px var(--halo-glow);
-    }
-    .brand-icon svg { width: 24px; height: 24px; fill: #02140a; }
-
-    header h1 {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, #ffffff, var(--halo-green));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
-    }
-
-    .live-clock {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--halo-green);
-      background: rgba(0, 0, 0, 0.4);
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--card-border);
-      box-shadow: 0 0 10px var(--halo-glow-subtle);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .live-clock::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background-color: var(--halo-green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--halo-green);
-    }
-
-    .action-group { display: flex; gap: 12px; align-items: center; }
-
-    .btn {
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--halo-green), #00b347);
-      color: #02140a;
-      box-shadow: 0 0 18px var(--halo-glow);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 28px rgba(0, 255, 102, 0.6);
-    }
-    .btn-secondary {
-      background: var(--card-bg);
-      color: var(--text-main);
-      border-color: var(--card-border);
-    }
-    .btn-secondary:hover {
-      background: var(--card-hover);
-      border-color: var(--halo-green);
-      box-shadow: 0 0 12px var(--halo-glow-subtle);
-      transform: translateY(-1px);
-    }
-
-    .app-body { display: flex; flex: 1; overflow: hidden; }
-
-    .left-panel {
-      width: 480px;
-      background: var(--panel-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-right: 1px solid var(--card-border);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow-y: auto;
-      box-shadow: 5px 0 25px rgba(0,0,0,0.5);
-    }
-
-    .panel-header { display: flex; justify-content: space-between; align-items: center; }
-    .panel-title {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--halo-green);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      text-shadow: 0 0 8px var(--halo-glow);
-    }
-
-    .field-group { display: flex; flex-direction: column; gap: 6px; }
-    .field-row { display: flex; gap: 10px; }
-    .field-row .field-group { flex: 1; }
-
-    .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
-
-    .input-text, .input-select {
-      background: rgba(3, 15, 10, 0.95);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      color: var(--halo-green);
-      font-weight: 700;
-      font-size: 13px;
-      padding: 10px 12px;
-      outline: none;
-      transition: all 0.2s ease;
+      gap: 20px;
+      max-width: 1200px;
       width: 100%;
     }
-    .input-text:focus, .input-select:focus {
-      border-color: var(--halo-green);
-      box-shadow: 0 0 15px var(--halo-glow);
-    }
-    .input-select option {
-      background: #050b08;
-      color: #f0fdf4;
-    }
 
-    .format-card {
-      background: linear-gradient(180deg, var(--card-bg), rgba(11, 34, 22, 0.4));
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .format-card code {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--halo-green);
-      background: rgba(0, 0, 0, 0.6);
-      padding: 2px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--halo-green);
-      font-size: 16px;
-      font-weight: 800;
-      box-shadow: 0 0 8px var(--halo-glow);
-    }
-
-    .textarea-wrapper { position: relative; display: flex; flex-direction: column; }
-    textarea {
-      width: 100%;
-      background: rgba(3, 15, 10, 0.95);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      color: #b3ffcb;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      padding: 14px;
-      resize: vertical;
-      outline: none;
-      transition: all 0.2s ease;
-      line-height: 1.6;
-    }
-    textarea#dataInput { height: 180px; }
-    textarea#notesInput { height: 80px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
-    
-    textarea:focus {
-      border-color: var(--halo-green);
-      box-shadow: 0 0 15px var(--halo-glow);
-    }
-
-    .status-badge {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      background: var(--card-bg);
-      border: 1px solid var(--halo-green);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--halo-green);
-      padding: 4px 10px;
-      border-radius: 6px;
-      box-shadow: 0 0 10px var(--halo-glow);
-    }
-
-    .right-panel {
+    .form-panel, .preview-panel {
       flex: 1;
-      background: transparent;
-      padding: 32px;
-      overflow-y: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-green);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      color: var(--accent-green);
+      font-size: 1.1rem;
+    }
+
+    .action-btn {
+      background: var(--accent-green);
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--accent-green);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-green);
+      border-radius: 6px;
+      padding: 10px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-green);
+    }
+
+    .delimiter-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--input-bg);
+      border: 1px solid var(--border-green);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .delimiter-box span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .delimiter-badge {
+      background: #0d1711;
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .preview-panel {
+      background: #0d1410;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 24px;
     }
 
-    .dashboard-metrics {
-      width: 100%;
-      max-width: 840px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .metric-card {
-      background: var(--panel-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-    .metric-info { display: flex; flex-direction: column; gap: 4px; }
-    .metric-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-    .metric-value { font-size: 24px; font-weight: 800; color: var(--halo-green); text-shadow: 0 0 10px var(--halo-glow); }
-    .metric-icon-box {
-      width: 38px; height: 38px;
-      border-radius: 8px;
-      background: rgba(0, 255, 102, 0.08);
-      border: 1px solid var(--card-border);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .metric-icon-box svg { width: 20px; height: 20px; fill: var(--halo-green); }
-
-    .report-paper {
+    .printable-sheet {
       background: #ffffff;
-      color: #111827;
-      width: 100%;
-      max-width: 840px;
-      padding: 36px 44px;
-      border-radius: 18px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 2px var(--halo-green);
-      font-size: 10.5px;
-      position: relative;
-    }
-
-    .doc-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-bottom: 3px solid var(--accent-emerald);
-      padding-bottom: 10px;
-      margin-bottom: 16px;
-    }
-    .header-left { width: 32%; display: flex; flex-direction: column; gap: 4px; }
-    .delivery-no-box { font-size: 11px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
-    .supplier-box { font-size: 10px; font-weight: 800; color: #111827; text-transform: uppercase; }
-    
-    .doc-title { width: 30%; text-align: center; }
-    .doc-title h2 { font-size: 17px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; }
-
-    .header-right { width: 38%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-    .doc-logo { font-size: 24px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; line-height: 1; }
-    .doc-timestamp { font-size: 8.5px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
-    
-    .meta-box-container { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; margin-top: 4px; }
-    .meta-item { background: #e6fdf0; border: 1px solid #bbf7d0; padding: 3px 6px; border-radius: 6px; text-align: right; }
-    .meta-item-label { font-size: 7.5px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; }
-    .meta-item-value { font-size: 9.5px; font-weight: 800; color: #111827; }
-    .meta-item-value.pass { color: #15803d; }
-    .meta-item-value.fail { color: #b91c1c; }
-
-    .breakdown-section {
-      page-break-after: always !important;
-      break-after: page !important;
-    }
-
-    .summary-section { 
-      page-break-before: always !important; 
-      break-before: page !important;
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
-      padding-top: 10px;
-    }
-
-    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 10px; }
-    table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
-    table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 5px 10px; text-align: left; }
-    table.data-table th { background: #e6fdf0; color: var(--accent-emerald); font-weight: 800; text-transform: uppercase; }
-    table.data-table .num-col { text-align: right; }
-    
-    .subtotal-row { background-color: #f8fafc; font-weight: bold; color: var(--accent-emerald); }
-    .grandtotal-row { background-color: var(--accent-emerald); color: #ffffff; font-weight: 900; font-size: 10.5px; }
-    .grandtotal-row td { border-color: var(--accent-emerald); }
-
-    .custom-notes-box {
-      margin-top: 14px;
-      padding: 10px 12px;
-      background-color: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-left: 4px solid var(--accent-emerald);
+      color: #000000;
+      padding: 30px;
       border-radius: 6px;
-      font-size: 10px;
-      color: #374151;
-      line-height: 1.4;
+      min-height: 500px;
+      font-family: Arial, sans-serif;
+    }
+
+    .printable-sheet h2 {
+      border-bottom: 2px solid #000;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+      font-size: 1.4rem;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .notes-display {
+      margin-top: 20px;
+      background: #f4f4f4;
+      padding: 10px;
+      border-left: 4px solid #000;
       white-space: pre-wrap;
+      font-size: 0.85rem;
     }
-    .custom-notes-title {
-      font-weight: 800;
-      color: var(--accent-emerald);
-      text-transform: uppercase;
-      font-size: 9.5px;
-      letter-spacing: 0.5px;
-      margin-bottom: 3px;
-    }
-
-    .doc-note { font-size: 9.5px; color: #6b7280; font-style: italic; margin-top: 10px; }
-
-    .empty-state {
-      background: var(--panel-bg);
-      border: 2px dashed var(--card-border);
-      border-radius: 20px;
-      padding: 80px 40px;
-      text-align: center;
-      color: var(--text-muted);
-      max-width: 520px;
-      margin-top: 40px;
-    }
-    .empty-state-icon { margin-bottom: 16px; display: inline-block; }
-    .empty-state-icon svg { width: 48px; height: 48px; fill: var(--text-muted); }
 
     @media print {
-      header, .left-panel, .dashboard-metrics, .no-print { display: none !important; }
-      body, .app-body, .right-panel { background: #ffffff !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
-      .report-paper { box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; }
-      .data-table th { background-color: #e6fdf0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .grandtotal-row { background-color: #02381e !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .custom-notes-box { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .meta-item { background: #e6fdf0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .breakdown-section { 
-        page-break-after: always !important; 
-        break-after: page !important; 
+      body * {
+        visibility: hidden;
       }
-      .summary-section { 
-        page-break-before: always !important; 
-        break-before: page !important; 
-        page-break-inside: avoid !important; 
-        break-inside: avoid !important; 
+      .printable-sheet, .printable-sheet * {
+        visibility: visible;
+      }
+      .printable-sheet {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 11.5c-1.8 0-3.3 1.5-3.3 3.3 0 1.5 1.8 4.2 3.3 5.7 1.5-1.5 3.3-4.2 3.3-5.7 0-1.8-1.5-3.3-3.3-3.3zm-5.5-2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm11 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-11 4.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm11 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
+<div class="container">
+  <!-- LEFT INPUT PANEL -->
+  <div class="form-panel">
+    <div class="top-bar">
+      <div class="brand">
+        <span>LYKA BREAKDOWN GENERATOR</span>
       </div>
-      <h1>Lyka Breakdown Generator</h1>
+      <button class="action-btn" onclick="window.print()">Print Docket (A4)</button>
     </div>
-    <div class="action-group">
-      <div class="live-clock" id="liveClock">--:--:--</div>
-      <button class="btn btn-secondary" onclick="copyData()">📋 Copy Input</button>
-      <button class="btn btn-primary" onclick="window.print()">🖨️ Print Docket (A4)</button>
+
+    <div class="section-title">
+      <span>HEADER INFORMATION</span>
     </div>
-  </header>
 
-  <div class="app-body">
-    <!-- Left Control Sidebar -->
-    <div class="left-panel">
-      <div class="panel-header">
-        <span class="panel-title">Header Information</span>
-        <div>
-          <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="loadSample()">Sample</button>
-          <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="clearData()">Clear</button>
-        </div>
+    <div class="form-group grid-2">
+      <div>
+        <label>Delivery Ref No.</label>
+        <input type="text" id="deliveryRef" value="TOLN___" oninput="updatePreview()">
       </div>
-
-      <!-- Input Row 1: Delivery Ref & Supplier -->
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="deliveryNoInput">Delivery Ref No.</label>
-          <input type="text" id="deliveryNoInput" class="input-text" placeholder="TOLN___" oninput="parseData()">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="supplierInput">Supplier Name</label>
-          <input type="text" id="supplierInput" class="input-text" placeholder="e.g. Parwan Valley" oninput="parseData()">
-        </div>
-      </div>
-
-      <!-- Input Row 2: Temp & PrimeSafe -->
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="tempInput">Temp on Arrival</label>
-          <input type="text" id="tempInput" class="input-text" placeholder="e.g. -18°C" oninput="parseData()">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="primesafeInput">PrimeSafe No.</label>
-          <input type="text" id="primesafeInput" class="input-text" placeholder="e.g. PS-10482" oninput="parseData()">
-        </div>
-      </div>
-
-      <!-- Input Row 3: Packaging Acceptable Dropdown -->
-      <div class="field-group">
-        <label class="field-label" for="pkgAcceptableInput">Packaging Acceptable</label>
-        <select id="pkgAcceptableInput" class="input-select" onchange="parseData()">
-          <option value="">-- Select Status --</option>
-          <option value="PASS" selected>PASS</option>
-          <option value="FAIL">FAIL</option>
-        </select>
-      </div>
-
-      <div class="format-card">
-        <span class="field-label">Accepted Delimiter:</span>
-        <code>-</code>
-      </div>
-
-      <!-- Breakdown Raw Stream -->
-      <div class="field-group">
-        <label class="field-label">Raw Breakdown Stream</label>
-        <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Kangaroo trim&#10;344-455-222-989&#10;&#10;Kangaroo MDM&#10;459-345-290" oninput="parseData()"></textarea>
-          <div class="status-badge" id="palletCountBadge">0 Pallets</div>
-        </div>
-      </div>
-
-      <!-- Notes Text Area -->
-      <div class="field-group">
-        <label class="field-label" for="notesInput">Additional Notes / Instructions</label>
-        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029" oninput="parseData()"></textarea>
+      <div>
+        <label>Supplier Name</label>
+        <input type="text" id="supplierName" placeholder="e.g. Parwan Valley" oninput="updatePreview()">
       </div>
     </div>
 
-    <!-- Right Live Document View -->
-    <div class="right-panel">
-      
-      <!-- Live Metrics Dashboard Header -->
-      <div class="dashboard-metrics" id="dashboardMetrics" style="display:none;">
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Total Pallets</span>
-            <span class="metric-value" id="statPallets">0</span>
-          </div>
-          <div class="metric-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H4V5h16v14zM6 7h12v2H6V7zm0 4h12v2H6v-2zm0 4h8v2H6v-2z"/></svg>
-          </div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Gross Weight</span>
-            <span class="metric-value" id="statWeight">0 kg</span>
-          </div>
-          <div class="metric-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5 0 1.52-1 2.81-2.4 3.27L14.5 17h-2.1l-1.1-3.3H9.5L8.4 17H6.3l1.4-4.23C6.3 12.31 5.3 11.02 5.3 9.5 5.3 7.57 6.87 6 8.8 6h3.2zm0 2H8.8c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h3.2c.83 0 1.5-.67 1.5-1.5S12.83 8 12 8z"/></svg>
-          </div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-info">
-            <span class="metric-label">Unique Products</span>
-            <span class="metric-value" id="statProducts">0</span>
-          </div>
-          <div class="metric-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
-          </div>
-        </div>
+    <div class="form-group grid-2">
+      <div>
+        <label>Temp on Arrival</label>
+        <input type="text" id="tempArrival" placeholder="e.g. -18°C" oninput="updatePreview()">
       </div>
-
-      <!-- Printable Document Output Container -->
-      <div id="reportContainer" style="width: 100%; display: flex; justify-content: center;">
-        <div class="empty-state">
-          <div class="empty-state-icon">
-            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-          </div>
-          <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
-          <p style="margin-top:8px; font-size:13px;">Enter product names and weights on the left, or click <strong>Sample</strong>.</p>
-        </div>
+      <div>
+        <label>Primesafe No.</label>
+        <input type="text" id="primesafeNo" placeholder="e.g. PS-10482" oninput="updatePreview()">
       </div>
+    </div>
 
+    <!-- PACKAGING ACCEPTABLE DROPDOWN -->
+    <div class="form-group">
+      <label>Packaging Acceptable</label>
+      <select id="packagingAcceptable" onchange="updatePreview()">
+        <option value="PASS">PASS</option>
+        <option value="FAIL">FAIL</option>
+      </select>
+    </div>
+
+    <!-- PRODUCT HARD FROZEN DROPDOWN (PLACED DIRECTLY BELOW) -->
+    <div class="form-group">
+      <label>Product Hard Frozen</label>
+      <select id="productHardFrozen" onchange="updatePreview()">
+        <option value="YES">YES</option>
+        <option value="NO">NO</option>
+      </select>
+    </div>
+
+    <div class="delimiter-box">
+      <span>ACCEPTED DELIMITER:</span>
+      <span class="delimiter-badge">-</span>
+    </div>
+
+    <div class="form-group">
+      <label>Raw Breakdown Stream</label>
+      <textarea id="rawStream" rows="6" placeholder="Kangaroo trim&#10;344-455-222-989&#10;&#10;Kangaroo MDM&#10;459-345-290" oninput="updatePreview()"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Additional Notes / Instructions</label>
+      <textarea id="notes" rows="3" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029" oninput="updatePreview()"></textarea>
     </div>
   </div>
 
-  <script>
-    function updateClock() {
-      const now = new Date();
-      const dateStr = now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
-      const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      document.getElementById('liveClock').innerText = `${dateStr} • ${timeStr}`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    const sampleText = `Kangaroo trim
-979.2-979.2-979.2-979.2-979.2-979.2-952
-
-Kangaroo MDM
-612-612-720-720-720-720-432-432`;
-
-    function formatNum(val) {
-      if (typeof val !== 'number') val = parseFloat(val);
-      if (isNaN(val)) return '0';
-      return Number.isInteger(val) ? val.toLocaleString() : val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
-    }
-
-    function loadSample() {
-      document.getElementById('deliveryNoInput').value = 'TOLN10492';
-      document.getElementById('supplierInput').value = 'Parwan Valley Meats';
-      document.getElementById('tempInput').value = '-18°C';
-      document.getElementById('primesafeInput').value = 'PS-10482';
-      document.getElementById('pkgAcceptableInput').value = 'PASS';
-      document.getElementById('dataInput').value = sampleText;
-      document.getElementById('notesInput').value = 'Kangaroo trim BBD : 30/06/2028\nKangaroo MDM BBD : 25/2/2029';
-      parseData();
-    }
-
-    function clearData() {
-      document.getElementById('deliveryNoInput').value = '';
-      document.getElementById('supplierInput').value = '';
-      document.getElementById('tempInput').value = '';
-      document.getElementById('primesafeInput').value = '';
-      document.getElementById('pkgAcceptableInput').value = 'PASS';
-      document.getElementById('dataInput').value = '';
-      document.getElementById('notesInput').value = '';
-      parseData();
-    }
-
-    function copyData() {
-      const input = document.getElementById('dataInput').value;
-      if (!input) return;
-      navigator.clipboard.writeText(input);
-      alert('Raw input copied to clipboard!');
-    }
-
-    function extractWeightsFromLine(line) {
-      const weights = [];
-      const parts = line.split('-');
-
-      parts.forEach(part => {
-        const cleanPart = part.trim();
-        const weightVal = parseFloat(cleanPart);
-        if (!isNaN(weightVal) && weightVal > 0) {
-          weights.push(weightVal);
-        }
-      });
-
-      return weights;
-    }
-
-    function parseData() {
-      const deliveryNo = document.getElementById('deliveryNoInput').value.trim();
-      const supplierVal = document.getElementById('supplierInput').value.trim();
-      const tempVal = document.getElementById('tempInput').value.trim();
-      const primesafeVal = document.getElementById('primesafeInput').value.trim();
-      const pkgAcceptableVal = document.getElementById('pkgAcceptableInput').value;
-      const rawText = document.getElementById('dataInput').value.trim();
-      const customNotes = document.getElementById('notesInput').value.trim();
-      const container = document.getElementById('reportContainer');
-      const metrics = document.getElementById('dashboardMetrics');
-      const badge = document.getElementById('palletCountBadge');
-
-      if (!rawText) {
-        metrics.style.display = 'none';
-        badge.innerText = '0 Pallets';
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-            </div>
-            <strong style="color:var(--text-main); display:block; font-size:17px;">Awaiting Input Data</strong>
-            <p style="margin-top:8px; font-size:13px;">Enter product names and weights on the left, or click <strong>Sample</strong>.</p>
-          </div>`;
-        return;
-      }
-
-      const lines = rawText.split('\n');
-      const pallets = [];
-      let palletCounter = 1;
-      let currentDesc = '';
-
-      lines.forEach(line => {
-        let cleanLine = line.trim();
-        if (!cleanLine) return;
-
-        const hasText = /[a-zA-Z]/.test(cleanLine);
-
-        if (hasText) {
-          const firstNumIdx = cleanLine.search(/\d/);
-          if (firstNumIdx !== -1) {
-            currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim();
-            const weights = extractWeightsFromLine(cleanLine.substring(firstNumIdx));
-            weights.forEach(w => {
-              pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
-            });
-          } else {
-            currentDesc = cleanLine;
-          }
-        } else if (currentDesc) {
-          const weights = extractWeightsFromLine(cleanLine);
-          weights.forEach(w => {
-            pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
-          });
-        }
-      });
-
-      badge.innerText = `${pallets.length} Pallet${pallets.length === 1 ? '' : 's'}`;
-
-      if (pallets.length === 0) {
-        metrics.style.display = 'none';
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-            </div>
-            <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
-            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 459-345-290).</p>
-          </div>`;
-        return;
-      }
-
-      const summaryGroups = {};
-      let totalPalletsCount = 0;
-      let grandTotalWeight = 0;
-
-      pallets.forEach(item => {
-        totalPalletsCount++;
-        grandTotalWeight += item.weight;
-
-        if (!summaryGroups[item.desc]) {
-          summaryGroups[item.desc] = { weights: {}, totalWeight: 0, totalPallets: 0 };
-        }
-
-        const group = summaryGroups[item.desc];
-        const wKey = item.weight.toString();
-        
-        if (!group.weights[wKey]) {
-          group.weights[wKey] = 0;
-        }
-        group.weights[wKey]++;
-        group.totalPallets++;
-        group.totalWeight += item.weight;
-      });
-
-      metrics.style.display = 'grid';
-      document.getElementById('statPallets').innerText = totalPalletsCount;
-      document.getElementById('statWeight').innerText = `${formatNum(grandTotalWeight)} kg`;
-      document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
-
-      const now = new Date();
-      const generatedStamp = `${now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
-
-      const renderDocHeader = (titleText) => `
-        <div class="doc-header">
-          <div class="header-left">
-            ${deliveryNo ? `<div class="delivery-no-box">DELIVERY NO: ${deliveryNo}</div>` : ''}
-            ${supplierVal ? `<div class="supplier-box">SUPPLIER: ${supplierVal}</div>` : ''}
-          </div>
-          <div class="doc-title">
-            <h2>${titleText}</h2>
-          </div>
-          <div class="header-right">
-            <div class="doc-logo">lyka</div>
-            <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
-            ${(tempVal || primesafeVal || pkgAcceptableVal) ? `
-              <div class="meta-box-container">
-                ${tempVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">TEMP ON ARRIVAL</div>
-                    <div class="meta-item-value">${tempVal}</div>
-                  </div>
-                ` : ''}
-                ${primesafeVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">PRIMESAFE NO.</div>
-                    <div class="meta-item-value">${primesafeVal}</div>
-                  </div>
-                ` : ''}
-                ${pkgAcceptableVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">PKG ACCEPTABLE</div>
-                    <div class="meta-item-value ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div>
-                  </div>
-                ` : ''}
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-
-      let html = `
-        <div class="report-paper">
-          <!-- Page 1: Delivery Breakdown -->
-          <div class="breakdown-section">
-            ${renderDocHeader('DELIVERY BREAKDOWN')}
-
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width: 12%;">PALLET NO.</th>
-                  <th style="width: 48%;">PRODUCT DESCRIPTION</th>
-                  <th style="width: 15%;">DATE</th>
-                  <th style="width: 15%;">BATCH</th>
-                  <th style="width: 10%;" class="num-col">WEIGHT (KG)</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${pallets.map(p => `
-                  <tr>
-                    <td>${p.palletNo}</td>
-                    <td><strong>${p.desc}</strong></td>
-                    <td></td>
-                    <td></td>
-                    <td class="num-col"><strong>${formatNum(p.weight)}</strong></td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Page 2: Delivery Summary -->
-          <div class="summary-section">
-            ${renderDocHeader('DELIVERY SUMMARY')}
-            <div style="font-weight: bold; font-size: 10px; margin-bottom: 5px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
-
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width: 40%;">PRODUCT</th>
-                  <th style="width: 20%;" class="num-col">WEIGHT PER PALLET (KG)</th>
-                  <th style="width: 20%;" class="num-col">NO. OF PALLETS</th>
-                  <th style="width: 20%;" class="num-col">TOTAL WEIGHT (KG)</th>
-                </tr>
-              </thead>
-              <tbody>
-      `;
-
-      Object.keys(summaryGroups).forEach(prodName => {
-        const group = summaryGroups[prodName];
-        const weightsList = Object.keys(group.weights);
-
-        weightsList.forEach((wVal, idx) => {
-          const count = group.weights[wVal];
-          const subWeight = parseFloat(wVal) * count;
-          
-          html += `
-            <tr>
-              <td>${idx === 0 ? `<strong>${prodName}</strong>` : ''}</td>
-              <td class="num-col">${formatNum(wVal)}</td>
-              <td class="num-col">${count}</td>
-              <td class="num-col">${formatNum(subWeight)}</td>
-            </tr>
-          `;
-        });
-
-        html += `
-          <tr class="subtotal-row">
-            <td>TOTAL ${prodName}</td>
-            <td class="num-col"></td>
-            <td class="num-col">${group.totalPallets}</td>
-            <td class="num-col">${formatNum(group.totalWeight)}</td>
-          </tr>
-        `;
-      });
-
-      html += `
-              <tr class="grandtotal-row">
-                <td>GRAND TOTAL</td>
-                <td class="num-col"></td>
-                <td class="num-col">${totalPalletsCount}</td>
-                <td class="num-col">${formatNum(grandTotalWeight)}</td>
-              </tr>
-            </tbody>
-          </table>
-
-          ${customNotes ? `
-            <div class="custom-notes-box">
-              <div class="custom-notes-title">Delivery Notes:</div>
-              <div>${customNotes}</div>
-            </div>
-          ` : ''}
-
-          <div class="doc-note">
-            Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.
-          </div>
-        </div>
+  <!-- RIGHT PREVIEW / PRINT PANEL -->
+  <div class="preview-panel">
+    <div class="printable-sheet" id="printSheet">
+      <h2>RECEIVING DOCKET SUMMARY</h2>
+      
+      <div class="meta-grid">
+        <div><strong>Delivery Ref:</strong> <span id="outRef">TOLN___</span></div>
+        <div><strong>Supplier:</strong> <span id="outSupplier">-</span></div>
+        <div><strong>Temp on Arrival:</strong> <span id="outTemp">-</span></div>
+        <div><strong>Primesafe No:</strong> <span id="outPrimesafe">-</span></div>
+        <div><strong>Packaging Acceptable:</strong> <span id="outPkg">PASS</span></div>
+        <div><strong>Product Hard Frozen:</strong> <span id="outFrozen">YES</span></div>
       </div>
-      `;
 
-      container.innerHTML = html;
-    }
-  </script>
+      <hr style="margin: 15px 0;">
+
+      <div>
+        <strong>Breakdown Data:</strong>
+        <pre id="outStream" style="margin-top: 10px; font-family: monospace; white-space: pre-wrap;"></pre>
+      </div>
+
+      <div class="notes-display" id="outNotesContainer">
+        <strong>Notes / BBD Details:</strong>
+        <div id="outNotes"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updatePreview() {
+    document.getElementById('outRef').textContent = document.getElementById('deliveryRef').value || '-';
+    document.getElementById('outSupplier').textContent = document.getElementById('supplierName').value || '-';
+    document.getElementById('outTemp').textContent = document.getElementById('tempArrival').value || '-';
+    document.getElementById('outPrimesafe').textContent = document.getElementById('primesafeNo').value || '-';
+    document.getElementById('outPkg').textContent = document.getElementById('packagingAcceptable').value;
+    document.getElementById('outFrozen').textContent = document.getElementById('productHardFrozen').value;
+    document.getElementById('outStream').textContent = document.getElementById('rawStream').value || 'Awaiting Input Data...';
+    document.getElementById('outNotes').textContent = document.getElementById('notes').value || 'None';
+  }
+
+  // Initial call on page load
+  updatePreview();
+</script>
+
 </body>
 </html>
