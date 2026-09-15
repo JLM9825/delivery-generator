@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <!-- html2pdf Library for PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --bg-dark: #050b08;
@@ -376,7 +378,6 @@
       margin-bottom: 3px;
     }
 
-    /* Manager Approval Sign-Off Box Styles */
     .sign-off-box {
       margin-top: 20px;
       padding: 12px 14px;
@@ -465,7 +466,8 @@
     <div class="action-group">
       <div class="live-clock" id="liveClock">--:--:--</div>
       <button class="btn btn-secondary" onclick="copyData()">📋 Copy Input</button>
-      <button class="btn btn-primary" onclick="window.print()">🖨️ Print Docket (A4)</button>
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+      <button class="btn btn-primary" onclick="downloadPDF()">📄 Save as PDF</button>
     </div>
   </header>
 
@@ -651,6 +653,28 @@ Kangaroo MDM
       if (!input) return;
       navigator.clipboard.writeText(input);
       alert('Raw input copied to clipboard!');
+    }
+
+    function downloadPDF() {
+      const element = document.querySelector('.report-paper');
+      if (!element) {
+        alert('No docket data available to export.');
+        return;
+      }
+
+      const deliveryNo = document.getElementById('deliveryNoInput')?.value.trim() || 'UNNAMED';
+      const fileName = `Delivery_Docket_${deliveryNo}.pdf`;
+
+      const opt = {
+        margin:       [0.3, 0.3, 0.3, 0.3],
+        filename:     fileName,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['css', 'legacy'] }
+      };
+
+      html2pdf().set(opt).from(element).save();
     }
 
     function extractWeightsFromLine(line) {
