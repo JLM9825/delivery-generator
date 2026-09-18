@@ -858,7 +858,7 @@ Kangaroo MDM
         `;
       }).join('');
 
-      // PAGE 2: Summary Grouping Table Rows (Exact Match)
+      // PAGE 2: Summary Grouping Table Rows
       let summaryRowsHTML = '';
       Object.keys(summaryGroups).forEach(prodDesc => {
         const grp = summaryGroups[prodDesc];
@@ -921,35 +921,13 @@ Kangaroo MDM
                   </tr>
                 </tbody>
               </table>
-
-              ${customNotes ? `
-                <div class="custom-notes-box">
-                  <div class="custom-notes-title">DELIVERY NOTES:</div>
-                  <div>${customNotes}</div>
-                </div>
-              ` : ''}
             </div>
 
-            <div class="sign-off-box">
-              <div class="sign-off-title">RECEIVING SIGN-OFF & VERIFICATION</div>
-              <div class="sign-off-grid">
-                <div class="sign-line-group">
-                  <div class="sign-line"></div>
-                  <div class="sign-label">RECEIVER NAME</div>
-                </div>
-                <div class="sign-line-group">
-                  <div class="sign-line"></div>
-                  <div class="sign-label">SIGNATURE</div>
-                </div>
-                <div class="sign-line-group">
-                  <div class="sign-line"></div>
-                  <div class="sign-label">DATE</div>
-                </div>
-              </div>
-            </div>
+            <!-- Page 1 Footer Note only -->
+            <div class="doc-note">Note: Detailed breakdown sheet. Generated on ${generatedStamp.toLowerCase()}.</div>
           </div>
 
-          <!-- PAGE 2: DELIVERY SUMMARY (EXACT MATCH TO IMAGE) -->
+          <!-- PAGE 2: DELIVERY SUMMARY (NOTES + MANAGER SIGN-OFF ONLY) -->
           <div class="doc-page">
             <div>
               ${renderDocHeader('DELIVERY SUMMARY')}
