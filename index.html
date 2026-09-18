@@ -6,7 +6,7 @@
   <title>Lyka Breakdown Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   
   <!-- PDF Libraries (html2canvas + jsPDF) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -345,62 +345,73 @@
     .meta-item-value.pass, .meta-item-value.yes { color: #15803d; }
     .meta-item-value.fail, .meta-item-value.no { color: #b91c1c; }
 
-    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 10px; }
-    table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 5px 10px; text-align: left; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10px; }
+    table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; }
     table.data-table th { background: #e6fdf0; color: var(--accent-emerald); font-weight: 800; text-transform: uppercase; white-space: nowrap; }
     table.data-table .num-col { text-align: right; }
     
-    .subtotal-row { background-color: #f8fafc; font-weight: bold; color: var(--accent-emerald); }
-    .grandtotal-row { background-color: var(--accent-emerald); color: #ffffff; font-weight: 900; font-size: 10.5px; }
-    .grandtotal-row td { border-color: var(--accent-emerald); }
+    .subtotal-row { background-color: #ffffff; font-weight: 800; color: var(--accent-emerald); border-bottom: 2px solid #e5e7eb; }
+    .subtotal-row td { color: var(--accent-emerald); font-weight: 800; }
+    
+    .grandtotal-row { background-color: var(--accent-emerald); color: #ffffff; font-weight: 900; font-size: 11px; }
+    .grandtotal-row td { border-color: var(--accent-emerald); color: #ffffff; text-align: right; }
 
     .custom-notes-box {
-      margin-top: 14px;
-      padding: 10px 12px;
+      margin-top: 20px;
+      padding: 16px 18px;
       background-color: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-left: 4px solid var(--accent-emerald);
-      border-radius: 6px;
-      font-size: 10px;
+      border: 1px solid #f3f4f6;
+      border-left: 5px solid var(--accent-emerald);
+      border-radius: 8px;
+      font-size: 11px;
       color: #374151;
-      line-height: 1.4;
+      line-height: 1.6;
       white-space: pre-wrap;
     }
     .custom-notes-title {
       font-weight: 800;
       color: var(--accent-emerald);
       text-transform: uppercase;
-      font-size: 9.5px;
+      font-size: 11px;
       letter-spacing: 0.5px;
-      margin-bottom: 3px;
+      margin-bottom: 12px;
     }
 
     .sign-off-box {
-      margin-top: 20px;
-      padding: 12px 14px;
-      border: 1px dashed var(--accent-emerald);
-      border-radius: 8px;
-      background-color: #f8fafc;
+      margin-top: 30px;
+      padding: 16px 20px;
+      border: 1.5px dashed var(--accent-emerald);
+      border-radius: 12px;
+      background-color: #ffffff;
     }
     .sign-off-title {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       color: var(--accent-emerald);
       text-transform: uppercase;
       letter-spacing: 0.6px;
-      margin-bottom: 14px;
+      margin-bottom: 24px;
     }
     .sign-off-grid {
       display: grid;
       grid-template-columns: 2fr 3fr 1.5fr;
-      gap: 16px;
+      gap: 20px;
       align-items: flex-end;
     }
-    .sign-line-group { display: flex; flex-direction: column; gap: 4px; }
+    .sign-line-group { display: flex; flex-direction: column; gap: 6px; }
     .sign-line { border-bottom: 1px solid #9ca3af; height: 20px; width: 100%; }
-    .sign-label { font-size: 8.5px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
+    .sign-label { font-size: 9px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
 
-    .doc-note { font-size: 9.5px; color: #6b7280; font-style: italic; margin-top: 10px; }
+    .doc-note { font-size: 9.5px; color: #6b7280; font-style: italic; margin-top: 12px; }
 
     .empty-state {
       background: var(--panel-bg);
@@ -541,14 +552,14 @@
       <div class="field-group">
         <label class="field-label">Raw Breakdown Stream</label>
         <div class="textarea-wrapper">
-          <textarea id="dataInput" placeholder="Kangaroo trim&#10;344-455-222-989&#10;&#10;Kangaroo MDM&#10;459-345-290" oninput="parseData()"></textarea>
+          <textarea id="dataInput" placeholder="Kangaroo trim&#10;952-979.2-979.2-979.2-979.2-979.2-979.2&#10;&#10;Kangaroo MDM&#10;432-432-612-612-720-720-720-720" oninput="parseData()"></textarea>
           <div class="status-badge" id="palletCountBadge">0 Pallets</div>
         </div>
       </div>
 
       <div class="field-group">
         <label class="field-label" for="notesInput">Additional Notes / Instructions</label>
-        <textarea id="notesInput" placeholder="Kangaroo trim 30/06/2028&#10;Kangaroo MDM 25/02/2029" oninput="parseData()"></textarea>
+        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029" oninput="parseData()"></textarea>
       </div>
     </div>
 
@@ -607,10 +618,10 @@
     setInterval(updateClock, 1000);
 
     const sampleText = `Kangaroo trim
-979.2-979.2-979.2-979.2-979.2-979.2-952
+952-979.2-979.2-979.2-979.2-979.2-979.2
 
 Kangaroo MDM
-612-612-720-720-720-720-432-432`;
+432-432-612-612-720-720-720-720`;
 
     function formatNum(val) {
       if (typeof val !== 'number') val = parseFloat(val);
@@ -620,14 +631,14 @@ Kangaroo MDM
 
     function loadSample() {
       document.getElementById('deliveryNoInput').value = 'TOLN10492';
-      document.getElementById('supplierInput').value = 'Parwan Valley Meats';
-      document.getElementById('generatedByInput').value = 'John Doe';
+      document.getElementById('supplierInput').value = 'PARWAN VALLEY MEATS';
+      document.getElementById('generatedByInput').value = 'JOHN DOE';
       document.getElementById('tempInput').value = '-18°C';
       document.getElementById('primesafeInput').value = 'PS-10482';
       document.getElementById('pkgAcceptableInput').value = 'PASS';
       document.getElementById('hardFrozenInput').value = 'YES';
       document.getElementById('dataInput').value = sampleText;
-      document.getElementById('notesInput').value = 'Kangaroo trim 30/06/2028\nKangaroo MDM 25/02/2029';
+      document.getElementById('notesInput').value = 'Kangaroo trim BBD : 30/06/2028\nKangaroo MDM BBD : 25/2/2029';
       parseData();
     }
 
@@ -800,7 +811,7 @@ Kangaroo MDM
       document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
 
       const now = new Date();
-      const generatedStamp = `${now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
+      const generatedStamp = `${now.getDate()} ${now.toLocaleString('default', { month: 'short' }).toUpperCase()} ${now.getFullYear()} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
 
       const renderDocHeader = (titleText) => `
         <div class="doc-header">
@@ -847,7 +858,7 @@ Kangaroo MDM
         `;
       }).join('');
 
-      // PAGE 2: Summary Grouping Table Rows
+      // PAGE 2: Summary Grouping Table Rows (Exact Match)
       let summaryRowsHTML = '';
       Object.keys(summaryGroups).forEach(prodDesc => {
         const grp = summaryGroups[prodDesc];
@@ -861,17 +872,17 @@ Kangaroo MDM
             summaryRowsHTML += `
               <tr>
                 <td rowspan="${weightKeys.length}"><strong>${prodDesc}</strong></td>
-                <td style="text-align:center;">${formatNum(wKey)} kg</td>
-                <td style="text-align:center;">${qty}</td>
-                <td class="num-col"><strong>${formatNum(subtotal)} kg</strong></td>
+                <td class="num-col">${formatNum(wKey)}</td>
+                <td class="num-col">${qty}</td>
+                <td class="num-col">${formatNum(subtotal)}</td>
               </tr>
             `;
           } else {
             summaryRowsHTML += `
               <tr>
-                <td style="text-align:center;">${formatNum(wKey)} kg</td>
-                <td style="text-align:center;">${qty}</td>
-                <td class="num-col"><strong>${formatNum(subtotal)} kg</strong></td>
+                <td class="num-col">${formatNum(wKey)}</td>
+                <td class="num-col">${qty}</td>
+                <td class="num-col">${formatNum(subtotal)}</td>
               </tr>
             `;
           }
@@ -879,9 +890,9 @@ Kangaroo MDM
 
         summaryRowsHTML += `
           <tr class="subtotal-row">
-            <td colspan="2" style="text-align:right;">SUBTOTAL: ${prodDesc}</td>
-            <td style="text-align:center;">${grp.totalPallets}</td>
-            <td class="num-col">${formatNum(grp.totalWeight)} kg</td>
+            <td colspan="2">TOTAL ${prodDesc}</td>
+            <td class="num-col">${grp.totalPallets}</td>
+            <td class="num-col">${formatNum(grp.totalWeight)}</td>
           </tr>
         `;
       });
@@ -905,15 +916,15 @@ Kangaroo MDM
                 <tbody>
                   ${tableRowsHTML}
                   <tr class="grandtotal-row">
-                    <td colspan="4" style="text-align:right;">GRAND TOTAL (${totalPalletsCount} PALLETS)</td>
-                    <td class="num-col">${formatNum(grandTotalWeight)} kg</td>
+                    <td colspan="4" style="text-align:right; border-right: none;">GRAND TOTAL</td>
+                    <td class="num-col" style="border-left: none;">${formatNum(grandTotalWeight)} kg</td>
                   </tr>
                 </tbody>
               </table>
 
               ${customNotes ? `
                 <div class="custom-notes-box">
-                  <div class="custom-notes-title">COMMENTS / NOTES</div>
+                  <div class="custom-notes-title">DELIVERY NOTES:</div>
                   <div>${customNotes}</div>
                 </div>
               ` : ''}
@@ -938,32 +949,60 @@ Kangaroo MDM
             </div>
           </div>
 
-          <!-- PAGE 2: PALLET WEIGHT SUMMARY -->
+          <!-- PAGE 2: DELIVERY SUMMARY (EXACT MATCH TO IMAGE) -->
           <div class="doc-page">
             <div>
-              ${renderDocHeader('PALLET WEIGHT SUMMARY')}
+              ${renderDocHeader('DELIVERY SUMMARY')}
+              
+              <div class="section-title">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
+              
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th style="width: 45%;">PRODUCT DESCRIPTION</th>
-                    <th style="width: 20%; text-align:center;">PALLET WEIGHT</th>
-                    <th style="width: 15%; text-align:center;">QTY</th>
-                    <th style="width: 20%; text-align:right;">TOTAL WEIGHT</th>
+                    <th style="width: 37%;">PRODUCT</th>
+                    <th style="width: 21%; text-align:right;">WEIGHT PER PALLET (KG)</th>
+                    <th style="width: 21%; text-align:right;">NO. OF PALLETS</th>
+                    <th style="width: 21%; text-align:right;">TOTAL WEIGHT (KG)</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${summaryRowsHTML}
                   <tr class="grandtotal-row">
-                    <td colspan="2" style="text-align:right;">GRAND TOTAL</td>
-                    <td style="text-align:center;">${totalPalletsCount}</td>
-                    <td class="num-col">${formatNum(grandTotalWeight)} kg</td>
+                    <td colspan="2" style="text-align:left; border-right: none;">GRAND TOTAL</td>
+                    <td style="text-align:right; border-left: none; border-right: none;">${totalPalletsCount}</td>
+                    <td class="num-col" style="border-left: none;">${formatNum(grandTotalWeight)}</td>
                   </tr>
                 </tbody>
               </table>
+
+              ${customNotes ? `
+                <div class="custom-notes-box">
+                  <div class="custom-notes-title">DELIVERY NOTES:</div>
+                  <div>${customNotes}</div>
+                </div>
+              ` : ''}
             </div>
 
             <div>
-              <div class="doc-note">Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.</div>
+              <div class="sign-off-box">
+                <div class="sign-off-title">MANAGER APPROVAL & SIGN-OFF</div>
+                <div class="sign-off-grid">
+                  <div class="sign-line-group">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">MANAGER NAME</div>
+                  </div>
+                  <div class="sign-line-group">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">SIGNATURE</div>
+                  </div>
+                  <div class="sign-line-group">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">DATE</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-note">Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp.toLowerCase()}.</div>
             </div>
           </div>
         </div>
