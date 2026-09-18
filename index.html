@@ -415,7 +415,7 @@
     .empty-state-icon { margin-bottom: 16px; display: inline-block; }
     .empty-state-icon svg { width: 48px; height: 48px; fill: var(--text-muted); }
 
-    /* Print Specific Style Overrides to Guarantee Exactly 2 Pages */
+    /* Print Specific Style Overrides */
     @media print {
       @page {
         size: A4 portrait;
@@ -548,7 +548,7 @@
 
       <div class="field-group">
         <label class="field-label" for="notesInput">Additional Notes / Instructions</label>
-        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029" oninput="parseData()"></textarea>
+        <textarea id="notesInput" placeholder="Kangaroo trim 30/06/2028&#10;Kangaroo MDM 25/02/2029" oninput="parseData()"></textarea>
       </div>
     </div>
 
@@ -627,7 +627,7 @@ Kangaroo MDM
       document.getElementById('pkgAcceptableInput').value = 'PASS';
       document.getElementById('hardFrozenInput').value = 'YES';
       document.getElementById('dataInput').value = sampleText;
-      document.getElementById('notesInput').value = 'Kangaroo trim BBD : 30/06/2028\nKangaroo MDM BBD : 25/2/2029';
+      document.getElementById('notesInput').value = 'Kangaroo trim 30/06/2028\nKangaroo MDM 25/02/2029';
       parseData();
     }
 
@@ -651,6 +651,10 @@ Kangaroo MDM
       alert('Raw input copied to clipboard!');
     }
 
+    function uploadToSharePoint() {
+      alert('SharePoint endpoint configuration pending.');
+    }
+
     function extractWeightsFromLine(line) {
       const weights = [];
       const parts = line.split('-');
@@ -664,6 +668,33 @@ Kangaroo MDM
       });
 
       return weights;
+    }
+
+    function extractProductMetaFromNotes(notesText) {
+      const metaMap = {};
+      if (!notesText) return metaMap;
+
+      const lines = notesText.split('\n');
+      lines.forEach(line => {
+        const cleanLine = line.trim();
+        if (!cleanLine) return;
+
+        // Extracts date formats like DD/MM/YYYY, DD/MM/YY, DD-MM-YYYY, or DD.MM.YY
+        const dateMatch = cleanLine.match(/(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4})/);
+        if (dateMatch) {
+          const rawDate = dateMatch[1];
+          // Grabs product description preceding keywords like BBD/EXP, colons, or dashes
+          let prodName = cleanLine.split(/bbd|use by|exp|[:\-]/i)[0].trim().toUpperCase();
+
+          if (prodName) {
+            // Converts date into numeric batch (stripping / - .)
+            const batchNo = rawDate.replace(/[\/\.-]/g, '');
+            metaMap[prodName] = { date: rawDate, batch: batchNo };
+          }
+        }
+      });
+
+      return metaMap;
     }
 
     function parseData() {
@@ -696,6 +727,9 @@ Kangaroo MDM
         return;
       }
 
+      // Map dynamic date and batch details from notes field
+      const notesMeta = extractProductMetaFromNotes(customNotes);
+
       const lines = rawText.split('\n');
       const pallets = [];
       let palletCounter = 1;
@@ -710,18 +744,18 @@ Kangaroo MDM
         if (hasText) {
           const firstNumIdx = cleanLine.search(/\d/);
           if (firstNumIdx !== -1) {
-            currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim();
+            currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim().toUpperCase();
             const weights = extractWeightsFromLine(cleanLine.substring(firstNumIdx));
             weights.forEach(w => {
-              pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
+              pallets.push({ palletNo: palletCounter++, desc: currentDesc, weight: w });
             });
           } else {
-            currentDesc = cleanLine;
+            currentDesc = cleanLine.toUpperCase();
           }
         } else if (currentDesc) {
           const weights = extractWeightsFromLine(cleanLine);
           weights.forEach(w => {
-            pallets.push({ palletNo: palletCounter++, desc: currentDesc.toUpperCase(), weight: w });
+            pallets.push({ palletNo: palletCounter++, desc: currentDesc, weight: w });
           });
         }
       });
@@ -787,233 +821,90 @@ Kangaroo MDM
             <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
             ${(tempVal || primesafeVal || pkgAcceptableVal || hardFrozenVal) ? `
               <div class="meta-box-container">
-                ${tempVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">TEMP ON ARRIVAL</div>
-                    <div class="meta-item-value">${tempVal}</div>
-                  </div>
-                ` : ''}
-                ${primesafeVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">PRIMESAFE NO.</div>
-                    <div class="meta-item-value">${primesafeVal}</div>
-                  </div>
-                ` : ''}
-                ${pkgAcceptableVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">PKG ACCEPTABLE</div>
-                    <div class="meta-item-value ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div>
-                  </div>
-                ` : ''}
-                ${hardFrozenVal ? `
-                  <div class="meta-item">
-                    <div class="meta-item-label">HARD FROZEN</div>
-                    <div class="meta-item-value ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</div>
-                  </div>
-                ` : ''}
+                ${tempVal ? `<div class="meta-item"><div class="meta-item-label">TEMP ON ARRIVAL</div><div class="meta-item-value">${tempVal}</div></div>` : ''}
+                ${primesafeVal ? `<div class="meta-item"><div class="meta-item-label">PRIMESAFE NO.</div><div class="meta-item-value">${primesafeVal}</div></div>` : ''}
+                ${pkgAcceptableVal ? `<div class="meta-item"><div class="meta-item-label">PKG ACCEPTABLE</div><div class="meta-item-value ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div></div>` : ''}
+                ${hardFrozenVal ? `<div class="meta-item"><div class="meta-item-label">HARD FROZEN</div><div class="meta-item-value ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</div></div>` : ''}
               </div>
             ` : ''}
           </div>
         </div>
       `;
 
-      let summaryRowsHtml = '';
-      Object.keys(summaryGroups).forEach(prodName => {
-        const group = summaryGroups[prodName];
-        const weightsList = Object.keys(group.weights);
-
-        weightsList.forEach((wVal, idx) => {
-          const count = group.weights[wVal];
-          const subWeight = parseFloat(wVal) * count;
-          
-          summaryRowsHtml += `
-            <tr>
-              <td>${idx === 0 ? `<strong>${prodName}</strong>` : ''}</td>
-              <td class="num-col">${formatNum(wVal)}</td>
-              <td class="num-col">${count}</td>
-              <td class="num-col">${formatNum(subWeight)}</td>
-            </tr>
-          `;
+      let tableRowsHTML = pallets.map(item => {
+        let matchedMeta = { date: '', batch: '' };
+        Object.keys(notesMeta).forEach(prodKey => {
+          if (item.desc.includes(prodKey) || prodKey.includes(item.desc)) {
+            matchedMeta = notesMeta[prodKey];
+          }
         });
 
-        summaryRowsHtml += `
-          <tr class="subtotal-row">
-            <td>TOTAL ${prodName}</td>
-            <td class="num-col"></td>
-            <td class="num-col">${group.totalPallets}</td>
-            <td class="num-col">${formatNum(group.totalWeight)}</td>
+        return `
+          <tr>
+            <td style="text-align:center;">${item.palletNo}</td>
+            <td><strong>${item.desc}</strong></td>
+            <td style="text-align:center;">${matchedMeta.date}</td>
+            <td style="text-align:center;">${matchedMeta.batch}</td>
+            <td class="num-col"><strong>${formatNum(item.weight)}</strong></td>
           </tr>
         `;
-      });
+      }).join('');
 
-      container.innerHTML = `
+      const reportHTML = `
         <div class="pdf-pages-wrapper">
-          <!-- Page 1 -->
-          <div class="doc-page" id="pdf-page-1">
+          <div class="doc-page">
             <div>
               ${renderDocHeader('DELIVERY BREAKDOWN')}
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th style="width: 12%;">PALLET NO.</th>
-                    <th style="width: 48%;">PRODUCT DESCRIPTION</th>
-                    <th style="width: 15%;">DATE</th>
-                    <th style="width: 15%;">BATCH</th>
-                    <th style="width: 10%;" class="num-col">WEIGHT (KG)</th>
+                    <th style="width: 10%; text-align:center;">PALLET NO.</th>
+                    <th style="width: 42%;">PRODUCT DESCRIPTION</th>
+                    <th style="width: 16%; text-align:center;">DATE</th>
+                    <th style="width: 16%; text-align:center;">BATCH</th>
+                    <th style="width: 16%; text-align:right;">WEIGHT (KG)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${pallets.map(p => `
-                    <tr>
-                      <td>${p.palletNo}</td>
-                      <td><strong>${p.desc}</strong></td>
-                      <td></td>
-                      <td></td>
-                      <td class="num-col"><strong>${formatNum(p.weight)}</strong></td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-            <div class="doc-note">
-              Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.
-            </div>
-          </div>
-
-          <!-- Page 2 -->
-          <div class="doc-page" id="pdf-page-2">
-            <div>
-              ${renderDocHeader('DELIVERY SUMMARY')}
-              <div style="font-weight: bold; font-size: 10px; margin-bottom: 5px; color: #374151;">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="width: 40%;">PRODUCT</th>
-                    <th style="width: 20%;" class="num-col">WEIGHT PER PALLET (KG)</th>
-                    <th style="width: 20%;" class="num-col">NO. OF PALLETS</th>
-                    <th style="width: 20%;" class="num-col">TOTAL WEIGHT (KG)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${summaryRowsHtml}
+                  ${tableRowsHTML}
                   <tr class="grandtotal-row">
-                    <td>GRAND TOTAL</td>
-                    <td class="num-col"></td>
-                    <td class="num-col">${totalPalletsCount}</td>
-                    <td class="num-col">${formatNum(grandTotalWeight)}</td>
+                    <td colspan="4" style="text-align:right;">GRAND TOTAL (${totalPalletsCount} PALLETS)</td>
+                    <td class="num-col">${formatNum(grandTotalWeight)} kg</td>
                   </tr>
                 </tbody>
               </table>
 
               ${customNotes ? `
                 <div class="custom-notes-box">
-                  <div class="custom-notes-title">Delivery Notes:</div>
+                  <div class="custom-notes-title">COMMENTS / NOTES</div>
                   <div>${customNotes}</div>
                 </div>
               ` : ''}
             </div>
 
-            <div>
-              <div class="sign-off-box">
-                <div class="sign-off-title">Manager Approval & Sign-off</div>
-                <div class="sign-off-grid">
-                  <div class="sign-line-group">
-                    <div class="sign-line"></div>
-                    <div class="sign-label">Manager Name</div>
-                  </div>
-                  <div class="sign-line-group">
-                    <div class="sign-line"></div>
-                    <div class="sign-label">Signature</div>
-                  </div>
-                  <div class="sign-line-group">
-                    <div class="sign-line"></div>
-                    <div class="sign-label">Date</div>
-                  </div>
+            <div class="sign-off-box">
+              <div class="sign-off-title">RECEIVING SIGN-OFF & VERIFICATION</div>
+              <div class="sign-off-grid">
+                <div class="sign-line-group">
+                  <div class="sign-line"></div>
+                  <div class="sign-label">RECEIVER NAME</div>
                 </div>
-              </div>
-              <div class="doc-note">
-                Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.
+                <div class="sign-line-group">
+                  <div class="sign-line"></div>
+                  <div class="sign-label">SIGNATURE</div>
+                </div>
+                <div class="sign-line-group">
+                  <div class="sign-line"></div>
+                  <div class="sign-label">DATE</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       `;
+
+      container.innerHTML = reportHTML;
     }
-
-    async function generatePdfBlob() {
-      const page1 = document.getElementById('pdf-page-1');
-      const page2 = document.getElementById('pdf-page-2');
-
-      if (!page1 || !page2) return null;
-
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p', 'pt', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-
-      const options = {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        width: 794,
-        height: 1123,
-        windowWidth: 1200
-      };
-
-      const canvas1 = await html2canvas(page1, options);
-      const imgData1 = canvas1.toDataURL('image/jpeg', 0.98);
-      pdf.addImage(imgData1, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
-      const canvas2 = await html2canvas(page2, options);
-      const imgData2 = canvas2.toDataURL('image/jpeg', 0.98);
-      pdf.addPage();
-      pdf.addImage(imgData2, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
-      return pdf.output('blob');
-    }
-
-    async function uploadToSharePoint() {
-      const btn = document.getElementById('uploadSharepointBtn');
-      const originalText = btn.innerHTML;
-      
-      const page1 = document.getElementById('pdf-page-1');
-      if (!page1) {
-        alert('No docket data available to upload.');
-        return;
-      }
-
-      btn.innerHTML = '⏳ Uploading...';
-      btn.disabled = true;
-
-      try {
-        const pdfBlob = await generatePdfBlob();
-        if (!pdfBlob) throw new Error('PDF Generation failed');
-
-        const deliveryNo = document.getElementById('deliveryNoInput')?.value.trim() || 'UNNAMED';
-        const fileName = `Delivery_Docket_${deliveryNo}.pdf`;
-
-        // PLACEHOLDER: Ready for Power Automate / Graph API Integration
-        // Example:
-        // const formData = new FormData();
-        // formData.append('file', pdfBlob, fileName);
-        // await fetch('YOUR_SHAREPOINT_WEBHOOK_URL', { method: 'POST', body: formData });
-
-        console.log(`Generated ${fileName} (${pdfBlob.size} bytes) ready for SharePoint upload.`);
-        alert(`Successfully generated ${fileName}! Replace the placeholder function in JS with your SharePoint endpoint or Power Automate HTTP trigger when ready.`);
-      } catch (err) {
-        console.error('SharePoint Upload Error:', err);
-        alert('An error occurred while uploading to SharePoint.');
-      } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      updateClock();
-      parseData();
-    });
   </script>
 </body>
 </html>
