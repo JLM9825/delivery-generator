@@ -679,15 +679,12 @@ Kangaroo MDM
         const cleanLine = line.trim();
         if (!cleanLine) return;
 
-        // Extracts date formats like DD/MM/YYYY, DD/MM/YY, DD-MM-YYYY, or DD.MM.YY
         const dateMatch = cleanLine.match(/(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4})/);
         if (dateMatch) {
           const rawDate = dateMatch[1];
-          // Grabs product description preceding keywords like BBD/EXP, colons, or dashes
           let prodName = cleanLine.split(/bbd|use by|exp|[:\-]/i)[0].trim().toUpperCase();
 
           if (prodName) {
-            // Converts date into numeric batch (stripping / - .)
             const batchNo = rawDate.replace(/[\/\.-]/g, '');
             metaMap[prodName] = { date: rawDate, batch: batchNo };
           }
@@ -727,7 +724,6 @@ Kangaroo MDM
         return;
       }
 
-      // Map dynamic date and batch details from notes field
       const notesMeta = extractProductMetaFromNotes(customNotes);
 
       const lines = rawText.split('\n');
@@ -831,6 +827,7 @@ Kangaroo MDM
         </div>
       `;
 
+      // PAGE 1: Itemized Table Rows
       let tableRowsHTML = pallets.map(item => {
         let matchedMeta = { date: '', batch: '' };
         Object.keys(notesMeta).forEach(prodKey => {
@@ -850,8 +847,48 @@ Kangaroo MDM
         `;
       }).join('');
 
+      // PAGE 2: Summary Grouping Table Rows
+      let summaryRowsHTML = '';
+      Object.keys(summaryGroups).forEach(prodDesc => {
+        const grp = summaryGroups[prodDesc];
+        const weightKeys = Object.keys(grp.weights);
+
+        weightKeys.forEach((wKey, idx) => {
+          const qty = grp.weights[wKey];
+          const subtotal = parseFloat(wKey) * qty;
+
+          if (idx === 0) {
+            summaryRowsHTML += `
+              <tr>
+                <td rowspan="${weightKeys.length}"><strong>${prodDesc}</strong></td>
+                <td style="text-align:center;">${formatNum(wKey)} kg</td>
+                <td style="text-align:center;">${qty}</td>
+                <td class="num-col"><strong>${formatNum(subtotal)} kg</strong></td>
+              </tr>
+            `;
+          } else {
+            summaryRowsHTML += `
+              <tr>
+                <td style="text-align:center;">${formatNum(wKey)} kg</td>
+                <td style="text-align:center;">${qty}</td>
+                <td class="num-col"><strong>${formatNum(subtotal)} kg</strong></td>
+              </tr>
+            `;
+          }
+        });
+
+        summaryRowsHTML += `
+          <tr class="subtotal-row">
+            <td colspan="2" style="text-align:right;">SUBTOTAL: ${prodDesc}</td>
+            <td style="text-align:center;">${grp.totalPallets}</td>
+            <td class="num-col">${formatNum(grp.totalWeight)} kg</td>
+          </tr>
+        `;
+      });
+
       const reportHTML = `
         <div class="pdf-pages-wrapper">
+          <!-- PAGE 1: DETAILED BREAKDOWN -->
           <div class="doc-page">
             <div>
               ${renderDocHeader('DELIVERY BREAKDOWN')}
@@ -898,6 +935,35 @@ Kangaroo MDM
                   <div class="sign-label">DATE</div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- PAGE 2: PALLET WEIGHT SUMMARY -->
+          <div class="doc-page">
+            <div>
+              ${renderDocHeader('PALLET WEIGHT SUMMARY')}
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 45%;">PRODUCT DESCRIPTION</th>
+                    <th style="width: 20%; text-align:center;">PALLET WEIGHT</th>
+                    <th style="width: 15%; text-align:center;">QTY</th>
+                    <th style="width: 20%; text-align:right;">TOTAL WEIGHT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summaryRowsHTML}
+                  <tr class="grandtotal-row">
+                    <td colspan="2" style="text-align:right;">GRAND TOTAL</td>
+                    <td style="text-align:center;">${totalPalletsCount}</td>
+                    <td class="num-col">${formatNum(grandTotalWeight)} kg</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <div class="doc-note">Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.</div>
             </div>
           </div>
         </div>
