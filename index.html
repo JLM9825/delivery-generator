@@ -670,7 +670,7 @@ Kangaroo MDM
 
         const formData = new FormData();
         formData.append('UPLOADCARE_PUB_KEY', 'ffd51c8695aa14ed5f3d');
-        formData.append('UPLOADCARE_STORE', 'auto');
+        formData.append('UPLOADCARE_STORE', '1'); // Permanent file storage flag
         formData.append('file', pdfBlob, fileName);
 
         let pdfUrl = '';
@@ -680,16 +680,16 @@ Kangaroo MDM
             body: formData
           });
           const uploadData = await uploadRes.json();
-          // Uploadcare returns keys corresponding to filenames or file group UUIDs
-          const fileUuid = uploadData[fileName] || Object.values(uploadData)[0];
+          
+          // Robust file UUID check for Uploadcare responses
+          const fileUuid = uploadData.file || uploadData[fileName] || Object.values(uploadData)[0];
           if (fileUuid) {
-            pdfUrl = `https://ucarecdn.com/${fileUuid}/`;
+            pdfUrl = `https://ucarecdn.com/${fileUuid}/${encodeURIComponent(fileName)}`;
           }
         } catch (uploadErr) {
           console.warn('Uploadcare direct request failed, using backup link generator:', uploadErr);
         }
 
-        // If uploadcare URL couldn't be parsed directly, generate a local download object URL or placeholder
         if (!pdfUrl) {
           const localUrl = URL.createObjectURL(pdfBlob);
           pdfUrl = localUrl; 
@@ -789,232 +789,159 @@ Kangaroo MDM
       }
 
       const notesMeta = extractProductMetaFromNotes(customNotes);
-      const lines = rawText.split('\n');
-      const pallets = [];
-      let palletCounter = 1;
-      let currentDesc = '';
+      const blocks = rawText.split(/\n\s*\n/);
+      const products = [];
 
-      lines.forEach(line => {
-        let cleanLine = line.trim();
-        if (!cleanLine) return;
-        const hasText = /[a-zA-Z]/.test(cleanLine);
+      blocks.forEach(block => {
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+        if (lines.length === 0) return;
 
-        if (hasText) {
-          const firstNumIdx = cleanLine.search(/\d/);
-          if (firstNumIdx !== -1) {
-            currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim().toUpperCase();
-            const weights = extractWeightsFromLine(cleanLine.substring(firstNumIdx));
-            weights.forEach(w => {
-              pallets.push({ palletNo: palletCounter++, desc: currentDesc, weight: w });
-            });
-          } else {
-            currentDesc = cleanLine.toUpperCase();
-          }
-        } else if (currentDesc) {
-          const weights = extractWeightsFromLine(cleanLine);
-          weights.forEach(w => {
-            pallets.push({ palletNo: palletCounter++, desc: currentDesc, weight: w });
-          });
+        let prodName = lines[0].toUpperCase();
+        let allWeights = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          const wList = extractWeightsFromLine(lines[i]);
+          allWeights = allWeights.concat(wList);
+        }
+
+        if (allWeights.length > 0) {
+          const totalW = allWeights.reduce((acc, curr) => acc + curr, 0);
+          const meta = notesMeta[prodName] || { date: 'N/A', batch: 'N/A' };
+          products.append ? products.append() : products.push({ name: prodName, weights: allWeights, totalWeight: totalW, pallets: allWeights.length, bbd: meta.date, batch: meta.batch });
         }
       });
 
-      badge.innerText = `${pallets.length} Pallet${pallets.length === 1 ? '' : 's'}`;
-
-      if (pallets.length === 0) {
+      if (products.length === 0) {
         metrics.style.display = 'none';
+        badge.innerText = '0 Pallets';
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-state-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-            </div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
-            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 459-345-290).</p>
+            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 952-979.2).</p>
           </div>`;
         return;
       }
 
-      const summaryGroups = {};
-      let totalPalletsCount = 0;
+      let grandTotalPallets = 0;
       let grandTotalWeight = 0;
-
-      pallets.forEach(item => {
-        totalPalletsCount++;
-        grandTotalWeight += item.weight;
-        if (!summaryGroups[item.desc]) {
-          summaryGroups[item.desc] = { weights: {}, totalWeight: 0, totalPallets: 0 };
-        }
-        const group = summaryGroups[item.desc];
-        const wKey = item.weight.toString();
-        if (!group.weights[wKey]) group.weights[wKey] = 0;
-        group.weights[wKey]++;
-        group.totalPallets++;
-        group.totalWeight += item.weight;
+      products.forEach(p => {
+        grandTotalPallets += p.pallets;
+        grandTotalWeight += p.totalWeight;
       });
 
       metrics.style.display = 'grid';
-      document.getElementById('statPallets').innerText = totalPalletsCount;
-      document.getElementById('statWeight').innerText = `${formatNum(grandTotalWeight)} kg`;
-      document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
+      document.getElementById('statPallets').innerText = grandTotalPallets;
+      document.getElementById('statWeight').innerText = formatNum(grandTotalWeight) + ' kg';
+      document.getElementById('statProducts').innerText = products.length;
+      badge.innerText = `${grandTotalPallets} Pallets`;
 
       const now = new Date();
-      const generatedStamp = `${now.getDate()} ${now.toLocaleString('default', { month: 'short' }).toUpperCase()} ${now.getFullYear()} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
+      const timeStr = now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) + ' • ' + now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
-      const renderDocHeader = (pageTitle) => `
-        <div class="doc-header">
-          <div class="header-left">
-            ${deliveryNo ? `<div class="delivery-no-box">DELIVERY NO: ${deliveryNo}</div>` : ''}
-            ${supplierVal ? `<div class="supplier-box">SUPPLIER: ${supplierVal}</div>` : ''}
-            ${generatedByVal ? `<div class="generated-by-box">GENERATED BY: ${generatedByVal}</div>` : ''}
-          </div>
-          <div class="doc-title">
-            <h2>${pageTitle}</h2>
-          </div>
-          <div class="header-right">
-            <div class="doc-logo">lyka</div>
-            <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
-            <div class="meta-box-container">
-              ${tempVal ? `<div class="meta-item"><div class="meta-item-label">Temp on Arrival</div><div class="meta-item-value">${tempVal}</div></div>` : ''}
-              ${primesafeVal ? `<div class="meta-item"><div class="meta-item-label">PrimeSafe No.</div><div class="meta-item-value">${primesafeVal}</div></div>` : ''}
-              <div class="meta-item"><div class="meta-item-label">Packaging Acceptable</div><div class="meta-item-value ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div></div>
-              <div class="meta-item"><div class="meta-item-label">Product Hard Frozen</div><div class="meta-item-value ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</div></div>
-            </div>
-          </div>
-        </div>`;
+      let html = `<div class="pdf-pages-wrapper">`;
+      
+      const itemsPerPage = 6;
+      for (let i = 0; i < products.length; i += itemsPerPage) {
+        const pageProds = products.slice(i, i + itemsPerPage);
+        const pageNum = Math.floor(i / itemsPerPage) + 1;
+        const totalPages = Math.ceil(products.length / itemsPerPage);
 
-      let tableRows = '';
-      pallets.forEach(item => {
-        let meta = { date: '-', batch: '-' };
-        Object.keys(notesMeta).forEach(key => {
-          if (item.desc.includes(key) || key.includes(item.desc)) {
-            meta = notesMeta[key];
-          }
-        });
+        html += `
+          <div class="doc-page">
+            <div>
+              <div class="doc-header">
+                <div class="header-left">
+                  <div class="delivery-no-box">Ref: ${deliveryNo || 'N/A'}</div>
+                  <div class="supplier-box">Supp: ${supplierVal || 'N/A'}</div>
+                  <div class="generated-by-box">By: ${generatedByVal || 'N/A'}</div>
+                </div>
+                <div class="doc-title">
+                  <h2>Delivery Breakdown</h2>
+                </div>
+                <div class="header-right">
+                  <div class="doc-logo">LYKA</div>
+                  <div class="doc-timestamp">${timeStr}</div>
+                  <div class="meta-box-container">
+                    <div class="meta-item"><div class="meta-item-label">Temp</div><div class="meta-item-value">${tempVal || 'N/A'}</div></div>
+                    <div class="meta-item"><div class="meta-item-label">PrimeSafe</div><div class="meta-item-value">${primesafeVal || 'N/A'}</div></div>
+                    <div class="meta-item"><div class="meta-item-label">Pkg</div><div class="meta-item-value ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div></div>
+                    <div class="meta-item"><div class="meta-item-label">Frozen</div><div class="meta-item-value ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</div></div>
+                  </div>
+                </div>
+              </div>
 
-        tableRows += `
-          <tr>
-            <td>${item.palletNo}</td>
-            <td><strong>${item.desc}</strong></td>
-            <td>${meta.date}</td>
-            <td>${meta.batch}</td>
-            <td class="num-col"><strong>${formatNum(item.weight)}</strong></td>
-          </tr>`;
-      });
+              <div class="section-title">Pallet Weight Breakdown (Page ${pageNum} of ${totalPages})</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Product Description</th>
+                    <th style="text-align:center;">BBD / Batch</th>
+                    <th class="num-col">Pallets</th>
+                    <th class="num-col">Total Weight (kg)</th>
+                  </tr>
+                </thead>
+                <tbody>`;
 
-      let summaryRowsOriginal = '';
-      Object.keys(summaryGroups).forEach(prodName => {
-        const group = summaryGroups[prodName];
-        const weightKeys = Object.keys(group.weights);
-        
-        weightKeys.forEach((wKey, idx) => {
-          const count = group.weights[wKey];
-          const wVal = parseFloat(wKey);
-          const rowTotal = count * wVal;
-
-          summaryRowsOriginal += `
+        pageProds.forEach(p => {
+          html += `
             <tr>
-              <td>${idx === 0 ? `<strong>${prodName}</strong>` : ''}</td>
-              <td class="num-col">${formatNum(wVal)}</td>
-              <td class="num-col">${count}</td>
-              <td class="num-col">${formatNum(rowTotal)}</td>
+              <td><strong>${p.name}</strong><br><span style="font-size:8.5px; color:#4b5563;">Weights: ${p.weights.map(w => formatNum(w)).join(', ')}</span></td>
+              <td style="text-align:center;">${p.bbd}<br><span style="font-size:8px; color:#4b5563;">Batch: ${p.batch}</span></td>
+              <td class="num-col">${p.pallets}</td>
+              <td class="num-col"><strong>${formatNum(p.totalWeight)} kg</strong></td>
             </tr>`;
         });
 
-        summaryRowsOriginal += `
-          <tr class="subtotal-row">
-            <td style="font-weight: 800;">TOTAL ${prodName}</td>
-            <td></td>
-            <td class="num-col" style="font-weight: 800;">${group.totalPallets}</td>
-            <td class="num-col" style="font-weight: 800;">${formatNum(group.totalWeight)}</td>
-          </tr>`;
-      });
-
-      container.innerHTML = `
-        <div class="pdf-pages-wrapper">
-          <!-- PAGE 1: PALLET BREAKDOWN -->
-          <div class="doc-page">
-            <div>
-              ${renderDocHeader('DELIVERY BREAKDOWN')}
-              <div class="section-title">Pallet Weight Breakdown</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="width: 10%;">Pallet #</th>
-                    <th style="width: 45%;">Product Description</th>
-                    <th style="width: 15%;">Use By / BBD</th>
-                    <th style="width: 15%;">Batch #</th>
-                    <th style="width: 15%; text-align: right;">Weight (kg)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${tableRows}
-                  <tr class="grandtotal-row">
-                    <td colspan="4" style="text-align: right; font-weight: 900;">GRAND TOTAL:</td>
-                    <td class="num-col" style="font-weight: 900; font-size: 12px;">${formatNum(grandTotalWeight)} kg</td>
-                  </tr>
+        html += `
                 </tbody>
               </table>
-            </div>
-          </div>
+            </div>`;
 
-          <!-- PAGE 2: DELIVERY SUMMARY -->
-          <div class="doc-page">
+        if (pageNum === totalPages) {
+          html += `
             <div>
-              ${renderDocHeader('DELIVERY SUMMARY')}
-              <div class="section-title">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="width: 40%;">PRODUCT</th>
-                    <th style="width: 20%; text-align: right;">WEIGHT PER PALLET (KG)</th>
-                    <th style="width: 20%; text-align: right;">NO. OF PALLETS</th>
-                    <th style="width: 20%; text-align: right;">TOTAL WEIGHT (KG)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${summaryRowsOriginal}
-                  <tr class="grandtotal-row">
-                    <td style="font-weight: 900;">GRAND TOTAL</td>
-                    <td></td>
-                    <td class="num-col" style="font-weight: 900; font-size: 11px;">${totalPalletsCount}</td>
-                    <td class="num-col" style="font-weight: 900; font-size: 11px;">${formatNum(grandTotalWeight)}</td>
-                  </tr>
-                </tbody>
+              <table class="data-table" style="margin-bottom:0;">
+                <tr class="grandtotal-row">
+                  <td style="text-align:left;">GRAND TOTALS</td>
+                  <td style="text-align:center;">—</td>
+                  <td class="num-col">${grandTotalPallets} Pallets</td>
+                  <td class="num-col">${formatNum(grandTotalWeight)} kg</td>
+                </tr>
               </table>
 
               ${customNotes ? `
                 <div class="custom-notes-box">
-                  <div class="custom-notes-title">DELIVERY NOTES:</div>
-                  ${customNotes}
-                </div>` : ''}
-            </div>
+                  <div class="custom-notes-title">Additional Notes & Instructions</div>
+                  <div>${customNotes}</div>
+                </div>
+              ` : ''}
 
-            <div>
               <div class="sign-off-box">
-                <div class="sign-off-title">MANAGER APPROVAL & SIGN-OFF</div>
+                <div class="sign-off-title">Receiving Verification & Sign-Off</div>
                 <div class="sign-off-grid">
                   <div class="sign-line-group">
                     <div class="sign-line"></div>
-                    <div class="sign-label">MANAGER NAME</div>
+                    <div class="sign-label">Receiver Signature</div>
                   </div>
                   <div class="sign-line-group">
                     <div class="sign-line"></div>
-                    <div class="sign-label">SIGNATURE</div>
+                    <div class="sign-label">Carrier / Driver Name</div>
                   </div>
                   <div class="sign-line-group">
                     <div class="sign-line"></div>
-                    <div class="sign-label">DATE</div>
+                    <div class="sign-label">Date / Time</div>
                   </div>
                 </div>
               </div>
-              <div class="doc-note" style="text-align: left; margin-top: 12px;">
-                Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.
-              </div>
-            </div>
-          </div>
-        </div>`;
-    }
+            </div>`;
+        }
 
-    parseData();
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
   </script>
 </body>
 </html>
