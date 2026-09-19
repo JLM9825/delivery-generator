@@ -670,7 +670,7 @@ Kangaroo MDM
 
         const formData = new FormData();
         formData.append('UPLOADCARE_PUB_KEY', 'ffd51c8695aa14ed5f3d');
-        formData.append('UPLOADCARE_STORE', '1'); // Permanent file storage flag
+        formData.append('UPLOADCARE_STORE', '1');
         formData.append('file', pdfBlob, fileName);
 
         let pdfUrl = '';
@@ -681,7 +681,6 @@ Kangaroo MDM
           });
           const uploadData = await uploadRes.json();
           
-          // Robust file UUID check for Uploadcare responses
           const fileUuid = uploadData.file || uploadData[fileName] || Object.values(uploadData)[0];
           if (fileUuid) {
             pdfUrl = `https://ucarecdn.com/${fileUuid}/${encodeURIComponent(fileName)}`;
@@ -712,7 +711,6 @@ Kangaroo MDM
           "I9OvU1KIHitB_S939"    
         );
 
-        // Also trigger local download so you have an immediate copy
         pdf.save(fileName);
 
         alert('✅ Email sent successfully & PDF downloaded locally!');
@@ -807,7 +805,7 @@ Kangaroo MDM
         if (allWeights.length > 0) {
           const totalW = allWeights.reduce((acc, curr) => acc + curr, 0);
           const meta = notesMeta[prodName] || { date: 'N/A', batch: 'N/A' };
-          products.append ? products.append() : products.push({ name: prodName, weights: allWeights, totalWeight: totalW, pallets: allWeights.length, bbd: meta.date, batch: meta.batch });
+          products.push({ name: prodName, weights: allWeights, totalWeight: totalW, pallets: allWeights.length, bbd: meta.date, batch: meta.batch });
         }
       });
 
