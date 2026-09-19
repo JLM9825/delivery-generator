@@ -10,6 +10,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- EmailJS Browser SDK -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
   <style>
@@ -22,6 +23,7 @@
       --halo-green: #00ff66;
       --halo-glow: rgba(0, 255, 102, 0.35);
       --halo-glow-subtle: rgba(0, 255, 102, 0.12);
+      --accent-emerald: #02381e;
       --text-main: #f0fdf4;
       --text-muted: #62997b;
     }
@@ -99,7 +101,8 @@
 
     .live-clock::before {
       content: '';
-      width: 8px; height: 8px;
+      width: 8px;
+      height: 8px;
       background-color: var(--halo-green);
       border-radius: 50%;
       box-shadow: 0 0 8px var(--halo-green);
@@ -298,7 +301,6 @@
       align-items: center;
     }
 
-    /* Original PDF Styling matching Image 2 Layout */
     .doc-page {
       background: #ffffff;
       color: #111827;
@@ -308,7 +310,7 @@
       padding: 40px;
       border-radius: 4px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-      font-size: 10px;
+      font-size: 10.5px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -322,79 +324,98 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 24px;
-    }
-    .header-col-left { display: flex; flex-direction: column; gap: 3px; font-size: 9.5px; font-weight: 800; text-transform: uppercase; color: #111827; }
-    .header-col-center { font-size: 16px; font-weight: 900; text-transform: uppercase; color: #111827; letter-spacing: 0.5px; text-align: center; }
-    .header-col-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-
-    .meta-pills-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      align-items: flex-end;
+      border-bottom: 3px solid var(--accent-emerald);
+      padding-bottom: 10px;
       margin-bottom: 16px;
     }
-    .meta-pill {
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid #166534;
-      border-radius: 6px;
-      overflow: hidden;
-      font-size: 8.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      background: #f0fdf4;
-    }
-    .meta-pill-label { background: #dcfce7; color: #14532d; padding: 3px 6px; border-right: 1px solid #166534; }
-    .meta-pill-val { padding: 3px 8px; color: #166534; text-align: center; min-width: 50px; }
-    .meta-pill-val.fail, .meta-pill-val.no { color: #b91c1c; background: #fee2e2; }
-
-    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 9.5px; }
-    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; }
-    table.data-table th { background: #f0fdf4; color: #14532d; font-weight: 800; text-transform: uppercase; border-color: #166534; }
-    table.data-table .num-col { text-align: right; }
+    .header-left { width: 32%; display: flex; flex-direction: column; gap: 4px; }
+    .delivery-no-box { font-size: 11px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; white-space: nowrap; }
+    .supplier-box { font-size: 10px; font-weight: 800; color: #111827; text-transform: uppercase; white-space: nowrap; }
+    .generated-by-box { font-size: 9.5px; font-weight: 700; color: #374151; text-transform: uppercase; margin-top: 2px; white-space: nowrap; }
     
+    .doc-title { width: 36%; text-align: center; }
+    .doc-title h2 { font-size: 16px; font-weight: 900; color: var(--accent-emerald); letter-spacing: 0.5px; white-space: nowrap; }
+
+    .header-right { width: 32%; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .doc-logo { font-size: 24px; font-weight: 900; color: var(--accent-emerald); font-style: italic; letter-spacing: -1px; line-height: 1; }
+    .doc-timestamp { font-size: 8.5px; font-weight: 700; color: #4b5563; text-transform: uppercase; white-space: nowrap; }
+    
+    .meta-box-container { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; margin-top: 4px; }
+    .meta-item { background: #e6fdf0; border: 1px solid #bbf7d0; padding: 3px 6px; border-radius: 6px; text-align: right; }
+    .meta-item-label { font-size: 7.5px; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; white-space: nowrap; }
+    .meta-item-value { font-size: 9.5px; font-weight: 800; color: #111827; white-space: nowrap; }
+    .meta-item-value.pass, .meta-item-value.yes { color: #15803d; }
+    .meta-item-value.fail, .meta-item-value.no { color: #b91c1c; }
+
     .section-title {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
-      color: #111827;
+      color: var(--accent-emerald);
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      margin-top: 16px;
       letter-spacing: 0.5px;
     }
+    .section-title:first-of-type { margin-top: 0; }
 
-    .subtotal-row { background-color: #f9fafb; font-weight: 800; color: #111827; }
-    .grandtotal-row { background-color: #111827; color: #ffffff; font-weight: 900; font-size: 10.5px; }
-    .grandtotal-row td { border-color: #111827; color: #ffffff; text-align: right; }
+    table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10px; }
+    table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; }
+    table.data-table th { background: #e6fdf0; color: var(--accent-emerald); font-weight: 800; text-transform: uppercase; white-space: nowrap; }
+    table.data-table .num-col { text-align: right; }
+    
+    .subtotal-row { background-color: #ffffff; font-weight: 800; color: var(--accent-emerald); border-bottom: 2px solid #e5e7eb; }
+    .subtotal-row td { color: var(--accent-emerald); font-weight: 800; }
+    
+    .grandtotal-row { background-color: var(--accent-emerald); color: #ffffff; font-weight: 900; font-size: 11px; }
+    .grandtotal-row td { border-color: var(--accent-emerald); color: #ffffff; text-align: right; }
 
     .custom-notes-box {
-      margin-top: 10px;
-      padding: 10px 12px;
+      margin-top: 20px;
+      padding: 16px 18px;
       background-color: #f9fafb;
       border: 1px solid #e5e7eb;
-      border-left: 4px solid #111827;
-      border-radius: 6px;
-      font-size: 10px;
+      border-left: 5px solid var(--accent-emerald);
+      border-radius: 8px;
+      font-size: 11px;
       color: #374151;
-      line-height: 1.5;
+      line-height: 1.6;
       white-space: pre-wrap;
     }
-    .custom-notes-title { font-weight: 800; color: #111827; text-transform: uppercase; font-size: 9.5px; margin-bottom: 4px; }
+    .custom-notes-title {
+      font-weight: 800;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
 
     .sign-off-box {
-      margin-top: 16px;
-      padding: 12px 14px;
-      border: 1px solid #111827;
-      border-radius: 8px;
+      margin-top: 30px;
+      padding: 16px 20px;
+      border: 1.5px dashed var(--accent-emerald);
+      border-radius: 12px;
       background-color: #ffffff;
     }
-    .sign-off-title { font-size: 10px; font-weight: 800; color: #111827; text-transform: uppercase; margin-bottom: 20px; }
-    .sign-off-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; align-items: flex-end; }
-    .sign-line { border-bottom: 1px solid #9ca3af; height: 16px; width: 100%; }
-    .sign-label { font-size: 8.5px; font-weight: 700; color: #4b5563; text-transform: uppercase; margin-top: 4px; }
+    .sign-off-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 24px;
+    }
+    .sign-off-grid {
+      display: grid;
+      grid-template-columns: 2fr 3fr 1.5fr;
+      gap: 20px;
+      align-items: flex-end;
+    }
+    .sign-line-group { display: flex; flex-direction: column; gap: 6px; }
+    .sign-line { border-bottom: 1px solid #9ca3af; height: 20px; width: 100%; }
+    .sign-label { font-size: 9px; font-weight: 700; color: #4b5563; text-transform: uppercase; }
 
-    .doc-footer-note { font-size: 8.5px; color: #6b7280; font-style: italic; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e5e7eb; padding-top: 6px; }
+    .doc-note { font-size: 9.5px; color: #6b7280; font-style: italic; margin-top: 12px; }
 
     .empty-state {
       background: var(--panel-bg);
@@ -409,14 +430,54 @@
     .empty-state-icon { margin-bottom: 16px; display: inline-block; }
     .empty-state-icon svg { width: 48px; height: 48px; fill: var(--text-muted); }
 
+    /* Enforce hard page breaks when printing */
     @media print {
-      @page { size: A4 portrait; margin: 0; }
-      html, body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; height: 100% !important; overflow: visible !important; }
-      header, .left-panel, .dashboard-metrics, .no-print { display: none !important; }
-      .app-body, .right-panel, #reportContainer { display: block !important; padding: 0 !important; margin: 0 !important; width: 100% !important; background: #ffffff !important; overflow: visible !important; }
-      .pdf-pages-wrapper { gap: 0 !important; max-width: 100% !important; width: 100% !important; }
-      .doc-page { width: 100% !important; min-width: 100% !important; max-width: 100% !important; height: 100vh !important; min-height: 100vh !important; box-shadow: none !important; padding: 15mm 15mm !important; border-radius: 0 !important; box-sizing: border-box !important; page-break-after: always !important; break-after: page !important; page-break-inside: avoid !important; break-inside: avoid !important; }
-      .doc-page:last-child { page-break-after: auto !important; break-after: auto !important; }
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100% !important;
+        overflow: visible !important;
+      }
+      header, .left-panel, .dashboard-metrics, .no-print {
+        display: none !important;
+      }
+      .app-body, .right-panel, #reportContainer {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        overflow: visible !important;
+      }
+      .pdf-pages-wrapper {
+        gap: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+      .doc-page {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        box-shadow: none !important;
+        padding: 15mm 15mm !important;
+        border-radius: 0 !important;
+        box-sizing: border-box !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .doc-page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
     }
   </style>
 </head>
@@ -505,7 +566,7 @@
 
       <div class="field-group">
         <label class="field-label" for="notesInput">Additional Notes / Instructions</label>
-        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029"></textarea>
+        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029" oninput="parseData()"></textarea>
       </div>
     </div>
 
@@ -553,6 +614,7 @@
   </div>
 
   <script>
+    // Initialize EmailJS with your exact Public Key
     (function() {
       emailjs.init("I9OvU1KIHitB_S939");
     })();
@@ -588,7 +650,7 @@ Kangaroo MDM
       document.getElementById('pkgAcceptableInput').value = 'PASS';
       document.getElementById('hardFrozenInput').value = 'YES';
       document.getElementById('dataInput').value = sampleText;
-      document.getElementById('notesInput').value = 'Kangaroo trim BBD: 30/06/2028\nKangaroo MDM BBD: 25/2/2029';
+      document.getElementById('notesInput').value = 'Kangaroo trim BBD : 30/06/2028\nKangaroo MDM BBD : 25/2/2029';
       parseData();
     }
 
@@ -621,7 +683,7 @@ Kangaroo MDM
       const totalWeight = document.getElementById('statWeight')?.innerText || '0 kg';
       const notes = document.getElementById('notesInput')?.value.trim() || 'None';
 
-      btn.innerText = '⏳ Generating PDF...';
+      btn.innerText = '⏳ Generating PDF & Sending...';
       btn.disabled = true;
 
       try {
@@ -635,50 +697,19 @@ Kangaroo MDM
         const pdfWidth = pdf.internal.pageSize.getWidth();
 
         for (let i = 0; i < reportPages.length; i++) {
-          const canvas = await html2canvas(reportPages[i], { scale: 1.5, useCORS: true });
-          const imgData = canvas.toDataURL('image/jpeg', 0.9);
+          const canvas = await html2canvas(reportPages[i], { scale: 2, useCORS: true });
+          const imgData = canvas.toDataURL('image/png');
           const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
           if (i > 0) pdf.addPage();
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         }
 
-        const pdfBlob = pdf.output('blob');
-        const fileName = `Delivery_Docket_${deliveryNo}.pdf`;
-        
-        btn.innerText = '⏳ Uploading PDF...';
-
-        const formData = new FormData();
-        formData.append('UPLOADCARE_PUB_KEY', 'ffd51c8695aa14ed5f3d');
-        formData.append('UPLOADCARE_STORE', '1');
-        formData.append('file', pdfBlob, fileName);
-
-        let pdfUrl = '';
-        try {
-          const uploadRes = await fetch('https://upload.uploadcare.com/base/', {
-            method: 'POST',
-            body: formData
-          });
-          const uploadData = await uploadRes.json();
-          
-          const fileUuid = uploadData.file || uploadData[fileName] || Object.values(uploadData)[0];
-          if (fileUuid && typeof fileUuid === 'string') {
-            const cleanUuid = fileUuid.replace('https://ucarecdn.com/', '').split('/')[0];
-            pdfUrl = `https://ucarecdn.com/${cleanUuid}/${encodeURIComponent(fileName)}`;
-          }
-        } catch (uploadErr) {
-          console.warn('Uploadcare request warning:', uploadErr);
-        }
-
-        if (!pdfUrl) {
-          pdfUrl = URL.createObjectURL(pdfBlob);
-        }
-
-        btn.innerText = '⏳ Sending Email...';
+        const pdfBase64 = pdf.output('datauristring');
 
         await emailjs.send(
-          "service_z4pnmgz",     
-          "template_b4u9035",    
+          "service_z4pnmgz",     // Service ID
+          "template_b4u9035",    // Template ID
           {
             delivery_no: deliveryNo,
             supplier: supplier,
@@ -686,17 +717,15 @@ Kangaroo MDM
             total_pallets: totalPallets,
             total_weight: totalWeight,
             notes: notes,
-            pdf_url: pdfUrl      
+            content: pdfBase64    // PDF Attachment Base64 String
           },
-          "I9OvU1KIHitB_S939"    
+          "I9OvU1KIHitB_S939"    // Public Key
         );
 
-        pdf.save(fileName);
-
-        alert('✅ Email sent successfully & PDF downloaded locally!');
+        alert('✅ Email with PDF attachment sent successfully!');
       } catch (err) {
-        console.error('EmailJS / Upload Error:', err);
-        alert(`❌ Process failed: ${err.text || err.message || JSON.stringify(err)}`);
+        console.error('EmailJS Error:', err);
+        alert(`❌ Email failed to send: ${err.text || err.message || JSON.stringify(err)}`);
       } finally {
         btn.innerText = '📧 Email Docket';
         btn.disabled = false;
@@ -706,6 +735,7 @@ Kangaroo MDM
     function extractWeightsFromLine(line) {
       const weights = [];
       const parts = line.split('-');
+
       parts.forEach(part => {
         const cleanPart = part.trim();
         const weightVal = parseFloat(cleanPart);
@@ -713,7 +743,32 @@ Kangaroo MDM
           weights.push(weightVal);
         }
       });
+
       return weights;
+    }
+
+    function extractProductMetaFromNotes(notesText) {
+      const metaMap = {};
+      if (!notesText) return metaMap;
+
+      const lines = notesText.split('\n');
+      lines.forEach(line => {
+        const cleanLine = line.trim();
+        if (!cleanLine) return;
+
+        const dateMatch = cleanLine.match(/(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4})/);
+        if (dateMatch) {
+          const rawDate = dateMatch[1];
+          let prodName = cleanLine.split(/bbd|use by|exp|[:\-]/i)[0].trim().toUpperCase();
+
+          if (prodName) {
+            const batchNo = rawDate.replace(/[\/\.-]/g, '');
+            metaMap[prodName] = { date: rawDate, batch: batchNo };
+          }
+        }
+      });
+
+      return metaMap;
     }
 
     function parseData() {
@@ -746,240 +801,241 @@ Kangaroo MDM
         return;
       }
 
-      const blocks = rawText.split(/\n\s*\n/);
-      const products = [];
-      let globalPalletIndex = 1;
+      const notesMeta = extractProductMetaFromNotes(customNotes);
 
-      blocks.forEach(block => {
-        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
-        if (lines.length === 0) return;
+      const lines = rawText.split('\n');
+      const pallets = [];
+      let palletCounter = 1;
+      let currentDesc = '';
 
-        let prodName = lines[0].toUpperCase();
-        let allWeights = [];
+      lines.forEach(line => {
+        let cleanLine = line.trim();
+        if (!cleanLine) return;
 
-        for (let i = 1; i < lines.length; i++) {
-          const wList = extractWeightsFromLine(lines[i]);
-          allWeights = allWeights.concat(wList);
-        }
+        const hasText = /[a-zA-Z]/.test(cleanLine);
 
-        if (allWeights.length > 0) {
-          const totalW = allWeights.reduce((acc, curr) => acc + curr, 0);
-          const paletteItems = allWeights.map(w => ({
-            palletNo: globalPalletIndex++,
-            productName: prodName,
-            weight: w
-          }));
-
-          const weightGroups = {};
-          allWeights.forEach(w => {
-            weightGroups[w] = (weightGroups[w] || 0) + 1;
-          });
-
-          const groupedSummary = Object.keys(weightGroups).map(wStr => {
-            const wNum = parseFloat(wStr);
-            const count = weightGroups[wStr];
-            return { weight: wNum, count: count, total: wNum * count };
-          });
-
-          products.push({
-            name: prodName,
-            paletteItems: paletteItems,
-            groupedSummary: groupedSummary,
-            totalWeight: totalW,
-            pallets: allWeights.length
+        if (hasText) {
+          const firstNumIdx = cleanLine.search(/\d/);
+          if (firstNumIdx !== -1) {
+            currentDesc = cleanLine.substring(0, firstNumIdx).replace(/[-,\s]+$/, '').trim().toUpperCase();
+            const weights = extractWeightsFromLine(cleanLine.substring(firstNumIdx));
+            weights.forEach(w => {
+              pallets.push({ palletNo: palletCounter++, desc: currentDesc, weight: w });
+            });
+          } else {
+            currentDesc = cleanLine.toUpperCase();
+          }
+        } else if (currentDesc) {
+          const weights = extractWeightsFromLine(cleanLine);
+          weights.forEach(w => {
+            pallets.push({ palletNo: palletCounter++, desc: currentDesc, weight: w });
           });
         }
       });
 
-      if (products.length === 0) {
+      badge.innerText = `${pallets.length} Pallet${pallets.length === 1 ? '' : 's'}`;
+
+      if (pallets.length === 0) {
         metrics.style.display = 'none';
-        badge.innerText = '0 Pallets';
         container.innerHTML = `
           <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            </div>
             <strong style="color:var(--text-main); display:block; font-size:17px;">No Valid Weights Detected</strong>
-            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 952-979.2).</p>
+            <p style="margin-top:8px; font-size:13px;">Ensure weights are separated by hyphens (e.g., 459-345-290).</p>
           </div>`;
         return;
       }
 
-      let grandTotalPallets = 0;
+      const summaryGroups = {};
+      let totalPalletsCount = 0;
       let grandTotalWeight = 0;
-      products.forEach(p => {
-        grandTotalPallets += p.pallets;
-        grandTotalWeight += p.totalWeight;
+
+      pallets.forEach(item => {
+        totalPalletsCount++;
+        grandTotalWeight += item.weight;
+
+        if (!summaryGroups[item.desc]) {
+          summaryGroups[item.desc] = { weights: {}, totalWeight: 0, totalPallets: 0 };
+        }
+
+        const group = summaryGroups[item.desc];
+        const wKey = item.weight.toString();
+        
+        if (!group.weights[wKey]) {
+          group.weights[wKey] = 0;
+        }
+        group.weights[wKey]++;
+        group.totalPallets++;
+        group.totalWeight += item.weight;
       });
 
       metrics.style.display = 'grid';
-      document.getElementById('statPallets').innerText = grandTotalPallets;
-      document.getElementById('statWeight').innerText = formatNum(grandTotalWeight) + ' kg';
-      document.getElementById('statProducts').innerText = products.length;
-      badge.innerText = `${grandTotalPallets} Pallets`;
+      document.getElementById('statPallets').innerText = totalPalletsCount;
+      document.getElementById('statWeight').innerText = `${formatNum(grandTotalWeight)} kg`;
+      document.getElementById('statProducts').innerText = Object.keys(summaryGroups).length;
 
       const now = new Date();
-      const timeStr = now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase() + ' @ ' + now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+      const generatedStamp = `${now.getDate()} ${now.toLocaleString('default', { month: 'short' }).toUpperCase()} ${now.getFullYear()} @ ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
 
-      let html = `<div class="pdf-pages-wrapper">`;
-
-      // ================= PAGE 1: DELIVERY BREAKDOWN =================
-      html += `
-        <div class="doc-page">
-          <div>
-            <div class="doc-header">
-              <div class="header-col-left">
-                <div>DELIVERY NO: ${deliveryNo || 'N/A'}</div>
-                <div>SUPPLIER: ${supplierVal || 'N/A'}</div>
-                <div>GENERATED BY: ${generatedByVal || 'N/A'}</div>
-              </div>
-              <div class="header-col-center">Delivery Breakdown</div>
-              <div class="header-col-right">
-                <div style="font-size:22px; font-weight:900; letter-spacing:-1px;">lyka</div>
-                <div style="font-size:7.5px; font-weight:700; color:#4b5563;">GENERATED: ${timeStr}</div>
-              </div>
-            </div>
-
-            <div class="meta-pills-stack">
-              <div class="meta-pill"><span class="meta-pill-label">Temp on Arrival</span><span class="meta-pill-val">${tempVal || 'N/A'}</span></div>
-              <div class="meta-pill"><span class="meta-pill-label">PrimeSafe No.</span><span class="meta-pill-val">${primesafeVal || 'N/A'}</span></div>
-              <div class="meta-pill"><span class="meta-pill-label">Pkg Acceptable</span><span class="meta-pill-val ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</span></div>
-              <div class="meta-pill"><span class="meta-pill-label">Hard Frozen</span><span class="meta-pill-val ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</span></div>
-            </div>
-
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width:12%;">Pallet No.</th>
-                  <th style="width:46%;">Product Description</th>
-                  <th style="width:14%;">Date</th>
-                  <th style="width:14%;">Batch</th>
-                  <th class="num-col" style="width:14%;">Weight (kg)</th>
-                </tr>
-              </thead>
-              <tbody>`;
-
-      products.forEach(p => {
-        p.paletteItems.forEach(item => {
-          html += `
-            <tr>
-              <td><strong>${item.palletNo}</strong></td>
-              <td>${item.productName}</td>
-              <td></td>
-              <td></td>
-              <td class="num-col"><strong>${formatNum(item.weight)}</strong></td>
-            </tr>`;
-        });
-      });
-
-      html += `
-              </tbody>
-            </table>
+      const renderDocHeader = (pageTitle) => `
+        <div class="doc-header">
+          <div class="header-left">
+            ${deliveryNo ? `<div class="delivery-no-box">DELIVERY NO: ${deliveryNo}</div>` : ''}
+            ${supplierVal ? `<div class="supplier-box">SUPPLIER: ${supplierVal}</div>` : ''}
+            ${generatedByVal ? `<div class="generated-by-box">GENERATED BY: ${generatedByVal}</div>` : ''}
           </div>
-
-          <div class="doc-footer-note">
-            <span>Note: All weights are recorded in kilograms (kg).</span>
-            <span>Generated on ${timeStr}</span>
+          <div class="doc-title">
+            <h2>${pageTitle}</h2>
+          </div>
+          <div class="header-right">
+            <div class="doc-logo">lyka</div>
+            <div class="doc-timestamp">GENERATED: ${generatedStamp}</div>
+            <div class="meta-box-container">
+              ${tempVal ? `<div class="meta-item"><div class="meta-item-label">Temp on Arrival</div><div class="meta-item-value">${tempVal}</div></div>` : ''}
+              ${primesafeVal ? `<div class="meta-item"><div class="meta-item-label">PrimeSafe No.</div><div class="meta-item-value">${primesafeVal}</div></div>` : ''}
+              <div class="meta-item"><div class="meta-item-label">Packaging Acceptable</div><div class="meta-item-value ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div></div>
+              <div class="meta-item"><div class="meta-item-label">Product Hard Frozen</div><div class="meta-item-value ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</div></div>
+            </div>
           </div>
         </div>`;
 
-      // ================= PAGE 2: DELIVERY SUMMARY =================
-      html += `
-        <div class="doc-page">
-          <div>
-            <div class="doc-header">
-              <div class="header-col-left">
-                <div>DELIVERY NO: ${deliveryNo || 'N/A'}</div>
-                <div>SUPPLIER: ${supplierVal || 'N/A'}</div>
-                <div>GENERATED BY: ${generatedByVal || 'N/A'}</div>
-              </div>
-              <div class="header-col-center">Delivery Summary</div>
-              <div class="header-col-right">
-                <div style="font-size:22px; font-weight:900; letter-spacing:-1px;">lyka</div>
-                <div style="font-size:7.5px; font-weight:700; color:#4b5563;">GENERATED: ${timeStr}</div>
-              </div>
-            </div>
-
-            <div class="meta-pills-stack">
-              <div class="meta-pill"><span class="meta-pill-label">Temp on Arrival</span><span class="meta-pill-val">${tempVal || 'N/A'}</span></div>
-              <div class="meta-pill"><span class="meta-pill-label">PrimeSafe No.</span><span class="meta-pill-val">${primesafeVal || 'N/A'}</span></div>
-              <div class="meta-pill"><span class="meta-pill-label">Pkg Acceptable</span><span class="meta-pill-val ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</span></div>
-              <div class="meta-pill"><span class="meta-pill-label">Hard Frozen</span><span class="meta-pill-val ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</span></div>
-            </div>
-
-            <div class="section-title">Pallet Quantity Breakdown by Weight</div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th class="num-col">Weight Per Pallet (kg)</th>
-                  <th class="num-col">No. of Pallets</th>
-                  <th class="num-col">Total Weight (kg)</th>
-                </tr>
-              </thead>
-              <tbody>`;
-
-      products.forEach(p => {
-        p.groupedSummary.forEach((g, idx) => {
-          html += `
-            <tr>
-              <td>${idx === 0 ? `<strong>${p.name}</strong>` : ''}</td>
-              <td class="num-col">${formatNum(g.weight)}</td>
-              <td class="num-col">${g.count}</td>
-              <td class="num-col">${formatNum(g.total)}</td>
-            </tr>`;
+      let tableRows = '';
+      pallets.forEach(item => {
+        let meta = { date: '-', batch: '-' };
+        Object.keys(notesMeta).forEach(key => {
+          if (item.desc.includes(key) || key.includes(item.desc)) {
+            meta = notesMeta[key];
+          }
         });
-        html += `
-          <tr class="subtotal-row">
-            <td>TOTAL ${p.name}</td>
-            <td class="num-col">—</td>
-            <td class="num-col">${p.pallets}</td>
-            <td class="num-col">${formatNum(p.totalWeight)}</td>
+
+        tableRows += `
+          <tr>
+            <td>${item.palletNo}</td>
+            <td><strong>${item.desc}</strong></td>
+            <td>${meta.date}</td>
+            <td>${meta.batch}</td>
+            <td class="num-col"><strong>${formatNum(item.weight)}</strong></td>
           </tr>`;
       });
 
-      html += `
-                <tr class="grandtotal-row">
-                  <td>GRAND TOTAL</td>
-                  <td class="num-col">—</td>
-                  <td class="num-col">${grandTotalPallets}</td>
-                  <td class="num-col">${formatNum(grandTotalWeight)}</td>
-                </tr>
-              </tbody>
-            </table>
+      let summaryRowsOriginal = '';
+      Object.keys(summaryGroups).forEach(prodName => {
+        const group = summaryGroups[prodName];
+        const weightKeys = Object.keys(group.weights);
+        
+        weightKeys.forEach((wKey, idx) => {
+          const count = group.weights[wKey];
+          const wVal = parseFloat(wKey);
+          const rowTotal = count * wVal;
 
-            ${customNotes ? `
-              <div class="custom-notes-box">
-                <div class="custom-notes-title">Delivery Notes:</div>
-                <div>${customNotes}</div>
-              </div>
-            ` : ''}
+          summaryRowsOriginal += `
+            <tr>
+              <td>${idx === 0 ? `<strong>${prodName}</strong>` : ''}</td>
+              <td class="num-col">${formatNum(wVal)}</td>
+              <td class="num-col">${count}</td>
+              <td class="num-col">${formatNum(rowTotal)}</td>
+            </tr>`;
+        });
 
-            <div class="sign-off-box">
-              <div class="sign-off-title">Manager Approval & Sign-Off</div>
-              <div class="sign-off-grid">
-                <div>
-                  <div class="sign-line"></div>
-                  <div class="sign-label">Manager Name</div>
-                </div>
-                <div>
-                  <div class="sign-line"></div>
-                  <div class="sign-label">Signature</div>
-                </div>
-                <div>
-                  <div class="sign-line"></div>
-                  <div class="sign-label">Date</div>
-                </div>
-              </div>
+        summaryRowsOriginal += `
+          <tr class="subtotal-row">
+            <td style="font-weight: 800;">TOTAL ${prodName}</td>
+            <td></td>
+            <td class="num-col" style="font-weight: 800;">${group.totalPallets}</td>
+            <td class="num-col" style="font-weight: 800;">${formatNum(group.totalWeight)}</td>
+          </tr>`;
+      });
+
+      container.innerHTML = `
+        <div class="pdf-pages-wrapper">
+          <!-- PAGE 1: PALLET BREAKDOWN -->
+          <div class="doc-page">
+            <div>
+              ${renderDocHeader('DELIVERY BREAKDOWN')}
+              <div class="section-title">Pallet Weight Breakdown</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 10%;">Pallet #</th>
+                    <th style="width: 45%;">Product Description</th>
+                    <th style="width: 15%;">Use By / BBD</th>
+                    <th style="width: 15%;">Batch #</th>
+                    <th style="width: 15%; text-align: right;">Weight (kg)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tableRows}
+                  <tr class="grandtotal-row">
+                    <td colspan="4" style="text-align: right; font-weight: 900;">GRAND TOTAL:</td>
+                    <td class="num-col" style="font-weight: 900; font-size: 12px;">${formatNum(grandTotalWeight)} kg</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <div class="doc-footer-note">
-            <span>Note: All weights are recorded in kilograms (kg).</span>
-            <span>Generated on ${timeStr}</span>
+          <!-- PAGE 2: DELIVERY SUMMARY (MATCHING ORIGINAL DESIGN) -->
+          <div class="doc-page">
+            <div>
+              ${renderDocHeader('DELIVERY SUMMARY')}
+              <div class="section-title">PALLET QUANTITY BREAKDOWN BY WEIGHT</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40%;">PRODUCT</th>
+                    <th style="width: 20%; text-align: right;">WEIGHT PER PALLET (KG)</th>
+                    <th style="width: 20%; text-align: right;">NO. OF PALLETS</th>
+                    <th style="width: 20%; text-align: right;">TOTAL WEIGHT (KG)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summaryRowsOriginal}
+                  <tr class="grandtotal-row">
+                    <td style="font-weight: 900;">GRAND TOTAL</td>
+                    <td></td>
+                    <td class="num-col" style="font-weight: 900; font-size: 11px;">${totalPalletsCount}</td>
+                    <td class="num-col" style="font-weight: 900; font-size: 11px;">${formatNum(grandTotalWeight)}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              ${customNotes ? `
+                <div class="custom-notes-box">
+                  <div class="custom-notes-title">DELIVERY NOTES:</div>
+                  ${customNotes}
+                </div>` : ''}
+            </div>
+
+            <div>
+              <div class="sign-off-box">
+                <div class="sign-off-title">MANAGER APPROVAL & SIGN-OFF</div>
+                <div class="sign-off-grid">
+                  <div class="sign-line-group">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">MANAGER NAME</div>
+                  </div>
+                  <div class="sign-line-group">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">SIGNATURE</div>
+                  </div>
+                  <div class="sign-line-group">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">DATE</div>
+                  </div>
+                </div>
+              </div>
+              <div class="doc-note" style="text-align: left; margin-top: 12px;">
+                Note: All weights are recorded in kilograms (kg). Generated on ${generatedStamp}.
+              </div>
+            </div>
           </div>
         </div>`;
-
-      html += `</div>`;
-      container.innerHTML = html;
     }
+
+    // Run initial parse on page load
+    parseData();
   </script>
 </body>
 </html>
