@@ -614,6 +614,11 @@
   </div>
 
   <script>
+    // Initialize EmailJS with your exact Public Key
+    (function() {
+      emailjs.init("I9OvU1KIHitB_S939");
+    })();
+
     function updateClock() {
       const liveClockEl = document.getElementById('liveClock');
       if (!liveClockEl) return;
@@ -693,7 +698,7 @@ Kangaroo MDM
             total_weight: totalWeight,
             notes: notes
           },
-          "I9OvU1KlHitB_S939"    // Public Key
+          "I9OvU1KIHitB_S939"    // Public Key (Capital 'I' after 1K)
         );
         alert('✅ Test Email sent successfully!');
       } catch (err) {
