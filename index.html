@@ -683,10 +683,30 @@ Kangaroo MDM
       const totalWeight = document.getElementById('statWeight')?.innerText || '0 kg';
       const notes = document.getElementById('notesInput')?.value.trim() || 'None';
 
-      btn.innerText = '📧 Sending...';
+      btn.innerText = '⏳ Generating PDF & Sending...';
       btn.disabled = true;
 
       try {
+        const reportPages = document.querySelectorAll('.doc-page');
+        if (!reportPages || reportPages.length === 0) {
+          throw new Error('No report pages available to generate PDF.');
+        }
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+
+        for (let i = 0; i < reportPages.length; i++) {
+          const canvas = await html2canvas(reportPages[i], { scale: 2, useCORS: true });
+          const imgData = canvas.toDataURL('image/png');
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          if (i > 0) pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        }
+
+        const pdfBase64 = pdf.output('datauristring');
+
         await emailjs.send(
           "service_z4pnmgz",     // Service ID
           "template_b4u9035",    // Template ID
@@ -696,11 +716,13 @@ Kangaroo MDM
             generated_by: generatedBy,
             total_pallets: totalPallets,
             total_weight: totalWeight,
-            notes: notes
+            notes: notes,
+            content: pdfBase64    // PDF Attachment Base64 String
           },
-          "I9OvU1KIHitB_S939"    // Public Key (Capital 'I' after 1K)
+          "I9OvU1KIHitB_S939"    // Public Key
         );
-        alert('✅ Test Email sent successfully!');
+
+        alert('✅ Email with PDF attachment sent successfully!');
       } catch (err) {
         console.error('EmailJS Error:', err);
         alert(`❌ Email failed to send: ${err.text || err.message || JSON.stringify(err)}`);
