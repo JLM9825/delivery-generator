@@ -614,7 +614,7 @@
   </div>
 
   <script>
-    // Initialize EmailJS with your exact Public Key
+    // Initialize EmailJS
     (function() {
       emailjs.init("I9OvU1KIHitB_S939");
     })();
@@ -683,7 +683,7 @@ Kangaroo MDM
       const totalWeight = document.getElementById('statWeight')?.innerText || '0 kg';
       const notes = document.getElementById('notesInput')?.value.trim() || 'None';
 
-      btn.innerText = '⏳ Generating PDF & Sending...';
+      btn.innerText = '⏳ Generating PDF...';
       btn.disabled = true;
 
       try {
@@ -692,6 +692,7 @@ Kangaroo MDM
           throw new Error('No report pages available to generate PDF.');
         }
 
+        // 1. Generate PDF Blob using jsPDF + html2canvas
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -705,7 +706,32 @@ Kangaroo MDM
           pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         }
 
-        const pdfBase64 = pdf.output('datauristring');
+        const pdfBlob = pdf.output('blob');
+
+        // 2. Upload PDF Blob to Uploadcare using your Public Key
+        const UPLOADCARE_PUBLIC_KEY = 'ffd51c8695aa14ed5f3d'; 
+
+        const formData = new FormData();
+        formData.append('UPLOADCARE_PUB_KEY', UPLOADCARE_PUBLIC_KEY);
+        formData.append('UPLOADCARE_STORE', '1');
+        formData.append('file', pdfBlob, `Delivery_Docket_${deliveryNo}.pdf`);
+
+        btn.innerText = '⏳ Uploading PDF...';
+        
+        const uploadRes = await fetch('https://upload.uploadcare.com/base/', {
+          method: 'POST',
+          body: formData
+        });
+
+        const uploadData = await uploadRes.json();
+        if (!uploadData.file) {
+          throw new Error('Upload failed: ' + JSON.stringify(uploadData));
+        }
+
+        const pdfUrl = `https://ucarecdn.com/${uploadData.file}/Delivery_Docket_${deliveryNo}.pdf`;
+
+        // 3. Send Email via EmailJS with hosted link
+        btn.innerText = '⏳ Sending Email...';
 
         await emailjs.send(
           "service_z4pnmgz",     // Service ID
@@ -717,15 +743,15 @@ Kangaroo MDM
             total_pallets: totalPallets,
             total_weight: totalWeight,
             notes: notes,
-            content: pdfBase64    // PDF Attachment Base64 String
+            pdf_url: pdfUrl      // PDF URL passed to EmailJS template
           },
           "I9OvU1KIHitB_S939"    // Public Key
         );
 
-        alert('✅ Email with PDF attachment sent successfully!');
+        alert('✅ Email sent successfully with PDF download link!');
       } catch (err) {
-        console.error('EmailJS Error:', err);
-        alert(`❌ Email failed to send: ${err.text || err.message || JSON.stringify(err)}`);
+        console.error('EmailJS / Upload Error:', err);
+        alert(`❌ Process failed: ${err.text || err.message || JSON.stringify(err)}`);
       } finally {
         btn.innerText = '📧 Email Docket';
         btn.disabled = false;
@@ -976,7 +1002,7 @@ Kangaroo MDM
             </div>
           </div>
 
-          <!-- PAGE 2: DELIVERY SUMMARY (MATCHING ORIGINAL DESIGN) -->
+          <!-- PAGE 2: DELIVERY SUMMARY -->
           <div class="doc-page">
             <div>
               ${renderDocHeader('DELIVERY SUMMARY')}
@@ -1034,7 +1060,7 @@ Kangaroo MDM
         </div>`;
     }
 
-    // Run initial parse on page load
+    // Initial parse on load
     parseData();
   </script>
 </body>
