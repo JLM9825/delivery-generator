@@ -659,14 +659,17 @@ Kangaroo MDM
             body: formData
           });
           const uploadData = await uploadRes.json();
+          
+          // Robust key extraction from Uploadcare response
           const fileUuid = uploadData.file || uploadData[fileName] || Object.values(uploadData)[0];
-          if (fileUuid) {
-            pdfUrl = `https://ucarecdn.com/${fileUuid}/${encodeURIComponent(fileName)}`;
+          if (fileUuid && typeof fileUuid === 'string') {
+            pdfUrl = fileUuid.startsWith('http') ? fileUuid : `https://ucarecdn.com/${fileUuid}/${encodeURIComponent(fileName)}`;
           }
         } catch (uploadErr) {
-          console.warn('Uploadcare direct request failed, using backup link generator:', uploadErr);
+          console.warn('Uploadcare request warning:', uploadErr);
         }
 
+        // Fallback safety link if cloud upload response is blocked/restricted
         if (!pdfUrl) {
           pdfUrl = URL.createObjectURL(pdfBlob);
         }
@@ -767,7 +770,6 @@ Kangaroo MDM
             weight: w
           }));
 
-          // Group weights for summary breakdown
           const weightGroups = {};
           allWeights.forEach(w => {
             weightGroups[w] = (weightGroups[w] || 0) + 1;
