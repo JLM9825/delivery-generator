@@ -353,8 +353,10 @@
       color: var(--accent-emerald);
       text-transform: uppercase;
       margin-bottom: 8px;
+      margin-top: 16px;
       letter-spacing: 0.5px;
     }
+    .section-title:first-of-type { margin-top: 0; }
 
     table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10px; }
     table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; }
@@ -691,7 +693,7 @@ Kangaroo MDM
             total_weight: totalWeight,
             notes: notes
           },
-          "I9OvU1KlHitB_S939"    // Corrected Public Key (Capital I)
+          "I9OvU1KlHitB_S939"    // Public Key
         );
         alert('✅ Test Email sent successfully!');
       } catch (err) {
@@ -891,6 +893,31 @@ Kangaroo MDM
           </tr>`;
       });
 
+      // Build secondary summary breakdown table
+      let summaryRows = '';
+      Object.keys(summaryGroups).forEach(prodName => {
+        const group = summaryGroups[prodName];
+        let meta = { date: '-', batch: '-' };
+        Object.keys(notesMeta).forEach(key => {
+          if (prodName.includes(key) || key.includes(prodName)) {
+            meta = notesMeta[key];
+          }
+        });
+
+        const breakdownParts = Object.keys(group.weights).map(w => `${group.weights[w]} x ${formatNum(parseFloat(w))} kg`);
+        const breakdownStr = breakdownParts.join(' + ');
+
+        summaryRows += `
+          <tr>
+            <td><strong>${prodName}</strong></td>
+            <td>${meta.date}</td>
+            <td>${meta.batch}</td>
+            <td>${breakdownStr}</td>
+            <td class="num-col">${group.totalPallets}</td>
+            <td class="num-col"><strong>${formatNum(group.totalWeight)} kg</strong></td>
+          </tr>`;
+      });
+
       container.innerHTML = `
         <div class="pdf-pages-wrapper">
           <div class="doc-page">
@@ -912,6 +939,28 @@ Kangaroo MDM
                   <tr class="grandtotal-row">
                     <td colspan="4" style="text-align: right; font-weight: 900;">GRAND TOTAL:</td>
                     <td class="num-col" style="font-weight: 900; font-size: 12px;">${formatNum(grandTotalWeight)} kg</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="section-title">Product Summary Breakdown</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 25%;">Product Description</th>
+                    <th style="width: 12%;">Use By / BBD</th>
+                    <th style="width: 13%;">Batch #</th>
+                    <th style="width: 30%;">Weight Breakdown</th>
+                    <th style="width: 10%; text-align: right;">Pallets</th>
+                    <th style="width: 10%; text-align: right;">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summaryRows}
+                  <tr class="grandtotal-row">
+                    <td colspan="4" style="text-align: right; font-weight: 900;">TOTAL SUMMARY:</td>
+                    <td class="num-col" style="font-weight: 900;">${totalPalletsCount}</td>
+                    <td class="num-col" style="font-weight: 900;">${formatNum(grandTotalWeight)} kg</td>
                   </tr>
                 </tbody>
               </table>
