@@ -706,27 +706,23 @@ Kangaroo MDM
         }
 
         const pdfBlob = pdf.output('blob');
-        const UPLOADCARE_PUBLIC_KEY = 'ffd51c8695aa14ed5f3d'; 
-
         const formData = new FormData();
-        formData.append('UPLOADCARE_PUB_KEY', UPLOADCARE_PUBLIC_KEY);
-        formData.append('UPLOADCARE_STORE', 'auto');
         formData.append('file', pdfBlob, `Delivery_Docket_${deliveryNo}.pdf`);
 
         btn.innerText = '⏳ Uploading PDF...';
         
-        const uploadRes = await fetch('https://upload.uploadcare.com/base/', {
+        const uploadRes = await fetch('https://tmpfiles.org/api/v1/upload', {
           method: 'POST',
           body: formData
         });
 
         const uploadData = await uploadRes.json();
-        if (!uploadData.file) {
-          throw new Error('Upload failed: ' + JSON.stringify(uploadData));
+        if (uploadData.status !== 'success') {
+          throw new Error('Upload failed.');
         }
 
-        const fileUuid = uploadData.file;
-        const pdfUrl = `https://ucarecdn.com/${fileUuid}/`;
+        let rawUrl = uploadData.data.url;
+        let pdfUrl = rawUrl.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
 
         btn.innerText = '⏳ Sending Email...';
 
