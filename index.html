@@ -401,6 +401,43 @@
       display: flex;
       justify-content: space-between;
     }
+
+    /* PRINT STYLES: Hides dark UI and outputs clean document pages */
+    @media print {
+      header, 
+      .left-panel, 
+      .dashboard-metrics, 
+      .quick-links {
+        display: none !important;
+      }
+
+      body, 
+      .app-body, 
+      .right-panel, 
+      .report-container {
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
+        display: block !important;
+      }
+
+      .doc-page {
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        page-break-after: always;
+      }
+
+      .breakdown-table tr {
+        page-break-inside: avoid;
+      }
+    }
   </style>
 </head>
 <body>
