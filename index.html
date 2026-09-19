@@ -697,32 +697,36 @@ Kangaroo MDM
         const pdfWidth = pdf.internal.pageSize.getWidth();
 
         for (let i = 0; i < reportPages.length; i++) {
-          const canvas = await html2canvas(reportPages[i], { scale: 2, useCORS: true });
-          const imgData = canvas.toDataURL('image/png');
+          // Scale set to 1.2 for optimized lightweight file size and instant uploads
+          const canvas = await html2canvas(reportPages[i], { scale: 1.2, useCORS: true });
+          const imgData = canvas.toDataURL('image/jpeg', 0.9);
           const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
           if (i > 0) pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
         }
 
         const pdfBlob = pdf.output('blob');
         const formData = new FormData();
+        formData.append('UPLOADCARE_PUB_KEY', 'ffd51c8695aa14ed5f3d');
+        formData.append('UPLOADCARE_STORE', 'auto');
         formData.append('file', pdfBlob, `Delivery_Docket_${deliveryNo}.pdf`);
 
         btn.innerText = '⏳ Uploading PDF...';
         
-        const uploadRes = await fetch('https://tmpfiles.org/api/v1/upload', {
+        const uploadRes = await fetch('https://upload.uploadcare.com/base/', {
           method: 'POST',
           body: formData
         });
 
         const uploadData = await uploadRes.json();
-        if (uploadData.status !== 'success') {
+        const fileUuid = uploadData[`Delivery_Docket_${deliveryNo}.pdf`];
+        
+        if (!fileUuid) {
           throw new Error('Upload failed.');
         }
 
-        let rawUrl = uploadData.data.url;
-        let pdfUrl = rawUrl.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+        let pdfUrl = `https://ucarecdn.com/${fileUuid}/`;
 
         btn.innerText = '⏳ Sending Email...';
 
