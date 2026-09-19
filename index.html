@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF Libraries (html2canvas + jsPDF) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -294,7 +293,7 @@
     .pdf-pages-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 32px;
       width: 100%;
       max-width: 800px;
       align-items: center;
@@ -316,6 +315,8 @@
       justify-content: space-between;
       box-sizing: border-box;
       position: relative;
+      page-break-after: always;
+      break-after: page;
     }
 
     .doc-header {
@@ -426,7 +427,7 @@
     .empty-state-icon { margin-bottom: 16px; display: inline-block; }
     .empty-state-icon svg { width: 48px; height: 48px; fill: var(--text-muted); }
 
-    /* Print Specific Style Overrides */
+    /* Enforce hard page breaks when printing */
     @media print {
       @page {
         size: A4 portrait;
@@ -436,7 +437,7 @@
         background: #ffffff !important;
         margin: 0 !important;
         padding: 0 !important;
-        height: auto !important;
+        height: 100% !important;
         overflow: visible !important;
       }
       header, .left-panel, .dashboard-metrics, .no-print {
@@ -457,19 +458,22 @@
       }
       .doc-page {
         width: 100% !important;
-        min-width: 0 !important;
+        min-width: 100% !important;
         max-width: 100% !important;
-        height: auto !important;
-        min-height: 0 !important;
-        max-height: 100vh !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
         box-shadow: none !important;
         padding: 15mm 15mm !important;
         border-radius: 0 !important;
         box-sizing: border-box !important;
-      }
-      .doc-page:not(:last-child) {
         page-break-after: always !important;
         break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .doc-page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
       }
     }
   </style>
@@ -899,7 +903,7 @@ Kangaroo MDM
 
       const reportHTML = `
         <div class="pdf-pages-wrapper">
-          <!-- PAGE 1: DETAILED BREAKDOWN -->
+          <!-- PAGE 1: DETAILED BREAKDOWN ONLY -->
           <div class="doc-page">
             <div>
               ${renderDocHeader('DELIVERY BREAKDOWN')}
@@ -923,11 +927,10 @@ Kangaroo MDM
               </table>
             </div>
 
-            <!-- Page 1 Footer Note only -->
             <div class="doc-note">Note: Detailed breakdown sheet. Generated on ${generatedStamp.toLowerCase()}.</div>
           </div>
 
-          <!-- PAGE 2: DELIVERY SUMMARY (NOTES + MANAGER SIGN-OFF ONLY) -->
+          <!-- PAGE 2: DELIVERY SUMMARY (SUMMARY, NOTES & MANAGER SIGN-OFF) -->
           <div class="doc-page">
             <div>
               ${renderDocHeader('DELIVERY SUMMARY')}
