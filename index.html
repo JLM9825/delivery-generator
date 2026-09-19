@@ -22,7 +22,6 @@
       --halo-green: #00ff66;
       --halo-glow: rgba(0, 255, 102, 0.35);
       --halo-glow-subtle: rgba(0, 255, 102, 0.12);
-      --accent-emerald: #02381e;
       --text-main: #f0fdf4;
       --text-muted: #62997b;
     }
@@ -100,8 +99,7 @@
 
     .live-clock::before {
       content: '';
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       background-color: var(--halo-green);
       border-radius: 50%;
       box-shadow: 0 0 8px var(--halo-green);
@@ -300,7 +298,7 @@
       align-items: center;
     }
 
-    /* Exact Original PDF Styling Matching Provided Template */
+    /* Original PDF Styling matching Image 2 Layout */
     .doc-page {
       background: #ffffff;
       color: #111827;
@@ -310,7 +308,7 @@
       padding: 40px;
       border-radius: 4px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-      font-size: 10.5px;
+      font-size: 10px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -321,37 +319,40 @@
     }
 
     .doc-header {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr 1.2fr;
+      display: flex;
+      justify-content: space-between;
       align-items: flex-start;
-      border-bottom: 2px solid #111827;
-      padding-bottom: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
     .header-col-left { display: flex; flex-direction: column; gap: 3px; font-size: 9.5px; font-weight: 800; text-transform: uppercase; color: #111827; }
-    .header-col-center { text-align: center; font-size: 14px; font-weight: 900; text-transform: uppercase; color: #111827; letter-spacing: 0.5px; padding-top: 4px; }
-    .header-col-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .header-col-center { font-size: 16px; font-weight: 900; text-transform: uppercase; color: #111827; letter-spacing: 0.5px; text-align: center; }
+    .header-col-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 
-    .meta-top-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      background: #f3f4f6;
-      border: 1px solid #e5e7eb;
-      padding: 8px;
-      border-radius: 6px;
+    .meta-pills-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-end;
       margin-bottom: 16px;
-      text-align: center;
     }
-    .meta-box-item { display: flex; flex-direction: column; gap: 2px; }
-    .meta-box-label { font-size: 7.5px; font-weight: 800; color: #4b5563; text-transform: uppercase; }
-    .meta-box-val { font-size: 10px; font-weight: 800; color: #111827; }
-    .meta-box-val.pass, .meta-box-val.yes { color: #15803d; }
-    .meta-box-val.fail, .meta-box-val.no { color: #b91c1c; }
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #166534;
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 8.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: #f0fdf4;
+    }
+    .meta-pill-label { background: #dcfce7; color: #14532d; padding: 3px 6px; border-right: 1px solid #166534; }
+    .meta-pill-val { padding: 3px 8px; color: #166534; text-align: center; min-width: 50px; }
+    .meta-pill-val.fail, .meta-pill-val.no { color: #b91c1c; background: #fee2e2; }
 
     table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 9.5px; }
-    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 5px 8px; text-align: left; }
-    table.data-table th { background: #f9fafb; color: #111827; font-weight: 800; text-transform: uppercase; }
+    table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; }
+    table.data-table th { background: #f0fdf4; color: #14532d; font-weight: 800; text-transform: uppercase; border-color: #166534; }
     table.data-table .num-col { text-align: right; }
     
     .section-title {
@@ -504,7 +505,7 @@
 
       <div class="field-group">
         <label class="field-label" for="notesInput">Additional Notes / Instructions</label>
-        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029" oninput="parseData()"></textarea>
+        <textarea id="notesInput" placeholder="Kangaroo trim BBD : 30/06/2028&#10;Kangaroo MDM BBD : 25/2/2029"></textarea>
       </div>
     </div>
 
@@ -831,24 +832,26 @@ Kangaroo MDM
               </div>
               <div class="header-col-center">Delivery Breakdown</div>
               <div class="header-col-right">
-                <div style="font-size:18px; font-weight:900; letter-spacing:-1px;">lyka</div>
+                <div style="font-size:22px; font-weight:900; letter-spacing:-1px;">lyka</div>
                 <div style="font-size:7.5px; font-weight:700; color:#4b5563;">GENERATED: ${timeStr}</div>
               </div>
             </div>
 
-            <div class="meta-top-grid">
-              <div class="meta-box-item"><div class="meta-box-label">Temp on Arrival</div><div class="meta-box-val">${tempVal || 'N/A'}</div></div>
-              <div class="meta-box-item"><div class="meta-box-label">PrimeSafe No.</div><div class="meta-box-val">${primesafeVal || 'N/A'}</div></div>
-              <div class="meta-box-item"><div class="meta-box-label">Pkg Acceptable</div><div class="meta-box-val ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div></div>
-              <div class="meta-box-item"><div class="meta-box-label">Hard Frozen</div><div class="meta-box-val ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</div></div>
+            <div class="meta-pills-stack">
+              <div class="meta-pill"><span class="meta-pill-label">Temp on Arrival</span><span class="meta-pill-val">${tempVal || 'N/A'}</span></div>
+              <div class="meta-pill"><span class="meta-pill-label">PrimeSafe No.</span><span class="meta-pill-val">${primesafeVal || 'N/A'}</span></div>
+              <div class="meta-pill"><span class="meta-pill-label">Pkg Acceptable</span><span class="meta-pill-val ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</span></div>
+              <div class="meta-pill"><span class="meta-pill-label">Hard Frozen</span><span class="meta-pill-val ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</span></div>
             </div>
 
             <table class="data-table">
               <thead>
                 <tr>
-                  <th style="width:15%;">Pallet No.</th>
-                  <th style="width:55%;">Product Description</th>
-                  <th class="num-col" style="width:30%;">Weight (kg)</th>
+                  <th style="width:12%;">Pallet No.</th>
+                  <th style="width:46%;">Product Description</th>
+                  <th style="width:14%;">Date</th>
+                  <th style="width:14%;">Batch</th>
+                  <th class="num-col" style="width:14%;">Weight (kg)</th>
                 </tr>
               </thead>
               <tbody>`;
@@ -859,6 +862,8 @@ Kangaroo MDM
             <tr>
               <td><strong>${item.palletNo}</strong></td>
               <td>${item.productName}</td>
+              <td></td>
+              <td></td>
               <td class="num-col"><strong>${formatNum(item.weight)}</strong></td>
             </tr>`;
         });
@@ -887,16 +892,16 @@ Kangaroo MDM
               </div>
               <div class="header-col-center">Delivery Summary</div>
               <div class="header-col-right">
-                <div style="font-size:18px; font-weight:900; letter-spacing:-1px;">lyka</div>
+                <div style="font-size:22px; font-weight:900; letter-spacing:-1px;">lyka</div>
                 <div style="font-size:7.5px; font-weight:700; color:#4b5563;">GENERATED: ${timeStr}</div>
               </div>
             </div>
 
-            <div class="meta-top-grid">
-              <div class="meta-box-item"><div class="meta-box-label">Temp on Arrival</div><div class="meta-box-val">${tempVal || 'N/A'}</div></div>
-              <div class="meta-box-item"><div class="meta-box-label">PrimeSafe No.</div><div class="meta-box-val">${primesafeVal || 'N/A'}</div></div>
-              <div class="meta-box-item"><div class="meta-box-label">Pkg Acceptable</div><div class="meta-box-val ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</div></div>
-              <div class="meta-box-item"><div class="meta-box-label">Hard Frozen</div><div class="meta-box-val ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</div></div>
+            <div class="meta-pills-stack">
+              <div class="meta-pill"><span class="meta-pill-label">Temp on Arrival</span><span class="meta-pill-val">${tempVal || 'N/A'}</span></div>
+              <div class="meta-pill"><span class="meta-pill-label">PrimeSafe No.</span><span class="meta-pill-val">${primesafeVal || 'N/A'}</span></div>
+              <div class="meta-pill"><span class="meta-pill-label">Pkg Acceptable</span><span class="meta-pill-val ${pkgAcceptableVal.toLowerCase()}">${pkgAcceptableVal}</span></div>
+              <div class="meta-pill"><span class="meta-pill-label">Hard Frozen</span><span class="meta-pill-val ${hardFrozenVal.toLowerCase()}">${hardFrozenVal}</span></div>
             </div>
 
             <div class="section-title">Pallet Quantity Breakdown by Weight</div>
