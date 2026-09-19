@@ -893,7 +893,6 @@ Kangaroo MDM
           </tr>`;
       });
 
-      // Build secondary summary breakdown table
       let summaryRows = '';
       Object.keys(summaryGroups).forEach(prodName => {
         const group = summaryGroups[prodName];
@@ -920,6 +919,7 @@ Kangaroo MDM
 
       container.innerHTML = `
         <div class="pdf-pages-wrapper">
+          <!-- PAGE 1: PALLET WEIGHT BREAKDOWN -->
           <div class="doc-page">
             <div>
               ${renderDocHeader()}
@@ -942,7 +942,13 @@ Kangaroo MDM
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
 
+          <!-- PAGE 2: PRODUCT SUMMARY BREAKDOWN, NOTES, & SIGN-OFF -->
+          <div class="doc-page">
+            <div>
+              ${renderDocHeader()}
               <div class="section-title">Product Summary Breakdown</div>
               <table class="data-table">
                 <thead>
