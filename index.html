@@ -363,7 +363,6 @@
     table.data-table th { background: #f3f4f6; color: #111827; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
     table.data-table .num-col { text-align: right; }
     
-    /* Summary Breakdown Table Specifics */
     table.summary-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 20px; }
     table.summary-table th, table.summary-table td { border: 1px solid #d1d5db; padding: 7px 10px; }
     table.summary-table th { background: #ffffff; color: #111827; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid #9ca3af; }
@@ -372,7 +371,6 @@
     table.summary-table tr.grandtotal-row { background-color: #0c1524; color: #ffffff; font-weight: 800; font-size: 10.5px; }
     table.summary-table tr.grandtotal-row td { border-color: #0c1524; color: #ffffff; }
 
-    /* Custom Layout Containers for Delivery Notes & Sign-Off */
     .summary-box-container {
       border: 1px solid #d1d5db;
       border-radius: 8px;
@@ -428,7 +426,6 @@
     .empty-state-icon { margin-bottom: 16px; display: inline-block; }
     .empty-state-icon svg { width: 48px; height: 48px; fill: var(--text-muted); }
 
-    /* Enforce hard page breaks when printing */
     @media print {
       @page {
         size: A4 portrait;
@@ -612,7 +609,6 @@
   </div>
 
   <script>
-    // Initialize EmailJS
     (function() {
       emailjs.init("I9OvU1KIHitB_S939");
     })();
@@ -684,7 +680,6 @@ Kangaroo MDM
       btn.innerText = '⏳ Sending Email...';
       btn.disabled = true;
 
-      // Extract the itemized breakdown directly from the generated report table
       const reportPages = document.querySelectorAll('.doc-page');
       let htmlSummary = '';
       let textSummary = '';
@@ -693,8 +688,6 @@ Kangaroo MDM
         const table = reportPages[0].querySelector('table');
         if (table) {
           htmlSummary = table.outerHTML;
-          
-          // Generate plain-text alternative as backup
           const rows = table.querySelectorAll('tr');
           rows.forEach(row => {
             const cols = Array.from(row.querySelectorAll('th, td')).map(cell => cell.innerText.trim());
@@ -703,29 +696,43 @@ Kangaroo MDM
         }
       }
 
-      try {
-        await emailjs.send(
-          "service_z4pnmgz",     // Service ID
-          "wo4zacj",             // Template ID matched to active template
-          {
-            delivery_no: deliveryNo,
-            supplier: supplier,
-            generated_by: generatedBy,
-            total_pallets: totalPallets,
-            total_weight: totalWeight,
-            notes: notes,
-            docket_html: htmlSummary,
-            docket_summary: textSummary,
-            name: generatedBy,
-            title: deliveryNo
-          },
-          "I9OvU1KIHitB_S939"    // Public Key
-        );
+      const emailPayload = {
+        delivery_no: deliveryNo,
+        supplier: supplier,
+        generated_by: generatedBy,
+        total_pallets: totalPallets,
+        total_weight: totalWeight,
+        notes: notes,
+        docket_html: htmlSummary,
+        docket_summary: textSummary,
+        name: generatedBy,
+        title: deliveryNo
+      };
 
+      try {
+        // Attempt sending with Template ID wo4zacj
+        await emailjs.send(
+          "service_z4pnmgz",
+          "wo4zacj",
+          emailPayload,
+          "I9OvU1KIHitB_S939"
+        );
         alert('✅ Email docket summary sent successfully!');
-      } catch (err) {
-        console.error('EmailJS Error:', err);
-        alert(`❌ Email failed to send: ${err.text || err.message || JSON.stringify(err)}`);
+      } catch (err1) {
+        console.warn('First Template ID failed, trying fallback...', err1);
+        try {
+          // Fallback attempt with template_b4u9035
+          await emailjs.send(
+            "service_z4pnmgz",
+            "template_b4u9035",
+            emailPayload,
+            "I9OvU1KIHitB_S939"
+          );
+          alert('✅ Email docket summary sent successfully!');
+        } catch (err2) {
+          console.error('EmailJS Error:', err2);
+          alert(`❌ Email failed to send: ${err2.text || err2.message || JSON.stringify(err2)}`);
+        }
       } finally {
         btn.innerText = '📧 Email Docket';
         btn.disabled = false;
@@ -756,7 +763,6 @@ Kangaroo MDM
         const cleanLine = line.trim();
         if (!cleanLine) return;
 
-        // Extracts date formats like 12/12/28 or 12/12/2028
         const dateMatch = cleanLine.match(/(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4})/);
         if (dateMatch) {
           const rawDate = dateMatch[1];
@@ -856,7 +862,6 @@ Kangaroo MDM
         productGroups[p.desc].pallets.push(p);
         productGroups[p.desc].totalWeight += p.weight;
 
-        // Group weights per weight value for summary page
         if (!productGroups[p.desc].weightBreakdown[p.weight]) {
           productGroups[p.desc].weightBreakdown[p.weight] = 0;
         }
@@ -872,7 +877,6 @@ Kangaroo MDM
       const now = new Date();
       const timeString = `${now.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })} ${now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
 
-      // Page 1 Layout (Detailed Itemized Pallets)
       let pagesHTML = '<div class="pdf-pages-wrapper">';
 
       pagesHTML += `
@@ -944,7 +948,6 @@ Kangaroo MDM
           </div>
         </div>`;
 
-      // Page 2 Layout (Summary Table matching the exact provided UI)
       pagesHTML += `
         <div class="doc-page">
           <div>
@@ -983,7 +986,6 @@ Kangaroo MDM
 
         totalPalletsCount += group.pallets.length;
 
-        // Subtotal row for product group
         pagesHTML += `
           <tr class="subtotal-row">
             <td style="font-weight: 800;">TOTAL ${prodName}</td>
@@ -993,7 +995,6 @@ Kangaroo MDM
           </tr>`;
       });
 
-      // Grand Total row
       pagesHTML += `
                 <tr class="grandtotal-row">
                   <td>GRAND TOTAL</td>
@@ -1030,7 +1031,7 @@ Kangaroo MDM
           <div class="doc-note">This document is auto-generated for stock receiving and quality control log verification.</div>
         </div>`;
 
-      pagesHTML += '</div>'; // End .pdf-pages-wrapper
+      pagesHTML += '</div>';
       container.innerHTML = pagesHTML;
     }
   </script>
