@@ -691,19 +691,25 @@ Kangaroo MDM
         }
 
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdf = new jsPDF({
+          orientation: 'p',
+          unit: 'mm',
+          format: 'a4',
+          compress: true
+        });
         const pdfWidth = pdf.internal.pageSize.getWidth();
 
         for (let i = 0; i < reportPages.length; i++) {
-          const canvas = await html2canvas(reportPages[i], { scale: 2, useCORS: true });
-          const imgData = canvas.toDataURL('image/png');
+          const canvas = await html2canvas(reportPages[i], { scale: 1.5, useCORS: true });
+          const imgData = canvas.toDataURL('image/jpeg', 0.7);
           const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
           if (i > 0) pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
         }
 
-        const pdfBase64 = pdf.output('datauristring');
+        const pdfDataUri = pdf.output('datauristring');
+        const base64Data = pdfDataUri.split(',')[1];
 
         await emailjs.send(
           "service_z4pnmgz",     // Service ID
@@ -715,7 +721,7 @@ Kangaroo MDM
             total_pallets: totalPallets,
             total_weight: totalWeight,
             notes: notes,
-            content: pdfBase64    // PDF Attachment Base64 String
+            content: base64Data    // Compressed raw Base64 string
           },
           "I9OvU1KIHitB_S939"    // Public Key
         );
