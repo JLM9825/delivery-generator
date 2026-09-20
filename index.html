@@ -706,7 +706,7 @@ Kangaroo MDM
       try {
         await emailjs.send(
           "service_z4pnmgz",     // Service ID
-          "template_b4u9035",    // Template ID
+          "wo4zacj",             // Template ID matched to active template
           {
             delivery_no: deliveryNo,
             supplier: supplier,
@@ -715,7 +715,9 @@ Kangaroo MDM
             total_weight: totalWeight,
             notes: notes,
             docket_html: htmlSummary,
-            docket_summary: textSummary
+            docket_summary: textSummary,
+            name: generatedBy,
+            title: deliveryNo
           },
           "I9OvU1KIHitB_S939"    // Public Key
         );
